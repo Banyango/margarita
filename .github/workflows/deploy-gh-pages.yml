@@ -36,6 +36,7 @@ jobs:
 
       - name: Build site with MkDocs
         run: |
+          cd docs
           mkdocs build --site-dir site
 
       - name: Upload pages artifact
