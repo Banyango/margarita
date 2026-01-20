@@ -9,6 +9,10 @@ nav:
         - Conditionals: conditionals.md
         - Loops: loops.md
         - Include Files: include_files.md
+    - Python API:
+        - Basic Usage: basic.md
+        - Includes For Organized Prompts: includes.md
+        - Agentic Loops: use-in-agents.md
 
 repo_url: https://github.com/banyango/pmd
 repo_name: banyango/pmd
