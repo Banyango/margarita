@@ -616,6 +616,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Include Files
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -632,6 +650,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-includes-in-python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Includes in Python API
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -828,6 +876,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-includes-in-python-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Includes in Python API
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -873,6 +940,30 @@ Content goes here using the same context.
 <li>Paths are resolved relative to the parent template's directory (the CLI and renderer set <code>base_path</code>).</li>
 <li>Avoid circular includes; they can cause infinite loops or errors.</li>
 </ul>
+<h2 id="using-includes-in-python-api">Using Includes in Python API<a class="headerlink" href="#using-includes-in-python-api" title="Permanent link">&para;</a></h2>
+<p>When using PMD programmatically, you must set the <code>base_path</code> when creating the renderer. <strong>All include paths are resolved relative to this base path</strong>, not relative to the file doing the including.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pmd.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">PmdParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pmd.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">PmdRenderer</span>
+
+<span class="c1"># Parse your template</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">PmdParser</span><span class="p">()</span>
+<span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;{</span><span class="si">% i</span><span class="s1">nclude &quot;header.pmd&quot; %}</span><span class="se">\n\n</span><span class="s1">Main content here.&#39;</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+<span class="c1"># Set base_path - all includes resolve from here</span>
+<span class="n">renderer</span> <span class="o">=</span> <span class="n">PmdRenderer</span><span class="p">(</span>
+    <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;My Page&quot;</span><span class="p">},</span>
+    <span class="n">base_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./templates&quot;</span><span class="p">)</span>  <span class="c1"># header.pmd will be loaded from ./templates/header.pmd</span>
+<span class="p">)</span>
+
+<span class="n">output</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Important</strong>: Even in nested includes, all paths are from <code>base_path</code>. If <code>snippets/section.pmd</code> includes another file, it must use the full path from <code>base_path</code>:</p>
+<div class="highlight"><pre><span></span><code>{# Inside templates/snippets/section.pmd #}
+{% include &quot;snippets/subsection.pmd&quot; %}  {# NOT just &quot;subsection.pmd&quot; #}
+</code></pre></div>
+<p>See the <a href="../includes/">Using Includes</a> page for comprehensive examples and patterns.</p>
 <p>Tip: Use includes for headers, footers, and small shared components to keep templates DRY and maintainable.</p>
 
 
