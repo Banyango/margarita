@@ -1,5 +1,5 @@
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 template = """
 You are a helpful assistant.
@@ -15,11 +15,11 @@ Please provide a detailed response.
 """
 
 # Parse the template
-parser = MargaritaParser()
+parser = Parser()
 metadata, nodes = parser.parse(template)
 
 # Create a renderer with context
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={"task": "Summarize the key points", "context": "User is researching AI agents"}
 )
 

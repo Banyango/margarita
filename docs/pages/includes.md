@@ -6,18 +6,18 @@ MARGARITA's include functionality allows you to compose templates from reusable 
 
 ### Setting Up the Renderer
 
-The key to using includes is setting the `base_path` parameter when creating a `MargaritaRenderer`. This tells MARGARITA where to resolve relative include paths:
+The key to using includes is setting the `base_path` parameter when creating a `Renderer`. This tells MARGARITA where to resolve relative include paths:
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 # Define base path for includes
 template_dir = Path("./templates")
 
 # Parse your main template
-parser = MargaritaParser()
+parser = Parser()
 template_content = """
 {% include "header.marg" %}
 
@@ -29,7 +29,7 @@ Main content here.
 metadata, nodes = parser.parse(template_content)
 
 # Create renderer with base_path
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={"app_name": "MyApp"},
     base_path=template_dir
 )
@@ -71,8 +71,8 @@ Timestamp: {{timestamp}}
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 # Main template that composes snippets
 main_template = """
@@ -88,10 +88,10 @@ main_template = """
 """
 
 # Parse and render
-parser = MargaritaParser()
+parser = Parser()
 _, nodes = parser.parse(main_template)
 
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={
         "role": "technical expert",
         "user_name": "Alice",
@@ -113,14 +113,14 @@ print(prompt)
 
 ### MargaritaComposer
 
-Include complex prompts dynamically using `MargaritaComposer`:
+Include complex prompts dynamically using `Composer`:
 
 ```python
 from pathlib import Path
-from margarita.composer import MargaritaComposer
+from margarita.composer import Composer
 
 # Usage
-manager = MargaritaComposer(Path("./templates"))
+manager = Composer(Path("./templates"))
 
 # Compose a complex prompt from multiple snippets
 prompt = manager.compose_prompt(
@@ -145,6 +145,8 @@ prompt = manager.compose_prompt(
 ### Using Conditionals with Includes
 
 ```python
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 # Template with conditional includes
 template = """
 {% include "snippets/system_role.marg" %}
@@ -164,11 +166,11 @@ template = """
 {% endif %}
 """
 
-parser = MargaritaParser()
+parser = Parser()
 _, nodes = parser.parse(template)
 
 # Render with detailed mode
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={
         "role": "assistant",
         "use_examples": True,
@@ -223,15 +225,15 @@ Notice that even though `header_section.marg` is in the `snippets/` directory, i
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 # Parse the main template
-parser = MargaritaParser()
+parser = Parser()
 _, nodes = parser.parse('{% include "snippets/complete_prompt.marg" %}')
 
 # Set base_path to templates/
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={"role": "assistant"},
     base_path=Path("./templates")
 )
@@ -272,10 +274,10 @@ You can nest includes as deeply as needed:
 
 ```python
 # All paths resolve from base_path, no matter how deep the nesting
-parser = MargaritaParser()
+parser = Parser()
 _, nodes = parser.parse('{% include "layouts/full_prompt.marg" %}')
 
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={"title": "My Prompt"},
     base_path=Path("./templates")
 )
@@ -325,17 +327,17 @@ Always handle include errors gracefully:
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
 def safe_render(template_content: str, context: dict, base_path: Path) -> str:
     """Safely render a template with error handling."""
     try:
-        parser = MargaritaParser()
+        parser = Parser()
         _, nodes = parser.parse(template_content)
 
-        renderer = MargaritaRenderer(context=context, base_path=base_path)
+        renderer = Renderer(context=context, base_path=base_path)
         return renderer.render(nodes)
 
     except FileNotFoundError as e:
@@ -433,7 +435,7 @@ Parse templates once, render many times:
 class OptimizedRenderer:
     def __init__(self, template_dir: Path):
         self.template_dir = template_dir
-        self.parser = MargaritaParser()
+        self.parser = Parser()
         self.parsed_cache = {}
 
     def get_nodes(self, template_content: str):
@@ -447,7 +449,7 @@ class OptimizedRenderer:
 
     def render(self, template_content: str, context: dict) -> str:
         nodes = self.get_nodes(template_content)
-        renderer = MargaritaRenderer(context=context, base_path=self.template_dir)
+        renderer = Renderer(context=context, base_path=self.template_dir)
         return renderer.render(nodes)
 ```
 
@@ -455,8 +457,8 @@ class OptimizedRenderer:
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
 class AgentPromptBuilder:
@@ -464,7 +466,7 @@ class AgentPromptBuilder:
 
     def __init__(self, snippets_dir: Path):
         self.snippets_dir = snippets_dir
-        self.parser = MargaritaParser()
+        self.parser = Parser()
 
     def build_agent_prompt(
             self,
@@ -505,7 +507,7 @@ class AgentPromptBuilder:
 
         # Render
         _, nodes = self.parser.parse(template)
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context=context,
             base_path=self.snippets_dir
         )

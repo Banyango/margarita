@@ -11,14 +11,14 @@ from margarita.parser import (
     ForNode,
     IfNode,
     IncludeNode,
-    MargaritaParser,
     Node,
+    Parser,
     TextNode,
     VariableNode,
 )
 
 
-class MargaritaRenderer:
+class Renderer:
     def __init__(self, context: dict[str, Any] | None = None, base_path: Path | None = None):
         """Initialize the renderer with a context dictionary.
 
@@ -95,12 +95,10 @@ class MargaritaRenderer:
             try:
                 template_content = include_path.read_text()
 
-                parser = MargaritaParser()
+                parser = Parser()
                 _, included_nodes = parser.parse(template_content)
 
-                included_renderer = MargaritaRenderer(
-                    context=self.context, base_path=self.base_path
-                )
+                included_renderer = Renderer(context=self.context, base_path=self.base_path)
                 return included_renderer.render(included_nodes)
 
             except FileNotFoundError:

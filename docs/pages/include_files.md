@@ -44,16 +44,16 @@ When using MARGARITA programmatically, you must set the `base_path` when creatin
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 # Parse your template
-parser = MargaritaParser()
+parser = Parser()
 template = '{% include "header.marg" %}\n\nMain content here.'
 _, nodes = parser.parse(template)
 
 # Set base_path - all includes resolve from here
-renderer = MargaritaRenderer(
+renderer = Renderer(
     context={"title": "My Page"},
     base_path=Path("./templates")  # header.marg will be loaded from ./templates/header.marg
 )

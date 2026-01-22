@@ -51,7 +51,7 @@ class MetadataNode(Node):
 # -------------------------
 # Parser
 # -------------------------
-class MargaritaParser:
+class Parser:
     def __init__(self):
         self.metadata: dict[str, str] = {}
         self.tokens: list[tuple[str, Any]] = []

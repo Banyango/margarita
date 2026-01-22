@@ -8,8 +8,8 @@ import pathlib
 
 import pytest
 
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
 class TestMargaritaIntegration:
@@ -18,7 +18,7 @@ class TestMargaritaIntegration:
     @pytest.fixture
     def parser(self):
         """Create a fresh parser instance."""
-        return MargaritaParser()
+        return Parser()
 
     @pytest.fixture
     def files_dir(self):
@@ -35,7 +35,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with context
-        renderer = MargaritaRenderer(context={"name": "Alice"})
+        renderer = Renderer(context={"name": "Alice"})
         result = renderer.render(nodes)
 
         # Expected output
@@ -58,9 +58,7 @@ class TestMargaritaIntegration:
         assert metadata["version"] == "2.0"
 
         # Render with context
-        renderer = MargaritaRenderer(
-            context={"document": "This is a sample document to summarize."}
-        )
+        renderer = Renderer(context={"document": "This is a sample document to summarize."})
         result = renderer.render(nodes)
 
         # Expected output
@@ -85,7 +83,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with authenticated context
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={"is_authenticated": True, "username": "Bob", "status": "Premium"}
         )
         result = renderer.render(nodes)
@@ -114,7 +112,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with unauthenticated context
-        renderer = MargaritaRenderer(context={"is_authenticated": False})
+        renderer = Renderer(context={"is_authenticated": False})
         result = renderer.render(nodes)
 
         # Expected output
@@ -139,7 +137,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with items
-        renderer = MargaritaRenderer(context={"items": ["Apple", "Banana", "Cherry"]})
+        renderer = Renderer(context={"items": ["Apple", "Banana", "Cherry"]})
         result = renderer.render(nodes)
 
         # Expected output
@@ -166,7 +164,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with empty items
-        renderer = MargaritaRenderer(context={"items": []})
+        renderer = Renderer(context={"items": []})
         result = renderer.render(nodes)
 
         # Expected output (loop body should not appear)
@@ -188,7 +186,7 @@ class TestMargaritaIntegration:
         assert metadata["owner"] == "ai-team"
 
         # Render with context (has_context=True, format_json=False)
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={
                 "task_type": "question answering",
                 "has_context": True,
@@ -244,7 +242,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with context (has_context=False, format_json=True)
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={
                 "task_type": "general inquiry",
                 "has_context": False,
@@ -287,7 +285,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with show_categories=True, show_items=True
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={
                 "show_categories": True,
                 "categories": ["Electronics", "Books"],
@@ -328,7 +326,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with show_categories=True, show_items=False
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={"show_categories": True, "categories": ["Electronics"], "show_items": False}
         )
         result = renderer.render(nodes)
@@ -356,7 +354,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={"content": "This is the main content section."}, base_path=files_dir
         )
         result = renderer.render(nodes)
@@ -394,7 +392,7 @@ class TestMargaritaIntegration:
         assert metadata["language"] == "mixed"
 
         # Render with happy=True
-        renderer = MargaritaRenderer(context={"name": "World", "happy": True})
+        renderer = Renderer(context={"name": "World", "happy": True})
         result = renderer.render(nodes)
 
         # Expected output
@@ -423,7 +421,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with happy=False
-        renderer = MargaritaRenderer(context={"name": "世界", "happy": False})
+        renderer = Renderer(context={"name": "世界", "happy": False})
         result = renderer.render(nodes)
 
         # Expected output
@@ -452,7 +450,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with authenticated context
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context={"include_extra": True, "name": "Batman"},
             base_path=files_dir,
         )
@@ -473,9 +471,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with authenticated context
-        renderer = MargaritaRenderer(
-            context={"extra_content": False, "name": "Batman"}, base_path=files_dir
-        )
+        renderer = Renderer(context={"extra_content": False, "name": "Batman"}, base_path=files_dir)
         result = renderer.render(nodes)
 
         # Expected output
@@ -500,9 +496,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render with context
-        renderer = MargaritaRenderer(
-            context={"is_authenticated": is_authenticated, "is_admin": is_admin}
-        )
+        renderer = Renderer(context={"is_authenticated": is_authenticated, "is_admin": is_admin})
         result = renderer.render(nodes)
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
@@ -516,7 +510,7 @@ class TestMargaritaIntegration:
         metadata, nodes = parser.parse(content)
 
         # Render
-        renderer = MargaritaRenderer(context={}, base_path=files_dir)
+        renderer = Renderer(context={}, base_path=files_dir)
         result = renderer.render(nodes)
 
         # Expected output (includes are rendered as placeholders)

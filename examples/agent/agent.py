@@ -11,7 +11,7 @@ from typing import Literal
 
 import openai
 
-from margarita.composer import MargaritaComposer
+from margarita.composer import Composer
 
 
 class SimpleAgent:
@@ -25,7 +25,7 @@ class SimpleAgent:
             template_dir = Path(__file__).parent / "templates"
 
         self.template_dir = template_dir
-        self.composer = MargaritaComposer(template_dir)
+        self.composer = Composer(template_dir)
 
         # This could be persisted externally to maintain state across sessions.
         self.context = {

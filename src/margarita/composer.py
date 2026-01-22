@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
-class MargaritaComposer:
+class Composer:
     def __init__(self, template_dir: Path):
         self.template_dir = template_dir
-        self.parser = MargaritaParser()
+        self.parser = Parser()
         self._template_cache: dict[str, tuple] = {}
 
     def load_template(self, template_path: str) -> tuple:
@@ -41,7 +41,7 @@ class MargaritaComposer:
         """
         _, nodes = self.load_template(template_path)
 
-        renderer = MargaritaRenderer(context=context, base_path=self.template_dir)
+        renderer = Renderer(context=context, base_path=self.template_dir)
 
         return renderer.render(nodes)
 

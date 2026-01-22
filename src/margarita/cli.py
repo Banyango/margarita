@@ -7,8 +7,8 @@ from typing import Optional
 
 import click
 
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
 @click.group()
@@ -122,7 +122,7 @@ def _render_single_file(
 
     # Parse the template
     try:
-        parser = MargaritaParser()
+        parser = Parser()
         metadata, nodes = parser.parse(template_content)
     except Exception as e:
         click.echo(f"Error parsing template: {e}", err=True)
@@ -137,22 +137,24 @@ def _render_single_file(
 
     # Render the template
     try:
-        renderer = MargaritaRenderer(context=context_dict, base_path=template_file.parent)
+        renderer = Renderer(context=context_dict, base_path=template_file.parent)
         result = renderer.render(nodes)
     except Exception as e:
         click.echo(f"Error rendering template: {e}", err=True)
         sys.exit(1)
 
     # Output the result
-    if output:
-        try:
-            output.write_text(result)
-            click.echo(f"Output written to: {output}", err=True)
-        except Exception as e:
-            click.echo(f"Error writing output file: {e}", err=True)
-            sys.exit(1)
+    if output is None and template_file.is_file():
+        output = template_file.with_suffix(".md")
     else:
-        click.echo(result)
+        return
+
+    try:
+        output.write_text(result)
+        click.echo(f"Output written to: {output}", err=True)
+    except Exception as e:
+        click.echo(f"Error writing output file: {e}", err=True)
+        sys.exit(1)
 
 
 def _render_directory(
@@ -239,7 +241,7 @@ def _show_metadata_single_file(template_file: Path):
 
     # Parse the template
     try:
-        parser = MargaritaParser()
+        parser = Parser()
         metadata_dict, _ = parser.parse(template_content)
     except Exception as e:
         click.echo(f"Error parsing template: {e}", err=True)
@@ -271,7 +273,7 @@ def _show_metadata_directory(template_dir: Path):
 
         try:
             template_content = template_file.read_text()
-            parser = MargaritaParser()
+            parser = Parser()
             metadata_dict, _ = parser.parse(template_content)
 
             if metadata_dict:

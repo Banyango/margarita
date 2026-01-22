@@ -3,14 +3,14 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from margarita.composer import MargaritaComposer
+from margarita.composer import Composer
 
 
 class TestMargaritaComposer:
     def setup_method(self):
         self.temp_dir = TemporaryDirectory()
         self.template_dir = Path(self.temp_dir.name)
-        self.composer = MargaritaComposer(self.template_dir)
+        self.composer = Composer(self.template_dir)
 
     def teardown_method(self):
         self.temp_dir.cleanup()
@@ -225,8 +225,8 @@ Content here.""",
     def test_multiple_composers_should_have_independent_caches_when_created(self):
         self._create_template("test.marg", "Content")
 
-        composer1 = MargaritaComposer(self.template_dir)
-        composer2 = MargaritaComposer(self.template_dir)
+        composer1 = Composer(self.template_dir)
+        composer2 = Composer(self.template_dir)
 
         composer1.load_template("test.marg")
 

@@ -4,8 +4,8 @@ First, import the necessary components:
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 ```
 
 Render a template programmatically:
@@ -26,11 +26,11 @@ Please provide a detailed response.
 """
 
 # Parse the template
-parser = MargaritaParser()
+parser = Parser()
 metadata, nodes = parser.parse(template)
 
 # Create a renderer with context
-renderer = MargaritaRenderer(context={
+renderer = Renderer(context={
     "task": "Summarize the key points",
     "context": "User is researching AI agents"
 })

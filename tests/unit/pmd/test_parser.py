@@ -2,15 +2,15 @@ from margarita.parser import (
     ForNode,
     IfNode,
     IncludeNode,
-    MargaritaParser,
+    Parser,
     TextNode,
     VariableNode,
 )
 
 
-class TestMargaritaParser:
+class TestParser:
     def setup_method(self):
-        self.parser = MargaritaParser()
+        self.parser = Parser()
 
     def test_parse_should_parse_text_when_template_is_plain_text(self):
         template = "Hello, world!"
@@ -337,9 +337,9 @@ Content here
         assert nodes[0].iterable == "my_list"
 
 
-class TestMargaritaParserEdgeCases:
+class TestParserEdgeCases:
     def setup_method(self):
-        self.parser = MargaritaParser()
+        self.parser = Parser()
 
     def test_parse_should_parse_if_when_if_statement_is_unclosed(self):
         template = "{% if condition %}Text"

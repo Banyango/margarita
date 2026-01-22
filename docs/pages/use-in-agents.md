@@ -18,14 +18,14 @@ Here's a practical example of using MARGARITA in a multi-step agent workflow:
 
 ```python
 from pathlib import Path
-from margarita.parser import MargaritaParser
-from margarita.renderer import MargaritaRenderer
+from margarita.parser import Parser
+from margarita.renderer import Renderer
 
 
 class ResearchAgent:
     def __init__(self, template_dir: Path):
         self.template_dir = template_dir
-        self.parser = MargaritaParser()
+        self.parser = Parser()
         self.conversation_history = []
 
     def render_prompt(self, template_name: str, context: dict) -> str:
@@ -34,7 +34,7 @@ class ResearchAgent:
         template_content = template_path.read_text()
 
         _, nodes = self.parser.parse(template_content)
-        renderer = MargaritaRenderer(
+        renderer = Renderer(
             context=context,
             base_path=self.template_dir
         )
@@ -180,13 +180,13 @@ context = {
 }
 
 # Parse template once
-parser = MargaritaParser()
+parser = Parser()
 _, nodes = parser.parse(template_content)
 
 # Agent loop with evolving context
 for i in range(5):
     # Create renderer with current context
-    renderer = MargaritaRenderer(context=context, base_path=Path("."))
+    renderer = Renderer(context=context, base_path=Path("."))
     prompt = renderer.render(nodes)
 
     # Get LLM response
