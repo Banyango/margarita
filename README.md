@@ -119,7 +119,7 @@ prompt = manager.compose_prompt(
 
 ## Documentation
 
-Full documentation is available at [https://banyango.github.io/margarita/latest](https://www.banyango.com/MARGARITA/latest/)
+Full documentation is available at https://banyango.github.io/margarita/latest
 
 ## Development
 
