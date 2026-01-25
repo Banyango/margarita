@@ -5,11 +5,10 @@ Use conditionals to render sections conditionally based on context values.
 Syntax
 
 ```margarita
-{% if subscribed %}
-Thanks for subscribing, {{name}}!
-{% else %}
-Please consider subscribing.
-{% endif %}
+if subscribed:
+    << Thanks for subscribing, ${name}! >>
+else:
+    <<< Please consider subscribing. >>
 ```
 
 Rendered results

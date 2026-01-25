@@ -1,3 +1,5 @@
-Hello, {{name}}!
+<<
+Hello, ${name}!
 Welcome to Margarita templating.
 
+>>

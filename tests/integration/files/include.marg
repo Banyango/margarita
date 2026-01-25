@@ -1,9 +1,0 @@
-@task: include-example
-
-{% include "header.marg" %}
-
-# Main Content
-{{content}}
-
-{% include "footer.marg" %}
-

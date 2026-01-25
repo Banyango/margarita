@@ -1,3 +1,0 @@
-@test: nested-includes
-
-{% include "sub_dir/level1.marg" %}
