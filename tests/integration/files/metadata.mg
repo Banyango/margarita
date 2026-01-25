@@ -1,6 +1,8 @@
-@task: summarization
-@owner: search-team
-@version: 2.0
+---
+task: summarization
+owner: search-team
+version: 2.0
+---
 
 <<
 

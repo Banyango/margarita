@@ -22,9 +22,11 @@ class TestParser:
         assert nodes[0].content == "Hello, world!\n"
 
     def test_parse_should_extract_metadata_when_template_has_metadata_directives(self):
-        template = """@task: summarization
-@owner: search-team
-@version: 1.0
+        template = """---
+task: summarization
+owner: search-team
+version: 1.0
+---
 
 <<Content here>>"""
         metadata, nodes = self.parser.parse(template)
@@ -142,12 +144,12 @@ else:
         assert for_node.iterator == "item"
 
     def test_parse_should_parse_include_when_template_has_include_directive(self):
-        template = '[[ header.marg ]]'
+        template = '[[ header.mg ]]'
         _, nodes = self.parser.parse(template)
 
         assert len(nodes) == 1
         assert isinstance(nodes[0], IncludeNode)
-        assert nodes[0].template_name == "header.marg"
+        assert nodes[0].template_name == "header.mg"
 
     def test_parse_should_ignore_comments_when_template_has_comments(self):
         template = """<<Text before>>
@@ -174,8 +176,10 @@ else:
         assert "Content" in nodes[0].content
 
     def test_parse_should_parse_all_features_when_template_is_complex(self):
-        template = """@task: summarization
-@owner: search-team
+        template = """---
+task: summarization
+owner: search-team
+---
 
 <<# Instruction
 You are a helpful assistant.
@@ -274,8 +278,10 @@ if rules:
         assert has_if
 
     def test_parse_should_parse_metadata_when_metadata_has_special_chars(self):
-        template = """@description: This is a test with: colons and - dashes
-@email: user@example.com
+        template = """---
+description: This is a test with: colons and - dashes
+email: user@example.com
+---
 
 <<Content>>"""
         metadata, nodes = self.parser.parse(template)
@@ -285,19 +291,19 @@ if rules:
         assert metadata["email"] == "user@example.com"
 
     def test_parse_should_parse_all_includes_when_template_has_multiple_includes(self):
-        template = """[[ header.marg ]]
+        template = """[[ header.mg ]]
 <<Content here>>
-[[ footer.marg ]]"""
+[[ footer.mg ]]"""
         _, nodes = self.parser.parse(template)
 
         include_nodes = [node for node in nodes if isinstance(node, IncludeNode)]
         assert len(include_nodes) == 2
-        assert include_nodes[0].template_name == "header.marg"
-        assert include_nodes[1].template_name == "footer.marg"
+        assert include_nodes[0].template_name == "header.mg"
+        assert include_nodes[1].template_name == "footer.mg"
 
     def test_parse_should_reset_state_when_parsing_multiple_templates(self):
-        template1 = "@key: value1\n<<Text1>>"
-        template2 = "@key: value2\n<<Text2>>"
+        template1 = "---\nkey: value1\n---\n<<Text1>>"
+        template2 = "---\nkey: value2\n---\n<<Text2>>"
 
         metadata1, nodes1 = self.parser.parse(template1)
         metadata2, nodes2 = self.parser.parse(template2)
@@ -380,7 +386,7 @@ class TestNewSyntaxValidation:
         """Plain text without << >> delimiters should not be parsed as text nodes."""
         template = "This is plain text without delimiters"
         _, nodes = self.parser.parse(template)
-        
+
         # Without << >>, the text should be ignored or not create text nodes
         # (it's treated as an unknown line and skipped)
         assert len(nodes) == 0
@@ -393,7 +399,7 @@ text block with
 multiple lines
 >>"""
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], TextNode)
         assert "multiline" in nodes[0].content
@@ -401,19 +407,19 @@ multiple lines
 
     def test_parse_should_support_include_with_parameters(self):
         """Includes can have optional parameters."""
-        template = '[[ template.marg param1="value1" param2="value2" ]]'
+        template = '[[ template.mg param1="value1" param2="value2" ]]'
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], IncludeNode)
-        assert nodes[0].template_name == "template.marg"
+        assert nodes[0].template_name == "template.mg"
         assert nodes[0].params == {"param1": "value1", "param2": "value2"}
 
     def test_parse_should_handle_dollar_brace_syntax_for_variables(self):
         """Variables use ${varname} syntax within text blocks."""
         template = "<<Value: ${variable_name}>>"
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], TextNode)
         assert "${variable_name}" in nodes[0].content
@@ -423,7 +429,7 @@ multiple lines
         template = """if condition:
     <<Content>>"""
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], IfNode)
         assert nodes[0].condition == "condition"
@@ -435,7 +441,7 @@ multiple lines
     if inner:
         <<Inner>>"""
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], IfNode)
         # Inner if should be in the outer if's true_block
@@ -447,7 +453,7 @@ multiple lines
 <<Content>>
 // Another comment"""
         _, nodes = self.parser.parse(template)
-        
+
         # Only the text block should be parsed, comments ignored
         text_nodes = [n for n in nodes if isinstance(n, TextNode)]
         assert len(text_nodes) == 1
@@ -455,7 +461,9 @@ multiple lines
 
     def test_parse_should_support_complex_nested_structure(self):
         """Complex nested control structures with new syntax."""
-        template = """@meta: value
+        template = """---
+meta: value
+---
 
 <<Header>>
 
@@ -467,7 +475,7 @@ if show_items:
 
 <<Footer>>"""
         metadata, nodes = self.parser.parse(template)
-        
+
         assert metadata == {"meta": "value"}
         assert len(nodes) >= 2  # At least header and if node
         # Find the if node
@@ -481,7 +489,7 @@ if show_items:
         """Special characters should be preserved within text blocks."""
         template = "<<Special: !@#%^&*()[]{}|\\?,./;':\"~`>>"
         _, nodes = self.parser.parse(template)
-        
+
         assert len(nodes) == 1
         assert isinstance(nodes[0], TextNode)
         # Most special chars preserved ($ and < > have special meaning)
@@ -490,6 +498,6 @@ if show_items:
         """Empty text blocks should be handled gracefully."""
         template = "<<>>"
         _, nodes = self.parser.parse(template)
-        
+
         # Empty text blocks don't create nodes, which is reasonable
         assert len(nodes) == 0

@@ -1,6 +1,7 @@
-@task: list-generation
-@description: Generate a formatted list
-
+---
+task: list-generation
+description: Generate a formatted list
+---
 <<
 
 # Items List

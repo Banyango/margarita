@@ -1,6 +1,6 @@
-"""Integration tests that run .marg files through the parser and renderer.
+"""Integration tests that run .mg files through the parser and renderer.
 
-This module tests the complete pipeline: parsing .marg template files,
+This module tests the complete pipeline: parsing .mg template files,
 render them with test data, and verifying the output matches expected results.
 """
 
@@ -13,7 +13,7 @@ from margarita.renderer import Renderer
 
 
 class TestMargaritaIntegration:
-    """Integration tests for parsing and render .marg templates."""
+    """Integration tests for parsing and render .mg templates."""
 
     @pytest.fixture
     def parser(self):
@@ -26,8 +26,8 @@ class TestMargaritaIntegration:
         return pathlib.Path(__file__).parent / "files"
 
     def test_simple_template(self, parser, files_dir):
-        """Test simple.marg with basic variable substitution."""
-        template_file = files_dir / "simple.marg"
+        """Test simple.mg with basic variable substitution."""
+        template_file = files_dir / "simple.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -44,8 +44,8 @@ class TestMargaritaIntegration:
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_metadata_template(self, parser, files_dir):
-        """Test metadata.marg with metadata and variable substitution."""
-        template_file = files_dir / "metadata.marg"
+        """Test metadata.mg with metadata and variable substitution."""
+        template_file = files_dir / "metadata.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -74,8 +74,8 @@ class TestMargaritaIntegration:
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_conditional_template_authenticated(self, parser, files_dir):
-        """Test conditional.marg with authenticated user (true branch)."""
-        template_file = files_dir / "conditional.marg"
+        """Test conditional.mg with authenticated user (true branch)."""
+        template_file = files_dir / "conditional.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -90,21 +90,18 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
-            "\n"
-            "# Greeting\n\n"
+            "# Greeting\n"
             "Welcome back, Bob!\n\n"
             "Your account status: Premium\n"
-            "\n"
             "# Footer\n"
             "Thank you for using our service.\n"
-            "\n"
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_conditional_template_unauthenticated(self, parser, files_dir):
-        """Test conditional.marg with unauthenticated user (false branch)."""
-        template_file = files_dir / "conditional.marg"
+        """Test conditional.mg with unauthenticated user (false branch)."""
+        template_file = files_dir / "conditional.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -117,19 +114,17 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
-            "\n"
-            "# Greeting\n\n"
+            "# Greeting\n"
             "Please sign in to continue.\n"
-            "\n# Footer\n"
+            "# Footer\n"
             "Thank you for using our service.\n"
-            "\n"
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_loop_template(self, parser, files_dir):
-        """Test loop.marg with for loop iteration."""
-        template_file = files_dir / "loop.marg"
+        """Test loop.mg with for loop iteration."""
+        template_file = files_dir / "loop.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -155,8 +150,8 @@ class TestMargaritaIntegration:
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_loop_template_empty(self, parser, files_dir):
-        """Test loop.marg with empty items list."""
-        template_file = files_dir / "loop.marg"
+        """Test loop.mg with empty items list."""
+        template_file = files_dir / "loop.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -173,8 +168,8 @@ class TestMargaritaIntegration:
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_complex_template_with_context(self, parser, files_dir):
-        """Test complex.marg with nested if/for statements."""
-        template_file = files_dir / "complex.marg"
+        """Test complex.mg with nested if/for statements."""
+        template_file = files_dir / "complex.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -202,39 +197,30 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
-            "\n"
-            "# System Prompt\n"
-            "You are an AI assistant helping with question answering.\n"
-            "\n"
-            "# Instructions\n"
-            "Use the following context to answer:\n"
-            "\n"
-            "Document {'title': 'Doc1', 'content': 'Available'}:\n"
-            "- Title: Doc1\n"
-            "- Content: Available\n"
-            "Document {'title': 'Doc2', 'content': 'Available'}:\n"
-            "- Title: Doc2\n"
-            "- Content: Available\n"
-            "\n"
-            "# User Query\n"
-            "What is the capital of France?\n"
-            "\n"
-            "# Output Format\n"
-            "Provide your response in plain text.\n"
-            "\n"
-            "\n"
-            "# Additional Notes\n"
-            "- Be concise\n"
-            "- Be accurate\n"
-            "- Be helpful\n"
-            "\n"
+            '# System Prompt\n'
+             'You are an AI assistant helping with question answering.\n'
+             '\n'
+             '# Instructions\n'
+             'Use the following context to answer:\n'
+             '    - Title: Doc1\n'
+             '    - Content: Available\n'
+             '    - Title: Doc2\n'
+             '    - Content: Available\n'
+             '# User Query = What is the capital of France?\n'
+             '\n'
+             '# Output Format\n'
+             'Provide your response in plain text.\n'
+             '# Additional Notes\n'
+             '- Be concise\n'
+             '- Be accurate\n'
+             '- Be helpful\n'
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_complex_template_no_context(self, parser, files_dir):
-        """Test complex.marg with has_context=False."""
-        template_file = files_dir / "complex.marg"
+        """Test complex.mg with has_context=False."""
+        template_file = files_dir / "complex.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -254,30 +240,26 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
-            "\n"
-            "# System Prompt\n"
-            "You are an AI assistant helping with general inquiry.\n\n"
-            "# Instructions\n"
-            "Answer based on your general knowledge.\n"
-            "\n"
-            "# User Query\n"
-            "Tell me about AI\n\n"
-            "# Output Format\n"
-            "Provide your response in JSON format.\n"
-            "\n"
-            "\n"
-            "# Additional Notes\n"
-            "- Be concise\n"
-            "- Be accurate\n"
-            "- Be helpful\n"
-            "\n"
+            '# System Prompt\n'
+             'You are an AI assistant helping with general inquiry.\n'
+             '\n'
+             '# Instructions\n'
+             'Answer based on your general knowledge.\n'
+             '# User Query = Tell me about AI\n'
+             '\n'
+             '# Output Format\n'
+             'Provide your response in JSON format.\n'
+             '# Additional Notes\n'
+             '- Be concise\n'
+             '- Be accurate\n'
+             '- Be helpful\n'
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_nested_template(self, parser, files_dir):
-        """Test nested.marg with deeply nested structures."""
-        template_file = files_dir / "nested.marg"
+        """Test nested.mg with deeply nested structures."""
+        template_file = files_dir / "nested.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -297,28 +279,26 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
-            "\n"
-            "# Nested Conditionals and Loops\n\n"
-            "# Categories\n\n"
-            "## Category: Electronics\n\n"
-            "Items in this category:\n"
-            "  - Item1\n"
-            "  - Item2\n"
-            "\n"
-            "## Category: Books\n\n"
-            "Items in this category:\n"
-            "  - Item1\n"
-            "  - Item2\n"
-            "\n"
-            "\n# End\n"
-            "\n"
+            '# Nested Conditionals and Loops\n'
+            '\n'
+            'This shows how to use the new syntax for building marg files.\n'
+            '# Categories\n'
+            '## Category: Electronics\n'
+            'Items in this category:\n'
+            '- Item1\n'
+            '- Item2\n'
+            '## Category: Books\n'
+            'Items in this category:\n'
+            '- Item1\n'
+            '- Item2\n'
+            '# End\n'
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_nested_template_no_items(self, parser, files_dir):
-        """Test nested.marg with show_items=False."""
-        template_file = files_dir / "nested.marg"
+        """Test nested.mg with show_items=False."""
+        template_file = files_dir / "nested.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -333,20 +313,19 @@ class TestMargaritaIntegration:
 
         # Expected output
         expected = (
+            "# Nested Conditionals and Loops\n"
             "\n"
-            "# Nested Conditionals and Loops\n\n"
-            "# Categories\n\n"
-            "## Category: Electronics\n\n"
+            "This shows how to use the new syntax for building marg files.\n"
+            "# Categories\n"
+            "## Category: Electronics\n"
             "No items to display.\n"
-            "\n"
-            "\n# End\n"
-            "\n"
+            "# End\n"
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_include_template(self, parser, files_dir):
-        template_file = files_dir / "include.marg"
+        template_file = files_dir / "include.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -361,26 +340,22 @@ class TestMargaritaIntegration:
 
         # Expected output (includes are rendered as placeholders)
         expected = (
-            "\n"
-            "This is the header content.\n"
-            "Generated by header.prompt file.\n"
-            "\n"
-            "\n"
-            "# Main Content\n"
-            "This is the main content section.\n"
-            "\n"
-            "---\n"
-            "This is the footer content.\n"
-            "End of document.\n"
-            "\n"
-            "\n"
+            'This is the header content.\n'
+            'Generated by header.prompt file.\n'
+            '\n'
+            '# Main Content\n'
+            'This is the main content section.\n'
+            '---\n'
+            'This is the footer content.\n'
+            'End of document.\n'
+            '\n'
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_unicode_template_happy(self, parser, files_dir):
-        """Test unicode.marg with unicode characters and emojis (happy=True)."""
-        template_file = files_dir / "unicode.marg"
+        """Test unicode.mg with unicode characters and emojis (happy=True)."""
+        template_file = files_dir / "unicode.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -406,14 +381,13 @@ class TestMargaritaIntegration:
             "Привет, World! 🇷🇺\n\n"
             "# Emoji Support\n"
             "😊 You seem happy!\n"
-            "\n"
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_unicode_template_not_happy(self, parser, files_dir):
-        """Test unicode.marg with unicode characters and emojis (happy=False)."""
-        template_file = files_dir / "unicode.marg"
+        """Test unicode.mg with unicode characters and emojis (happy=False)."""
+        template_file = files_dir / "unicode.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -435,14 +409,13 @@ class TestMargaritaIntegration:
             "Привет, 世界! 🇷🇺\n\n"
             "# Emoji Support\n"
             "😐 Hope you're doing well!\n"
-            "\n"
         )
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_conditional_includes_when_conditional_is_true(self, parser, files_dir):
-        """Test conditional.marg with include directives in branches."""
-        template_file = files_dir / "conditional_include.marg"
+        """Test conditional.mg with include directives in branches."""
+        template_file = files_dir / "conditional_include.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -457,13 +430,13 @@ class TestMargaritaIntegration:
         result = renderer.render(nodes)
 
         # Expected output
-        expected = "\nTest Conditional Include\nHello Batman!\n"
+        expected = "Test Conditional Include\nHello Batman!\n"
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_conditional_includes_when_conditional_is_false(self, parser, files_dir):
-        """Test conditional.marg with include directives in branches."""
-        template_file = files_dir / "conditional_include.marg"
+        """Test conditional.mg with include directives in branches."""
+        template_file = files_dir / "conditional_include.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -475,7 +448,7 @@ class TestMargaritaIntegration:
         result = renderer.render(nodes)
 
         # Expected output
-        expected = "\nTest Conditional Include\n"
+        expected = "Test Conditional Include\n"
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
@@ -488,7 +461,7 @@ class TestMargaritaIntegration:
         ],
     )
     def test_nested_conditionals(self, parser, files_dir, is_authenticated, is_admin, expected):
-        template_file = files_dir / "nested_conditional.marg"
+        template_file = files_dir / "nested_conditional.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -501,8 +474,33 @@ class TestMargaritaIntegration:
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
+    def test_include_parameters(self, parser, files_dir):
+        template_file = files_dir / "component_main.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        # Parse
+        metadata, nodes = parser.parse(content)
+
+        # Render
+        renderer = Renderer(context={}, base_path=files_dir)
+        result = renderer.render(nodes)
+
+        # Expected output (includes are rendered as placeholders)
+        expected = (
+            "Welcome to the system!\n"
+            "User Admin Status: True\n"
+            "Menu Visible: False\n"
+            "Name: Alice\n"
+            "- Item: 1\n"
+            "- Item: 2\n"
+            "- Item: 3\n"
+        )
+
+        assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
+
     def test_nested_includes_subdir(self, parser, files_dir):
-        template_file = files_dir / "nested_includes.marg"
+        template_file = files_dir / "nested_includes.mg"
         with open(template_file, encoding="utf-8") as f:
             content = f.read()
 
@@ -519,9 +517,9 @@ class TestMargaritaIntegration:
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
     def test_all_templates_parse_without_error(self, parser, files_dir):
-        margarita_files = sorted(files_dir.glob("*.marg"))
+        margarita_files = sorted(files_dir.glob("*.mg"))
 
-        assert len(margarita_files) > 0, "No .marg files found"
+        assert len(margarita_files) > 0, "No .mg files found"
 
         results = {}
         for template_file in margarita_files:
@@ -545,11 +543,11 @@ class TestMargaritaIntegration:
             )
 
         # Verify we tested all expected files
-        assert "simple.marg" in results
-        assert "metadata.marg" in results
-        assert "conditional.marg" in results
-        assert "loop.marg" in results
-        assert "complex.marg" in results
-        assert "nested.marg" in results
-        assert "include.marg" in results
-        assert "unicode.marg" in results
+        assert "simple.mg" in results
+        assert "metadata.mg" in results
+        assert "conditional.mg" in results
+        assert "loop.mg" in results
+        assert "complex.mg" in results
+        assert "nested.mg" in results
+        assert "include.mg" in results
+        assert "unicode.mg" in results

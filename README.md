@@ -18,10 +18,10 @@ Margarita extends Markdown with templating features like variables, conditionals
 
 ## Get Started
 
-Here's a Hello World example. helloworld.marg contains the template, and helloworld.json contains the data.
+Here's a Hello World example. helloworld.mg contains the template, and helloworld.json contains the data.
 
-```markdown:helloworld.marg
-// file:helloworld.marg
+```markdown:helloworld.mg
+// file:helloworld.mg
 
 Hello, {{name}}!
 Welcome to Margarita templating.
@@ -37,7 +37,7 @@ Welcome to Margarita templating.
 
 **Run the following command:**
 ```shell
-margarita render helloworld.marg
+margarita render helloworld.mg
 ```
 
 **Output:**
@@ -102,10 +102,10 @@ manager = Composer(Path("./templates"))
 # Compose a complex prompt from multiple snippets
 prompt = manager.compose_prompt(
     snippets=[
-        "snippets/system_role.marg",
-        "snippets/task_context.marg",
-        "snippets/chain_of_thought.marg",
-        "snippets/output_format.marg"
+        "snippets/system_role.mg",
+        "snippets/task_context.mg",
+        "snippets/chain_of_thought.mg",
+        "snippets/output_format.mg"
     ],
     context={
         "role": "data scientist",
@@ -119,7 +119,7 @@ prompt = manager.compose_prompt(
 
 ## Documentation
 
-Full documentation is available at https://banyango.github.io/margarita/latest
+Full documentation is available at https://banyango.mgithub.io/margarita/latest
 
 ## Development
 

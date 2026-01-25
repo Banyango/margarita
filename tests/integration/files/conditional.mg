@@ -1,25 +1,18 @@
-@task: conditional-example
+---
+task: conditional-example
+---
 
-<<
+<<# Greeting>>
 
-# Greeting
-
->>
 if is_authenticated:
     <<
     Welcome back, ${username}!
 
     Your account status: ${status}
-
     >>
 else:
-    <<
-    Please sign in to continue.
+    << Please sign in to continue. >>
 
-    >>
-
-<<
-# Footer
+<< # Footer
 Thank you for using our service.
-
 >>

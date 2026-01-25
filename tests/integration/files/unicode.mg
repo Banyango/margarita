@@ -1,6 +1,7 @@
-@task: multilingual
-@language: mixed
-
+---
+task: multilingual
+language: mixed
+---
 <<
 
 # Multilingual Template
@@ -14,13 +15,7 @@ Bonjour, ${name}! 🇫🇷
 # Emoji Support
 >>
 if happy:
-    <<
-    😊 You seem happy!
-
-    >>
+    <<😊 You seem happy!>>
 else:
-    <<
-    😐 Hope you're doing well!
-
-    >>
+    <<😐 Hope you're doing well!>>
 

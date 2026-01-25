@@ -61,7 +61,7 @@ class Renderer:
                 var_name = match.group(1)
                 value = self._get_variable_value(var_name)
                 return str(value) if value is not None else ""
-            
+
             content = re.sub(r'\$\{([\w\.]+)\}', replace_var, content)
             return content
 
@@ -99,8 +99,12 @@ class Renderer:
             return "".join(output)
 
         elif isinstance(node, IncludeNode):
-            # Resolve the include path relative to base_path
-            include_path = self.base_path / node.template_name
+
+            template_name = node.template_name
+            if not template_name.endswith(".mg"):
+                template_name += ".mg"
+
+            include_path = self.base_path / template_name
 
             try:
                 template_content = include_path.read_text()

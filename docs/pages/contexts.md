@@ -17,7 +17,9 @@ Rendered result
 Given the following template:
 
 ```margarita
-Hello, {{name}}! (id={{user.id}}, active={{user.active}})
+<<
+Hello, ${name}! (id=${user.id}, active=${user.active})
+>>
 ```
 
 Rendering with the example context produces:
