@@ -5,14 +5,14 @@ MARGARITA is a lightweight templating tool for building prompt and markdown temp
 Key features
 
 - Simple variable substitution with JSON contexts
-- Template metadata for task information (e.g. `@task`, `@owner`)
+- Template metadata for task information
 - Conditionals and loops for dynamic sections
 - Include files to compose templates across multiple fragments
 - CLI for rendering and metadata inspection (`margarita render`, `margarita metadata`)
 
 Quick example
 
-Create `hello.marg` containing:
+Create `hello.mg` containing:
 
 ```margarita
 Hello, {{name}}!
@@ -21,7 +21,7 @@ Hello, {{name}}!
 Render with a JSON context:
 
 ```sh
-margarita render hello.marg -c '{"name": "World"}'
+margarita render hello.mg -c '{"name": "World"}'
 ```
 
 Rendered result

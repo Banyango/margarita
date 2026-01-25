@@ -46,24 +46,24 @@ def render(
 ):
     """Render a margarita template file or directory to markdown.
 
-    TEMPLATE_PATH is the path to a .marg template file or a directory containing .marg files.
+    TEMPLATE_PATH is the path to a .mg template file or a directory containing .mg files.
 
     Examples:
 
         # Render with variables from JSON string
-        margarita render template.marg -c '{"name": "World"}'
+        margarita render template.mg -c '{"name": "World"}'
 
         # Render with variables from JSON file
-        margarita render template.marg -f context.json
+        margarita render template.mg -f context.json
 
         # Save output to file
-        margarita render template.marg -o output.md -c '{"name": "World"}'
+        margarita render template.mg -o output.md -c '{"name": "World"}'
 
         # Render all templates in a directory
         margarita render templates/ -o output/
 
         # Show metadata
-        margarita render template.marg --show-metadata
+        margarita render template.mg --show-metadata
     """
     # Parse context
     context_dict = {}
@@ -160,10 +160,10 @@ def _render_single_file(
 def _render_directory(
     template_dir: Path, output_dir: Path | None, context_dict: dict, show_metadata: bool
 ):
-    margarita_files = list(template_dir.glob("*.marg"))
+    margarita_files = list(template_dir.glob("*.mg"))
 
     if not margarita_files:
-        click.echo(f"No .marg files found in directory: {template_dir}", err=True)
+        click.echo(f"No .mg files found in directory: {template_dir}", err=True)
         sys.exit(1)
 
     if output_dir:
@@ -213,11 +213,11 @@ def _render_directory(
 def metadata(template_path: Path):
     """Show metadata from a margarita template file or directory.
 
-    TEMPLATE_PATH is the path to a .marg template file or a directory containing .marg files.
+    TEMPLATE_PATH is the path to a .mg template file or a directory containing .mg files.
 
     Examples:
 
-        margarita metadata template.marg
+        margarita metadata template.mg
         margarita metadata templates/
     """
     # Determine if we're processing a file or directory
@@ -256,12 +256,12 @@ def _show_metadata_single_file(template_file: Path):
 
 
 def _show_metadata_directory(template_dir: Path):
-    """Show metadata from all .marg files in a directory."""
-    # Find all .marg files
-    margarita_files = list(template_dir.glob("*.marg"))
+    """Show metadata from all .mg files in a directory."""
+    # Find all .mg files
+    margarita_files = list(template_dir.glob("*.mg"))
 
     if not margarita_files:
-        click.echo(f"No .marg files found in directory: {template_dir}", err=True)
+        click.echo(f"No .mg files found in directory: {template_dir}", err=True)
         sys.exit(1)
 
     # Process each file

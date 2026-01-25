@@ -1,28 +1,27 @@
 # Include Files
 
-Reuse template fragments using `{% include "file.marg" %}`. Includes are resolved relative to the including template's directory.
+Reuse template fragments using `[[ file ]]`. Includes are resolved relative to the including template's directory.
 
 Example
 
-`header.marg`:
-
 ```margarita
-This is the header content.
+// filename: header.mg
+<<This is the header content.>>
 ```
 
-`page.marg`:
-
 ```margarita
-{% include "header.marg" %}
-
+// filename: page.mg
+[[ header ]]
+<<
 # Page Title
 
 Content goes here using the same context.
+>>
 ```
 
 Rendered result
 
-When rendering `page.marg`, the output will include the header content followed by the page body:
+When rendering `page.mg`, the output will include the header content followed by the page body:
 
 ```text
 This is the header content.
@@ -49,23 +48,23 @@ from margarita.renderer import Renderer
 
 # Parse your template
 parser = Parser()
-template = '{% include "header.marg" %}\n\nMain content here.'
+template = '[[ header ]]\n\nMain content here.'
 _, nodes = parser.parse(template)
 
 # Set base_path - all includes resolve from here
 renderer = Renderer(
     context={"title": "My Page"},
-    base_path=Path("./templates")  # header.marg will be loaded from ./templates/header.marg
+    base_path=Path("./templates")  # header.mg will be loaded from ./templates/header.mg
 )
 
 output = renderer.render(nodes)
 ```
 
-**Important**: Even in nested includes, all paths are from `base_path`. If `snippets/section.marg` includes another file, it must use the full path from `base_path`:
+**Important**: Even in nested includes, all paths are from `base_path`. If `snippets/section.mg` includes another file, it must use the full path from `base_path`:
 
 ```margarita
-{# Inside templates/snippets/section.marg #}
-{% include "snippets/subsection.marg" %}  {# NOT just "subsection.marg" #}
+
+[[ snippets/subsection ]]  {# NOT just "subsection" #}
 ```
 
 See the [Using Includes](includes.md) page for comprehensive examples and patterns.

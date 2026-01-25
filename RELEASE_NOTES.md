@@ -9,7 +9,7 @@ This is the initial release of **Margarita**, a lightweight markup language and 
 ## ✨ Features
 
 ### Core Functionality
-- **Parser** - Parse `.marg` template files with support for variables, conditionals, loops, and includes
+- **Parser** - Parse `.mg` template files with support for variables, conditionals, loops, and includes
 - **Renderer** - Render templates with context data to produce final prompts
 - **Composer** - Compose and nest multiple template files together
 - **CLI Tool** - Command-line interface for rendering templates from the terminal
@@ -36,7 +36,7 @@ pip install margarita==0.1.0
 
 ## 🚀 Quick Start
 
-Create a template file `hello.marg`:
+Create a template file `hello.mg`:
 ```markdown
 Hello, {{name}}!
 Welcome to Margarita templating.
@@ -51,7 +51,7 @@ Create a context file `context.json`:
 
 Render the template:
 ```bash
-margarita render hello.marg
+margarita render hello.mg
 ```
 
 ## 🔧 Requirements

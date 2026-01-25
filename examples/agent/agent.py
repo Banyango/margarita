@@ -19,7 +19,7 @@ class SimpleAgent:
         """Initialize the agent.
 
         Args:
-            template_dir: Directory containing .marg template files
+            template_dir: Directory containing .mg template files
         """
         if template_dir is None:
             template_dir = Path(__file__).parent / "templates"
@@ -46,12 +46,12 @@ class SimpleAgent:
             {
                 "model": "gpt-4o",
                 "tools": [{type: "set_mood_level"}],
-                "input": self.composer.render("set_mood.marg", {"query": query}),
+                "input": self.composer.render("set_mood.mg", {"query": query}),
             }
         )
 
         # ... Handle the tool call response where set mood level is invoked ...
 
-        prompt = self.composer.compose_prompt(["system_prompt.marg", "mood.marg"], self.context)
+        prompt = self.composer.compose_prompt(["system_prompt.mg", "mood.mg"], self.context)
 
         return prompt

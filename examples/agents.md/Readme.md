@@ -21,22 +21,22 @@ Let's create an agent system that adapts to different models by keeping model-sp
 
 ```
 agents/
-├── agents.marg          # Main template with conditional includes
+├── agents.mg          # Main template with conditional includes
 └── chatgpt5/
-    ├── system.marg
-    ├── responsibilities.marg
-    ├── tools.marg
-    └── response_format.marg
+    ├── system.mg
+    ├── responsibilities.mg
+    ├── tools.mg
+    └── response_format.mg
 └── claude/
-    ├── system.marg
-    ├── responsibilities.marg
-    ├── tools.marg
-    └── response_format.marg
+    ├── system.mg
+    ├── responsibilities.mg
+    ├── tools.mg
+    └── response_format.mg
 ```
  ### Usage
 
-`margarita render agents/agents.marg -c '{"model": "gpt5"}'`
+`margarita render agents/agents.mg -c '{"model": "gpt5"}'`
 
 This command will render the agent prompts optimized for GPT-5, avoiding ALL CAPS words as per its guidelines. To switch to Claude, simply change the context:
 
-`margarita render agents/agents.marg -c '{"model": "claude"}'`
+`margarita render agents/agents.mg -c '{"model": "claude"}'`

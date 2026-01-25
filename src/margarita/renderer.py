@@ -4,6 +4,7 @@ This module provides functionality to render parsed AST nodes into strings
 by applying variable substitution and control flow logic.
 """
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -53,7 +54,16 @@ class Renderer:
             Rendered string for this node
         """
         if isinstance(node, TextNode):
-            return node.content
+            # Process ${variable} syntax in text
+            content = node.content
+            # Replace ${var} with actual values
+            def replace_var(match):
+                var_name = match.group(1)
+                value = self._get_variable_value(var_name)
+                return str(value) if value is not None else ""
+
+            content = re.sub(r'\$\{([\w\.]+)\}', replace_var, content)
+            return content
 
         elif isinstance(node, VariableNode):
             # Support dotted notation like "user.name"
@@ -89,8 +99,12 @@ class Renderer:
             return "".join(output)
 
         elif isinstance(node, IncludeNode):
-            # Resolve the include path relative to base_path
-            include_path = self.base_path / node.template_name
+
+            template_name = node.template_name
+            if not template_name.endswith(".mg"):
+                template_name += ".mg"
+
+            include_path = self.base_path / template_name
 
             try:
                 template_content = include_path.read_text()
@@ -98,7 +112,11 @@ class Renderer:
                 parser = Parser()
                 _, included_nodes = parser.parse(template_content)
 
-                included_renderer = Renderer(context=self.context, base_path=self.base_path)
+                # Create a new context with include parameters merged in
+                include_context = self.context.copy()
+                include_context.update(node.params)
+
+                included_renderer = Renderer(context=include_context, base_path=self.base_path)
                 return included_renderer.render(included_nodes)
 
             except FileNotFoundError:

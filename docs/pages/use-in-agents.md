@@ -46,7 +46,7 @@ class ResearchAgent:
 
         for iteration in range(max_iterations):
             # Render the research prompt
-            prompt = self.render_prompt("research.marg", {
+            prompt = self.render_prompt("research.mg", {
                 "topic": topic,
                 "iteration": iteration + 1,
                 "previous_findings": findings,
@@ -74,7 +74,7 @@ class ResearchAgent:
                 break
 
         # Generate final summary
-        summary_prompt = self.render_prompt("summary.marg", {
+        summary_prompt = self.render_prompt("summary.mg", {
             "topic": topic,
             "findings": findings,
             "total_iterations": len(findings)
@@ -95,7 +95,7 @@ class ResearchAgent:
 
 ## Template Examples
 
-### research.marg
+### research.mg
 
 ```margarita
 ---
@@ -103,37 +103,35 @@ name: research-prompt
 version: 1.0.0
 description: Iterative research prompt for agent loops
 ---
+<<
+You are a research assistant conducting iteration ${iteration} of your research.
 
-You are a research assistant conducting iteration {{iteration}} of your research.
+Topic: ${topic}
+>>
 
-Topic: {{topic}}
+if previous_findings:
+    <<
+    ## Previous Findings
+    >>
+    for finding in previous_findings:
+        <<
+        ### Iteration ${finding.iteration}
+        ${finding.result}
+        >>
 
-{% if previous_findings %}
-## Previous Findings
-
-{% for finding in previous_findings %}
-### Iteration {{finding.iteration}}
-{{finding.result}}
-
-{% endfor %}
-{% endif %}
-
-{% if history %}
-## Conversation History
-
-{% for message in history %}
-**{{message.role}}**: {{message.content}}
-
-{% endfor %}
-{% endif %}
-
-## Your Task
+if history:
+    <<## Conversation History>>
+    for message in history:
+        <<
+        **${message.role}**: ${message.content}
+        >>
+<< ## Your Task >>
 
 Continue researching this topic. Build upon previous findings and provide new insights.
 When your research is complete, include the word COMPLETE in your response.
 ```
 
-### summary.marg
+### summary.mg
 
 ```margarita
 ---
@@ -141,30 +139,30 @@ name: summary-prompt
 version: 1.0.0
 description: Generate final summary from research findings
 ---
-
+<<
 # Research Summary
 
-Topic: {{topic}}
-Total Iterations: {{total_iterations}}
+Topic: ${topic}
+Total Iterations: ${total_iterations}
 
 ## All Findings
+>>
 
-{% for finding in findings %}
-### Research Phase {{finding.iteration}}
+for finding in findings
+    <<
+    ### Research Phase ${finding.iteration}
 
-**Query**: {{finding.query}}
+    **Query**: ${finding.query}
 
-**Results**:
-{{finding.result}}
-
----
-
-{% endfor %}
-
+    **Results**:
+    ${finding.result}
+    >>
+<<
 ## Your Task
 
 Synthesize all the above findings into a coherent, comprehensive summary.
 Highlight key insights and actionable takeaways.
+>>
 ```
 
 ## Dynamic Context Updates
