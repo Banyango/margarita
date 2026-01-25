@@ -1,35 +1,31 @@
 @task: multi-model-agent
 @version: 1.0.0
 
-# System Instructions
+<<# System Instructions>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/system.marg" %}
-{% else %}
-{% include "claude/system.marg" %}
-{% endif %}
+if model_gpt5:
+    [[ chatgpt5/system.marg ]]
+else:
+    [[ claude/system.marg ]]
 
-## Core Responsibilities
+<<## Core Responsibilities>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/responsibilities.marg" %}
-{% else %}
-{% include "claude/responsibilities.marg" %}
-{% endif %}
+if model_gpt5:
+    [[ chatgpt5/responsibilities.marg ]]
+else:
+    [[ claude/responsibilities.marg ]]
 
-## Available Tools
+<<## Available Tools>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/tools.marg" %}
-{% else %}
-{% include "claude/tools.marg" %}
-{% endif %}
+if model_gpt5:
+    [[ chatgpt5/tools.marg ]]
+else:
+    [[ claude/tools.marg ]]
 
-## Response Format
+<<## Response Format>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/response_format.marg" %}
-{% else %}
-{% include "claude/response_format.marg" %}
-{% endif %}
+if model_gpt5:
+    [[ chatgpt5/response_format.marg ]]
+else:
+    [[ claude/response_format.marg ]]
 

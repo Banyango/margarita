@@ -35,8 +35,8 @@ agents/
 ```
  ### Usage
 
-`margarita render agents/agents.marg -c '{"model": "gpt5"}'`
+`margarita render agents/agents.marg -c '{"model_gpt5": true}'`
 
 This command will render the agent prompts optimized for GPT-5, avoiding ALL CAPS words as per its guidelines. To switch to Claude, simply change the context:
 
-`margarita render agents/agents.marg -c '{"model": "claude"}'`
+`margarita render agents/agents.marg -c '{"model_gpt5": false}'`
