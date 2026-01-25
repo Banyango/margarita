@@ -53,6 +53,8 @@ class MetadataNode(Node):
 # Parser
 # -------------------------
 class Parser:
+    INDENT_SIZE = 4  # Number of spaces per indentation level
+    
     def __init__(self):
         self.metadata: dict[str, str] = {}
         self.lines: list[tuple[int, str]] = []  # (indent_level, line_content)
@@ -238,14 +240,11 @@ class Parser:
         return processed
 
     def _process_text_variables(self, text: str) -> str:
-        """Convert ${var} syntax to internal representation."""
-        # For now, we'll convert ${var} to {{var}} internally for compatibility
-        # But we need to track these as VariableNodes within TextNodes
+        """Process variable syntax in text content.
         
-        # Actually, we need to split the text into TextNode and VariableNode pieces
-        # For simplicity in this iteration, we'll leave the text as-is and handle
-        # variable substitution in a separate pass or in the renderer
-        
-        # Let's use a placeholder approach: we'll keep ${var} as is in TextNode
-        # and the renderer will handle the substitution
+        The ${var} syntax in text blocks is left as-is during parsing
+        and will be processed by the renderer during rendering phase.
+        This allows the parser to focus on structure while the renderer
+        handles variable substitution with the actual context values.
+        """
         return text

@@ -352,12 +352,19 @@ class TestParserEdgeCases:
         # Parser should handle this gracefully
 
     def test_parse_should_preserve_special_chars_when_in_text(self):
-        template = "<<Special chars: !@#%^&*()[]{}|\\?,./;':\"~`>>"
+        # Note: Some special characters have meaning in the new syntax:
+        # - $ is used for variable interpolation ${var}
+        # - < and > are used for text block delimiters << >>
+        # - [ and ] are used for includes [[ file ]]
+        # Other special characters should be preserved in text blocks
+        template = "<<Special chars: !@#%^&*(){}|\\?,./;':\"~`>>"
         _, nodes = self.parser.parse(template)
 
         assert len(nodes) == 1
         assert isinstance(nodes[0], TextNode)
-        # Most special chars should be preserved (except those used in patterns)
+        # Verify that non-syntactic special chars are preserved
+        assert "!" in nodes[0].content
+        assert "@" in nodes[0].content
 
     def test_parse_should_parse_unicode_when_content_has_unicode(self):
         template = "<<Hello 世界! ${name} 🌍>>"

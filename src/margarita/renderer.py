@@ -57,12 +57,15 @@ class Renderer:
             # Process ${variable} syntax in text
             content = node.content
             # Replace ${var} with actual values
+            # Pattern allows dotted notation like ${user.name}
             def replace_var(match):
                 var_name = match.group(1)
                 value = self._get_variable_value(var_name)
                 return str(value) if value is not None else ""
             
-            content = re.sub(r'\$\{([\w\.]+)\}', replace_var, content)
+            # Use a more precise pattern to match valid variable names with optional dotted notation
+            # Pattern: ${word} or ${word.word} or ${word.word.word} etc.
+            content = re.sub(r'\$\{([\w]+(?:\.[\w]+)*)\}', replace_var, content)
             return content
 
         elif isinstance(node, VariableNode):
