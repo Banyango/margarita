@@ -48,6 +48,72 @@ Hello, World!
 Welcome to Margarita templating.
 ```
 
+## Conditionals Example
+
+```markdown:conditional_example.mg
+// file:conditional_example.mg
+
+if is_admin:
+    <<Welcome, Admin ${name}>>
+else:
+    <<Welcome, User {{name}}!>>
+>>
+```
+
+## Includes
+
+```margarita
+// file: role_example.mg
+You are a fancy AI assistant.
+```
+
+```margarita
+// files:json_output_format_template.mg
+<<
+Output the response in the following JSON format:
+{
+    "response": "<your response here>"
+}
+>>
+```
+
+```margarita
+// file:include_example.mg
+[[ role ]]
+
+if output_json:
+    [[ json_output_format_template ]]
+```
+
+### Passing Context
+You can pass context variables to your templates to make them dynamic.
+
+```margarita
+// file:role.mg
+You are a ${ type } AI assistant.
+```
+
+```margarita
+// file:context_example.mg
+[[ role type="fancy" ]]
+```
+
+## Metadata
+
+Organize your templates with metadata headers.
+
+```margarita
+// file:metadata_example.mg
+---
+title: "Greeting Template"
+version: "1.0"
+author: "Batman"
+---
+<<
+Hello, {{name}}!
+Welcome to Margarita templating.
+>>
+```
 
 ## Python Library
 
