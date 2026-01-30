@@ -4,6 +4,7 @@
 [![Python Support](https://img.shields.io/pypi/pyversions/margarita.svg)](https://pypi.org/project/margarita/)
 
 Margarita is a lightweight markup language and Python library for writing, composing, and rendering structured LLM prompts.
+
 It renders out to Markdown format by default so you can use this anywhere Markdown is supported.
 
 Margarita extends Markdown with templating features like variables, conditionals, loops, and includes, making it easy to create dynamic prompts for large language models (LLMs).
