@@ -22,9 +22,10 @@ Here's a Hello World example. helloworld.mg contains the template, and helloworl
 
 ```markdown:helloworld.mg
 // file:helloworld.mg
-
+<<
 Hello, {{name}}!
 Welcome to Margarita templating.
+>>
 ```
 
 ```json:helloworld.json
