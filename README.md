@@ -57,7 +57,6 @@ if is_admin:
     <<Welcome, Admin ${name}>>
 else:
     <<Welcome, User {{name}}!>>
->>
 ```
 
 ## Includes
