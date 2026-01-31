@@ -1,9 +1,9 @@
 [project]
 name = "margarita"
-version = "0.2.0"
+version = "0.3.0"
 description = "A lightweight markup language and Python library for writing, composing, and rendering structured LLM prompts."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.15"
 license = { text = "MIT" }
 authors = [
     { name = "Kyle Reczek", email = "kyle@banyango.com" }
@@ -28,6 +28,7 @@ classifiers = [
 dependencies = [
     "click>=8.0.0",
     "loguru>=0.7.3",
+    "pyinstaller (>=6.18.0,<7.0.0)",
 ]
 
 [project.scripts]

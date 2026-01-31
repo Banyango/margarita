@@ -4,11 +4,15 @@ nav:
     - MARGARITA: index.md
     - Getting Started: getting_started.md
     - Language Reference:
-        - Contexts: contexts.md
-        - Metadata: metadata.md
         - Conditionals: conditionals.md
         - Loops: loops.md
-        - Include Files: include_files.md
+        - Variables: variables.md
+        - Metadata: metadata.md
+        - Includes: include_files.md
+        - Contexts: contexts.md
+    - Other Tools:
+        - MCP Server: mcp.md
+        - Jetbrains IDE Plugin: jetbrains_plugin.md
     - Python API:
         - Basic Usage: basic.md
         - Includes For Organized Prompts: includes.md

@@ -1,5 +1,14 @@
 # Getting Started
 
+# Installation
+
+Run the following command to install MARGARITA via pip:
+
+```sh
+
+```
+
+
 A minimal walkthrough to render your first MARGARITA template.
 
 1. Create a template file `greeting.mg`:
