@@ -671,10 +671,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-includes-in-python-api" class="md-nav__link">
+  <a href="#composable-templates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using Includes in Python API
+        Composable Templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More Examples
       
     </span>
   </a>
@@ -1040,10 +1051,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#using-includes-in-python-api" class="md-nav__link">
+  <a href="#composable-templates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Using Includes in Python API
+        Composable Templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#more-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        More Examples
       
     </span>
   </a>
@@ -1098,28 +1120,19 @@ Content goes here using the same context.
 <li>Paths are resolved relative to the parent template's directory (the CLI and renderer set <code>base_path</code>).</li>
 <li>Avoid circular includes; they can cause infinite loops or errors.</li>
 </ul>
-<h2 id="using-includes-in-python-api">Using Includes in Python API<a class="headerlink" href="#using-includes-in-python-api" title="Permanent link">&para;</a></h2>
-<p>When using MARGARITA programmatically, you must set the <code>base_path</code> when creating the renderer. <strong>All include paths are resolved relative to this base path</strong>, not relative to the file doing the including.</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">margarita.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">margarita.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderer</span>
-
-<span class="c1"># Parse your template</span>
-<span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">()</span>
-<span class="n">template</span> <span class="o">=</span> <span class="s1">&#39;[[ header ]]</span><span class="se">\n\n</span><span class="s1">Main content here.&#39;</span>
-<span class="n">_</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
-
-<span class="c1"># Set base_path - all includes resolve from here</span>
-<span class="n">renderer</span> <span class="o">=</span> <span class="n">Renderer</span><span class="p">(</span>
-    <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;My Page&quot;</span><span class="p">},</span>
-    <span class="n">base_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./templates&quot;</span><span class="p">)</span>  <span class="c1"># header.mg will be loaded from ./templates/header.mg</span>
-<span class="p">)</span>
-
-<span class="n">output</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+<h2 id="composable-templates">Composable Templates<a class="headerlink" href="#composable-templates" title="Permanent link">&para;</a></h2>
+<p>You can pass variables to included templates by defining them in the parent context. For example:</p>
+<div class="highlight"><pre><span></span><code>// filename: greeting.mg
+&lt;&lt;Hello, ${name}!&gt;&gt;
 </code></pre></div>
-<p><strong>Important</strong>: Even in nested includes, all paths are from <code>base_path</code>. If <code>snippets/section.mg</code> includes another file, it must use the full path from <code>base_path</code>:</p>
-<div class="highlight"><pre><span></span><code>[[ snippets/subsection ]]  {# NOT just &quot;subsection&quot; #}
+<div class="highlight"><pre><span></span><code>// filename: main.mg
+[[ greeting name=&quot;Alice&quot; ]]
 </code></pre></div>
+<p>Rendered result</p>
+<p>When rendering <code>main.mg</code>, the output will be:</p>
+<div class="highlight"><pre><span></span><code>Hello, Alice!
+</code></pre></div>
+<h2 id="more-examples">More Examples<a class="headerlink" href="#more-examples" title="Permanent link">&para;</a></h2>
 <p>See the <a href="../includes/">Using Includes</a> page for comprehensive examples and patterns.</p>
 <p>Tip: Use includes for headers, footers, and small shared components to keep templates DRY and maintainable.</p>
 

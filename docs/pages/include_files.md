@@ -37,35 +37,29 @@ Behavior
 - Paths are resolved relative to the parent template's directory (the CLI and renderer set `base_path`).
 - Avoid circular includes; they can cause infinite loops or errors.
 
-## Using Includes in Python API
+## Composable Templates
 
-When using MARGARITA programmatically, you must set the `base_path` when creating the renderer. **All include paths are resolved relative to this base path**, not relative to the file doing the including.
-
-```python
-from pathlib import Path
-from margarita.parser import Parser
-from margarita.renderer import Renderer
-
-# Parse your template
-parser = Parser()
-template = '[[ header ]]\n\nMain content here.'
-_, nodes = parser.parse(template)
-
-# Set base_path - all includes resolve from here
-renderer = Renderer(
-    context={"title": "My Page"},
-    base_path=Path("./templates")  # header.mg will be loaded from ./templates/header.mg
-)
-
-output = renderer.render(nodes)
-```
-
-**Important**: Even in nested includes, all paths are from `base_path`. If `snippets/section.mg` includes another file, it must use the full path from `base_path`:
+You can pass variables to included templates by defining them in the parent context. For example:
 
 ```margarita
-
-[[ snippets/subsection ]]  {# NOT just "subsection" #}
+// filename: greeting.mg
+<<Hello, ${name}!>>
 ```
+
+```margarita
+// filename: main.mg
+[[ greeting name="Alice" ]]
+```
+
+Rendered result
+
+When rendering `main.mg`, the output will be:
+
+```text
+Hello, Alice!
+```
+
+## More Examples
 
 See the [Using Includes](includes.md) page for comprehensive examples and patterns.
 
