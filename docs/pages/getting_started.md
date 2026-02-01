@@ -2,7 +2,7 @@
 
 # Installation
 
-Run the following command to install MARGARITA via pip:
+Run the following command to install MARGARITA:
 
 Linux:
 ```sh
