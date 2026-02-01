@@ -1001,7 +1001,7 @@
 </ul>
 <p>Quick example</p>
 <p>Create <code>hello.mg</code> containing:</p>
-<div class="highlight"><pre><span></span><code>Hello, {{name}}!
+<div class="highlight"><pre><span></span><code><< Hello, ${name}! >>
 </code></pre></div>
 <p>Render with a JSON context:</p>
 <div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>hello.mg<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;World&quot;}&#39;</span>
