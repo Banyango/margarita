@@ -18,6 +18,11 @@ Margarita extends Markdown with templating features like variables, conditionals
 - 🎯 Static-first — templates are validated before execution
 - 📦 Metadata — version, and provide metadata alongside your prompts.
 
+# Installing
+
+
+
+
 ## Get Started
 
 Here's a Hello World example. helloworld.mg contains the template, and helloworld.json contains the data.
@@ -65,7 +70,7 @@ else:
 
 ```margarita
 // file: role_example.mg
-You are a fancy AI assistant.
+<< You are a fancy AI assistant. >>
 ```
 
 ```margarita

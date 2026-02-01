@@ -1,11 +1,22 @@
 # install-windows.ps1
-# Usage: .\install-windows.ps1 [-Repository "owner/repo"]
+# Simple installer for Margarita on Windows.
+# Edit $VERSION at the top of this file before running to control which release is installed.
+# Usage:
+#   .\install-windows.ps1 -Repository "owner/repo" [-Asset "asset-name-or-url"]
+# Examples:
+#   .\install-windows.ps1 -Repository "Banyango/margarita"
+#   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "margarita-windows-0.3.2.exe"
+#   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "https://github.com/owner/repo/releases/download/v0.3.2/margarita-windows-0.3.2.exe"
+
 param(
-  [string]$Repository = $env:GITHUB_REPOSITORY
+  [string]$Repository = $env:GITHUB_REPOSITORY,
+  [string]$Asset = ''
 )
 
-function Get-Repo {
-  param($repo)
+# Manual version variable - update before running if you want a different release
+$VERSION = '0.3.2'
+
+function Get-Repo($repo) {
   if ($repo) { return $repo }
   try {
     $url = git config --get remote.origin.url 2>$null
@@ -20,52 +31,71 @@ function Get-Repo {
 
 $repo = Get-Repo -repo $Repository
 if (-not $repo) {
-  Write-Error "Could not determine GitHub repository. Pass -Repository or set GITHUB_REPOSITORY (owner/repo)."
-  exit 1
-}
-Write-Host "Using repository: $repo"
-
-$temp = New-TemporaryFile
-Invoke-WebRequest -UseBasicParsing -Uri "https://api.github.com/repos/$repo/releases/latest" -OutFile $temp
-
-$json = Get-Content $temp -Raw | ConvertFrom-Json
-$asset = $json.assets | Where-Object { $_.name -like 'margarita-windows-*' } | Select-Object -First 1
-if (-not $asset) {
-  Write-Error "No Windows asset found in latest release for pattern 'margarita-windows-*'."
+  Write-Host "Usage: .\install-windows.ps1 -Repository 'owner/repo' [-Asset 'asset-or-url']"
+  Write-Host "Please provide the GitHub repository (owner/repo) or set GITHUB_REPOSITORY env var."
   exit 1
 }
 
-$downloadUrl = $asset.browser_download_url
-$assetName = $asset.name
+if (-not $VERSION) {
+  Write-Error "Please set `$VERSION at the top of this script before running."
+  exit 1
+}
 
-Write-Host "Found asset: $assetName"
+# Determine download URL
+if ($Asset -and ($Asset -like 'http*')) {
+  $downloadUrl = $Asset
+  $assetName = [System.IO.Path]::GetFileName($downloadUrl)
+} else {
+  if (-not $Asset) { $assetName = "margarita-windows-$VERSION.exe" } else { $assetName = $Asset }
+  $downloadUrl = "https://github.com/$repo/releases/download/v$VERSION/$assetName"
+}
 
-$outPath = Join-Path $PWD $assetName
-Write-Host "Downloading $downloadUrl to $outPath..."
-Invoke-WebRequest -Uri $downloadUrl -OutFile $outPath
+Write-Host "Downloading: $downloadUrl"
 
-# Decide install directory: prefer Program Files\Margarita, then $env:LOCALAPPDATA\Programs\Margarita, else user's bin
-$installDir = "$env:ProgramFiles\Margarita"
-if (-not (Test-Path $installDir)) { New-Item -ItemType Directory -Force -Path $installDir | Out-Null }
+$temp = [System.IO.Path]::GetTempFileName()
+try {
+  Invoke-WebRequest -Uri $downloadUrl -OutFile $temp -UseBasicParsing -ErrorAction Stop
+} catch {
+  Write-Error "Failed to download $downloadUrl`n$($_.Exception.Message)"
+  Write-Host "If the asset name differs, pass it with -Asset or set `$VERSION in this script."
+  exit 1
+}
 
-$dest = Join-Path $installDir $assetName
-Move-Item -Path $outPath -Destination $dest -Force
+# Prefer Program Files\Margarita if writable, else use LocalAppData\Programs\Margarita, else fall back to %USERPROFILE%\bin
+$installDir = Join-Path $env:ProgramFiles 'Margarita'
+if (-not (Test-Path $installDir)) {
+  try { New-Item -ItemType Directory -Path $installDir -Force | Out-Null } catch { $installDir = $null }
+}
 
-# Optionally add installDir to PATH for current user
-$profilePath = [Environment]::GetFolderPath('UserProfile')
-$envPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-if ($envPath -notlike "*$installDir*") {
+if (-not $installDir) {
+  $installDir = Join-Path $env:LOCALAPPDATA 'Programs\Margarita'
+  if (-not (Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null }
+}
+
+if (-not $installDir) {
+  $installDir = Join-Path $env:USERPROFILE 'bin'
+  if (-not (Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null }
+}
+
+$targetPath = Join-Path $installDir 'margarita.exe'
+
+try {
+  Move-Item -Path $temp -Destination $targetPath -Force
+} catch {
+  Write-Host "Attempting elevated move to $installDir..."
+  $ps = Start-Process -FilePath powershell -ArgumentList "-NoProfile -Command Move-Item -Path '$temp' -Destination '$targetPath' -Force" -Verb RunAs -Wait -PassThru
+  if ($ps.ExitCode -ne 0) { Write-Error "Failed to move file to $installDir"; exit 1 }
+}
+
+Write-Host "Installed margarita -> $targetPath"
+
+# Add installDir to user PATH if missing
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+if ($userPath -notlike "*$installDir*") {
   Write-Host "Adding $installDir to user PATH"
-  $newPath = "$envPath;$installDir"
+  $newPath = if ($userPath) { "$userPath;$installDir" } else { $installDir }
   [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
+  Write-Host "Note: You may need to open a new terminal for PATH changes to take effect."
 }
 
-# Create a stable 'margarita' launcher script in installDir
-$launcher = Join-Path $installDir 'margarita.cmd'
-$exePath = Join-Path $installDir $assetName
-Set-Content -Path $launcher -Value "@echo off`n\"%~dp0\\$assetName\" %*" -Force -Encoding ASCII
-
-Write-Host "Installed $assetName -> $dest"
-Write-Host "Created launcher: $launcher"
-Write-Host "Done. You may need to open a new terminal for PATH changes to take effect."
-
+Write-Host "Done. Run 'margarita.exe --help' to verify."

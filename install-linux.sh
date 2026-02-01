@@ -1,118 +1,90 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# install-linux.sh
-# Usage: ./install-linux.sh [GITHUB_REPOSITORY]
-# Installs the latest margarita Linux binary from the GitHub release to /usr/local/bin (preferred)
+# Simple installer for Margarita Linux binary.
+# Edit VERSION at the top of this file before running to control which release is installed.
+# Usage:
+#   bash install-linux.sh owner/repo [asset-url-or-name]
+# Examples:
+#   bash install-linux.sh Banyango/margarita
+#   bash install-linux.sh Banyango/margarita margarita-linux-0.3.2
+#   bash install-linux.sh Banyango/margarita https://github.com/owner/repo/releases/download/v0.3.2/margarita-linux-0.3.2
 
+VERSION=0.3.2
 REPO=${1:-${GITHUB_REPOSITORY:-}}
+ASSET_ARG=${2:-}
 
-get_repo() {
-  if [ -n "$REPO" ]; then
-    echo "$REPO"
-    return
-  fi
+# Try to infer repo from git remote if not provided
+if [ -z "$REPO" ]; then
   url=$(git config --get remote.origin.url 2>/dev/null || true)
-  if [ -z "$url" ]; then
-    echo ""
-    return
-  fi
-  # support git@github.com:owner/repo.git and https://github.com/owner/repo.git
-  if [[ $url =~ git@github.com:(.+)/(.+)\.git ]]; then
-    echo "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
-    return
-  fi
-  if [[ $url =~ https://github.com/(.+)/(.+)\.git ]]; then
-    echo "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
-    return
-  fi
-  if [[ $url =~ https://github.com/(.+)/(.+) ]]; then
-    echo "${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
-    return
-  fi
-  echo ""
-}
-
-repo=$(get_repo)
-if [ -z "$repo" ]; then
-  echo "Could not determine GitHub repository. Pass it as the first argument or set GITHUB_REPOSITORY (owner/repo)."
-  exit 1
-fi
-
-echo "Using repository: $repo"
-
-tmpfile=$(mktemp)
-trap 'rm -f "$tmpfile"' EXIT
-curl -sL "https://api.github.com/repos/$repo/releases/latest" -o "$tmpfile"
-
-# Find the asset name and download URL using python (no jq dependency)
-read download_url asset_name < <(python3 - <<PY
-import sys, json
-j=json.load(open(r"$tmpfile"))
-for a in j.get("assets", []):
-    n = a.get("name", "")
-    if n.startswith("margarita-linux-"):
-        print(a.get("browser_download_url"), n)
-        sys.exit(0)
-sys.exit(1)
-PY
-) || {
-  echo "No Linux asset found in latest release for pattern 'margarita-linux-*'."
-  exit 1
-}
-
-echo "Found asset: $asset_name"
-
-echo "Downloading $download_url..."
-curl -L "$download_url" -o "$asset_name"
-chmod +x "$asset_name"
-
-# Prefer installation locations in this order: /usr/local/bin, $(brew --prefix)/bin (mac M1), $HOME/.local/bin
-install_dir=""
-if [ -w /usr/local/bin ]; then
-  install_dir="/usr/local/bin"
-else
-  # try to detect Homebrew prefix (useful on macs, but works on linux if brew exists)
-  if command -v brew >/dev/null 2>&1; then
-    prefix=$(brew --prefix)
-    if [ -d "$prefix/bin" ] && [ -w "$prefix/bin" ]; then
-      install_dir="$prefix/bin"
+  if [ -n "$url" ]; then
+    if [[ $url =~ git@github.com:(.+)/(.+)\.git ]]; then
+      REPO="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
+    elif [[ $url =~ https://github.com/(.+)/(.+)\.git ]]; then
+      REPO="${BASH_REMATCH[1]}/${BASH_REMATCH[2]}"
     fi
   fi
 fi
 
-if [ -z "$install_dir" ]; then
-  install_dir="$HOME/.local/bin"
-  mkdir -p "$install_dir"
+if [ -z "$REPO" ]; then
+  echo "Usage: $0 owner/repo [asset-url-or-name]"
+  echo "Please provide the GitHub repository (owner/repo) or set GITHUB_REPOSITORY env var."
+  exit 1
 fi
 
-# Move into place (use sudo if necessary)
-if [ -w "$install_dir" ]; then
-  mv "$asset_name" "$install_dir/$asset_name"
+if [ -z "$VERSION" ]; then
+  echo "Please set VERSION at the top of this script before running."
+  exit 1
+fi
+
+if [[ "$ASSET_ARG" =~ ^https?:// ]]; then
+  DOWNLOAD_URL="$ASSET_ARG"
+  ASSET_NAME=$(basename "$DOWNLOAD_URL")
 else
-  echo "Need elevated permissions to write to $install_dir. You may be prompted for your password."
-  sudo mv "$asset_name" "$install_dir/$asset_name"
+  if [ -n "$ASSET_ARG" ]; then
+    ASSET_NAME="$ASSET_ARG"
+  else
+    ASSET_NAME="margarita-linux-$VERSION"
+  fi
+  DOWNLOAD_URL="https://github.com/$REPO/releases/download/v$VERSION/$ASSET_NAME"
 fi
 
-# Create a stable symlink 'margarita' pointing to the versioned binary
-if [ -w "$install_dir" ]; then
-  ln -sf "$install_dir/$asset_name" "$install_dir/margarita"
+echo "Downloading: $DOWNLOAD_URL"
+
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+if ! curl -fSL --progress-bar "$DOWNLOAD_URL" -o "$tmpfile"; then
+  echo "Failed to download: $DOWNLOAD_URL"
+  echo "If the asset name differs, pass it as the second argument or set VERSION in this script."
+  exit 1
+fi
+
+chmod +x "$tmpfile"
+
+# Prefer system /usr/local/bin if writable, else install to $HOME/.local/bin
+INSTALL_DIR="/usr/local/bin"
+if [ ! -w "$INSTALL_DIR" ]; then
+  INSTALL_DIR="$HOME/.local/bin"
+  mkdir -p "$INSTALL_DIR"
+fi
+
+TARGET_PATH="$INSTALL_DIR/margarita"
+
+if [ -w "$INSTALL_DIR" ]; then
+  mv "$tmpfile" "$TARGET_PATH"
 else
-  sudo ln -sf "$install_dir/$asset_name" "$install_dir/margarita"
+  sudo mv "$tmpfile" "$TARGET_PATH"
 fi
 
-echo "Installed $asset_name -> $install_dir/$asset_name"
-echo "Symlink created: $install_dir/margarita"
+chmod +x "$TARGET_PATH"
 
-# Ensure install_dir is on PATH for the user
-if ! echo ":$PATH:" | grep -q ":$install_dir:"; then
+echo "Installed margarita -> $TARGET_PATH"
+
+if ! echo ":$PATH:" | grep -q ":$INSTALL_DIR:"; then
   echo
-  echo "Note: $install_dir is not in your PATH for this session."
-  echo "You may want to add the following line to your shell profile (e.g. ~/.bashrc or ~/.zshrc):"
-  echo
-  echo "  export PATH=\"$install_dir:\$PATH\""
+  echo "Note: $INSTALL_DIR is not in your PATH for this session. Add it to your profile, e.g.:"
+  echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
   echo
 fi
 
 echo "Done. Run 'margarita --help' to verify."
-

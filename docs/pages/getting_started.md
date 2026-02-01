@@ -4,8 +4,19 @@
 
 Run the following command to install MARGARITA via pip:
 
+Linux:
 ```sh
+curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-linux.sh | bash -s -- --option
+```
 
+MacOS:
+```sh
+curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-macos.sh | bash -s -- --option
+```
+
+Windows (PowerShell):
+```powershell
+iwr -useb https://raw.githubusercontent.com/Banyango/margarita/main/install-windows.ps1 | iex
 ```
 
 
