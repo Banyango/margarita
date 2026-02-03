@@ -1,6 +1,6 @@
 [project]
 name = "margarita"
-version = "0.3.3"
+version = "0.3.4"
 description = "A lightweight markup language and Python library for writing, composing, and rendering structured LLM prompts."
 readme = "README.md"
 requires-python = ">=3.10,<3.15"
@@ -28,7 +28,6 @@ classifiers = [
 dependencies = [
     "click>=8.0.0",
     "loguru>=0.7.3",
-    "pyinstaller (>=6.18.0,<7.0.0)",
 ]
 
 [project.scripts]
@@ -159,6 +158,7 @@ dev = [
     "mkdocs-material>=9.7.1",
     "mkdocs-open-in-new-tab>=1.0.8",
     "mkdocstrings-python>=2.0.1",
+    "pyinstaller>=6.18.0",
     "ruff>=0.14.13",
 ]
 test = [

@@ -1,3 +1,12 @@
+# Release Notes - Margarita v0.3.4
+
+**Release Date:** February 2, 2026
+
+## 🎉 Overview
+
+This release bumps the package version to v0.3.4 and removes some dev packages from the main dependencies.
+
+
 # Release Notes - Margarita v0.3.3
 
 **Release Date:** January 31, 2026

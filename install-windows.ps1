@@ -14,7 +14,7 @@ param(
 )
 
 # Manual version variable - update before running if you want a different release
-$VERSION = '0.3.3'
+$VERSION = '0.3.4'
 
 function Get-Repo($repo) {
   if ($repo) { return $repo }

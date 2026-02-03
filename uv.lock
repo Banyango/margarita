@@ -489,12 +489,11 @@ wheels = [
 
 [[package]]
 name = "margarita"
-version = "0.3.3"
+version = "0.3.4"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
     { name = "loguru" },
-    { name = "pyinstaller" },
 ]
 
 [package.optional-dependencies]
@@ -520,6 +519,7 @@ dev = [
     { name = "mkdocs-material" },
     { name = "mkdocs-open-in-new-tab" },
     { name = "mkdocstrings-python" },
+    { name = "pyinstaller" },
     { name = "ruff" },
 ]
 test = [
@@ -535,7 +535,6 @@ requires-dist = [
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.24.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8.0" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.6.0" },
-    { name = "pyinstaller", specifier = ">=6.18.0,<7.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
@@ -551,6 +550,7 @@ dev = [
     { name = "mkdocs-material", specifier = ">=9.7.1" },
     { name = "mkdocs-open-in-new-tab", specifier = ">=1.0.8" },
     { name = "mkdocstrings-python", specifier = ">=2.0.1" },
+    { name = "pyinstaller", specifier = ">=6.18.0" },
     { name = "ruff", specifier = ">=0.14.13" },
 ]
 test = [{ name = "pytest", specifier = ">=9.0.2" }]
