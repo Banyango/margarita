@@ -124,6 +124,13 @@ def _render_single_file(
     try:
         parser = Parser()
         metadata, nodes = parser.parse(template_content)
+
+        if parser.is_mgx:
+            click.echo(
+                "Error: cannot render .mgx — we can't render .mgx files, you need to execute them.",
+                err=True,
+            )
+            sys.exit(1)
     except Exception as e:
         click.echo(f"Error parsing template: {e}", err=True)
         sys.exit(1)
