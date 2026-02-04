@@ -104,6 +104,34 @@ else:
         assert len(nodes[0].block) == 1
         assert "${item}" in nodes[0].block[0].content
 
+    def test_parse_should_parse_effect_when_template_has_effect_directive(self):
+        template = """@effect func compute(value) => result
+<<The result is ${result}.>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert nodes[0].__class__.__name__ == "EffectNode"
+        assert "compute(value) => result" in nodes[0].raw_content
+        assert isinstance(nodes[1], TextNode)
+        assert "${result}" in nodes[1].content
+
+    def test_parse_should_parse_effect_when_effect_is_in_if(self):
+        template = """
+if condition:
+    @effect func do_something() => output
+
+<<Output is ${output}.>>
+"""
+        _, nodes = self.parser.parse(template)
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], IfNode)
+        if_node = nodes[0]
+        assert len(if_node.true_block) == 1
+        assert if_node.true_block[0].__class__.__name__ == "EffectNode"
+        assert "func do_something() => output" in if_node.true_block[0].raw_content
+        assert isinstance(nodes[1], TextNode)
+        assert "${output}" in nodes[1].content
+
     def test_parse_should_parse_nested_for_nodes_when_template_has_nested_for_loops(self):
         template = """for category in categories:
     <<Category: ${category}>>
