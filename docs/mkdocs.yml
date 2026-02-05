@@ -11,6 +11,7 @@ nav:
         - Includes: include_files.md
         - Contexts: contexts.md
     - Other Tools:
+        - MGX: mgx.md
         - MCP Server: mcp.md
         - Jetbrains IDE Plugin: jetbrains_plugin.md
     - Python API:

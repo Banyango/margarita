@@ -62,6 +62,18 @@ class EffectNode(Node):
     raw_content: str
 
 
+@dataclass
+class ImportNode(Node):
+    """Represents a Python-style import statement.
+
+    Examples:
+        import os
+        from pathlib import Path
+        from package import module, function
+    """
+    raw_import: str  # The full import statement
+
+
 # -------------------------
 # Parser
 # -------------------------
@@ -162,6 +174,8 @@ class Parser:
             else_match = re.match(r"^else:$", stripped)
             include_match = re.match(r"^\[\[\s*([^]]+)\s*]]$", stripped)
             effect_match = re.match(r"^@effect\s+(.+)$", stripped)
+            import_match = re.match(r"^import\s+.+$", stripped)
+            from_import_match = re.match(r"^from\s+.+\s+import\s+.+$", stripped)
             text_block_start = stripped.startswith("<<")
 
             if if_match:
@@ -221,6 +235,13 @@ class Parser:
                 # Capture everything after "@effect " and store as raw_content
                 raw_content = effect_match.group(1).strip()
                 nodes.append(EffectNode(raw_content))
+                self.is_mgx = True
+                self.pos += 1
+
+            elif import_match or from_import_match:
+                # Parse Python-style import statement
+                # Store the entire import line as-is
+                nodes.append(ImportNode(stripped))
                 self.is_mgx = True
                 self.pos += 1
 
