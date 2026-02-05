@@ -4,6 +4,7 @@ from margarita.parser import (
     ImportNode,
     IncludeNode,
     Parser,
+    StateNode,
     TextNode,
 )
 
@@ -132,6 +133,103 @@ if condition:
         assert "func do_something() => output" in if_node.true_block[0].raw_content
         assert isinstance(nodes[1], TextNode)
         assert "${output}" in nodes[1].content
+
+    def test_parse_should_parse_state_when_template_has_state_directive(self):
+        template = """@state result = {}
+<<The result is ${result}.>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], StateNode)
+        assert nodes[0].variable_name == "result"
+        assert nodes[0].initial_value == "{}"
+        assert isinstance(nodes[1], TextNode)
+        assert "${result}" in nodes[1].content
+
+    def test_parse_should_parse_state_when_initial_value_is_number(self):
+        template = """@state count = 0
+<<Count: ${count}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], StateNode)
+        assert nodes[0].variable_name == "count"
+        assert nodes[0].initial_value == "0"
+
+    def test_parse_should_parse_state_when_initial_value_is_list(self):
+        template = """@state items = []
+<<Items: ${items}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], StateNode)
+        assert nodes[0].variable_name == "items"
+        assert nodes[0].initial_value == "[]"
+
+    def test_parse_should_parse_state_when_initial_value_is_string(self):
+        template = """@state name = "default"
+<<Name: ${name}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], StateNode)
+        assert nodes[0].variable_name == "name"
+        assert nodes[0].initial_value == '"default"'
+
+    def test_parse_should_parse_state_when_state_is_in_if(self):
+        template = """if condition:
+    @state data = {}
+
+<<Data is ${data}.>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], IfNode)
+        if_node = nodes[0]
+        assert len(if_node.true_block) == 1
+        assert isinstance(if_node.true_block[0], StateNode)
+        assert if_node.true_block[0].variable_name == "data"
+        assert if_node.true_block[0].initial_value == "{}"
+        assert isinstance(nodes[1], TextNode)
+        assert "${data}" in nodes[1].content
+
+    def test_parse_should_parse_multiple_states_when_template_has_many(self):
+        template = """@state result = {}
+@state count = 0
+@state items = []
+
+<<Content>>"""
+        _, nodes = self.parser.parse(template)
+
+        state_nodes = [n for n in nodes if isinstance(n, StateNode)]
+        assert len(state_nodes) == 3
+        assert state_nodes[0].variable_name == "result"
+        assert state_nodes[0].initial_value == "{}"
+        assert state_nodes[1].variable_name == "count"
+        assert state_nodes[1].initial_value == "0"
+        assert state_nodes[2].variable_name == "items"
+        assert state_nodes[2].initial_value == "[]"
+
+    def test_parse_should_set_is_mgx_when_template_has_state(self):
+        template = """@state result = {}
+<<Hello World>>"""
+        _, _ = self.parser.parse(template)
+
+        assert self.parser.is_mgx is True
+
+    def test_parse_should_parse_state_with_effect_when_template_has_both(self):
+        template = """@state result = {}
+@effect func compute(value) => result
+
+<<Result: ${result}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 3
+        assert isinstance(nodes[0], StateNode)
+        assert nodes[0].variable_name == "result"
+        assert nodes[1].__class__.__name__ == "EffectNode"
+        assert isinstance(nodes[2], TextNode)
+        assert self.parser.is_mgx is True
 
     def test_parse_should_parse_import_when_template_has_simple_import(self):
         template = """import os

@@ -63,6 +63,22 @@ class EffectNode(Node):
 
 
 @dataclass
+class StateNode(Node):
+    """Represents an @state directive.
+
+    Declares a state variable with an optional type/initial value.
+
+    Examples:
+        @state result = {}
+        @state count = 0
+        @state data = []
+        @state name = "default"
+    """
+    variable_name: str
+    initial_value: str  # The expression after '=', e.g., '{}', '0', '[]', etc.
+
+
+@dataclass
 class ImportNode(Node):
     """Represents a Python-style import statement.
 
@@ -174,6 +190,7 @@ class Parser:
             else_match = re.match(r"^else:$", stripped)
             include_match = re.match(r"^\[\[\s*([^]]+)\s*]]$", stripped)
             effect_match = re.match(r"^@effect\s+(.+)$", stripped)
+            state_match = re.match(r"^@state\s+(\w+)\s*=\s*(.+)$", stripped)
             import_match = re.match(r"^import\s+.+$", stripped)
             from_import_match = re.match(r"^from\s+.+\s+import\s+.+$", stripped)
             text_block_start = stripped.startswith("<<")
@@ -235,6 +252,15 @@ class Parser:
                 # Capture everything after "@effect " and store as raw_content
                 raw_content = effect_match.group(1).strip()
                 nodes.append(EffectNode(raw_content))
+                self.is_mgx = True
+                self.pos += 1
+
+            elif state_match:
+                # Parse @state directive
+                # Capture the variable name and initial value
+                variable_name = state_match.group(1)
+                initial_value = state_match.group(2).strip()
+                nodes.append(StateNode(variable_name, initial_value))
                 self.is_mgx = True
                 self.pos += 1
 
