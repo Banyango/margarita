@@ -59,6 +59,7 @@ class EffectNode(Node):
         @effect func add(12, test.data) => result
         @effect tool add
     """
+
     raw_content: str
 
 
@@ -74,6 +75,7 @@ class StateNode(Node):
         @state data = []
         @state name = "default"
     """
+
     variable_name: str
     initial_value: str  # The expression after '=', e.g., '{}', '0', '[]', etc.
 
@@ -87,6 +89,7 @@ class ImportNode(Node):
         from pathlib import Path
         from package import module, function
     """
+
     raw_import: str  # The full import statement
 
 
