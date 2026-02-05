@@ -22,7 +22,7 @@
 4. run mike to create a new versioned docs site:
    ```bash
    cd docs
-   uv run mike deploy v<new_version> latest --update-aliases
+   uv run mike deploy <new_version> latest --update-aliases
    ```
 5. Update the version number in all the install scripts
 6. Commit all changes with a message like "Release vX.Y.Z".

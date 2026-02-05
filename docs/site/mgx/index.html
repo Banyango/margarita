@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../loops/">
+        <link rel="prev" href="../contexts/">
       
       
-        <link rel="next" href="../metadata/">
+        <link rel="next" href="../mcp/">
       
       
         
@@ -23,7 +23,7 @@
     
     
       
-        <title>Variables - MARGARITA</title>
+        <title>MGX - MARGARITA</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#variables" class="md-skip">
+        <a href="#mgx" class="md-skip">
           Skip to content
         </a>
       
@@ -129,7 +129,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Variables
+              MGX
             
           </span>
         </div>
@@ -425,8 +425,6 @@
                 
   
   
-    
-  
   
   
     
@@ -456,11 +454,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" >
         
           
           <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="">
@@ -481,7 +479,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_1_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -552,19 +550,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../variables/" class="md-nav__link">
         
   
   
@@ -580,7 +569,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -682,6 +670,8 @@
                 
   
   
+    
+  
   
   
     
@@ -705,11 +695,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" checked>
         
           
           <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="">
@@ -730,7 +720,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -745,10 +735,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -764,6 +763,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1033,12 +1033,82 @@
   
 
 
-<h1 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h1>
-<p>You can use variables in your templates to insert dynamic content based on the provided context.</p>
-<p><code>Syntax ${var_name}</code></p>
-<p>var_name will need to correspond to a key in the context JSON provided during rendering or a variable that
-was passed in from an <a href="../includes/">include statement</a>.</p>
-<div class="highlight"><pre><span></span><code>You are a AI Farming assistant who has ${count} Tractors.
+<h1 id="mgx">MGX<a class="headerlink" href="#mgx" title="Permanent link">&para;</a></h1>
+<h1 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h1>
+<p>.mgx files are a specialized template format used by Lime Agents.</p>
+<p>Use them with <a href="https://github.com/Banyango/lime">Lime</a> to execute workflows using your coding agents.</p>
+<h1 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h1>
+<ul>
+<li>All the features of .mg margarita templates. Such as includes, conditionals, loops, and variable interpolation.</li>
+<li>Adds the ability to import python functions.</li>
+<li><code>@effect</code> give commands to the agent. These can be used to define tools, run the agent, and manage context.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>---
+description: &quot;the description of the addition tool&quot;
+---
+// import python function.
+from math import add, subtract, multiply, load_files
+
+// Each markdown block in .mgx files gets evaluated and then loaded into the agent&#39;s context.
+&lt;&lt;
+You are an expert mathematician.
+Your task is to solve addition problems accurately and efficiently.
+
+When given a problem, you should:
+1. Read the problem carefully.
+2. Identify the two numbers to be added.
+3. Calculate the sum of the two numbers.
+4. Provide the final answer clearly.
+&gt;&gt;
+
+// We can load mg files into the context using includes as well
+[[ create-a-react-component ]]
+[[ create-a-test ]]
+[[ validate-test-works ]]
+
+// call the add function with 12 and test.data stored into result
+@effect func add(12, test.data) =&gt; result
+
+if result != 24:
+    &lt;&lt;
+    The addition tool did not return the expected result.
+    Expected: 24
+    Got: ${result}
+    &gt;&gt;
+
+@state result = {}
+
+// define a new tool that the agent should use
+@effect tool add
+@effect tool subtract
+@effect tool multiply
+@effect tool load_files
+
+// run the agent call
+@effect run
+
+// clear the context
+@effect context clear
+
+// clear the tool cache
+@effect tool clear
+
+// Load new state into the context.
+&lt;&lt;
+Validate the following:
+- The addition tool correctly adds two numbers.
+- The subtraction tool correctly subtracts two numbers.
+- The multiplication tool correctly multiplies two numbers.
+- The load_files function correctly loads and reads files from the specified directory.
+
+Store the result into the variable &#39;result&#39;.
+&gt;&gt;
+
+if result.failed:
+    &lt;&lt;
+    The test failed. Please review the implementation of the math tools and the
+    load_files function for any errors.
+    &gt;&gt;
 </code></pre></div>
 
 
@@ -1069,7 +1139,7 @@ was passed in from an <a href="../includes/">include statement</a>.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../loops/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Loops">
+          <a href="../contexts/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Contexts">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1079,20 +1149,20 @@ was passed in from an <a href="../includes/">include statement</a>.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Loops
+                Contexts
               </div>
             </div>
           </a>
         
         
           
-          <a href="../metadata/" class="md-footer__link md-footer__link--next" aria-label="Next: Metadata">
+          <a href="../mcp/" class="md-footer__link md-footer__link--next" aria-label="Next: MCP Server">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Metadata
+                MCP Server
               </div>
             </div>
             <div class="md-footer__button md-icon">

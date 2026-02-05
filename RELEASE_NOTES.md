@@ -1,3 +1,10 @@
+# Release Notes - Margarita v0.3.5
+
+**Release Date:** February 4, 2026
+
+Adds support for mgx files.
+@effect, @state, and python function imports.
+
 # Release Notes - Margarita v0.3.4
 
 **Release Date:** February 2, 2026
