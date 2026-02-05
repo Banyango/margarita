@@ -48,6 +48,51 @@ class MetadataNode(Node):
     value: str
 
 
+@dataclass
+class EffectNode(Node):
+    """Represents an @effect directive.
+
+    The raw_content contains the full effect string after '@effect',
+    allowing extensible implementation by the renderer/executor.
+
+    Examples:
+        @effect func add(12, test.data) => result
+        @effect tool add
+    """
+
+    raw_content: str
+
+
+@dataclass
+class StateNode(Node):
+    """Represents an @state directive.
+
+    Declares a state variable with an optional type/initial value.
+
+    Examples:
+        @state result = {}
+        @state count = 0
+        @state data = []
+        @state name = "default"
+    """
+
+    variable_name: str
+    initial_value: str  # The expression after '=', e.g., '{}', '0', '[]', etc.
+
+
+@dataclass
+class ImportNode(Node):
+    """Represents a Python-style import statement.
+
+    Examples:
+        import os
+        from pathlib import Path
+        from package import module, function
+    """
+
+    raw_import: str  # The full import statement
+
+
 # -------------------------
 # Parser
 # -------------------------
@@ -56,6 +101,7 @@ class Parser:
         self.metadata: dict[str, str] = {}
         self.lines: list[tuple[int, str]] = []  # (indent_level, line_content)
         self.pos: int = 0
+        self.is_mgx: bool = False
 
     def parse(self, template: str) -> tuple[dict[str, str], list[Node]]:
         """Parse a Margarita template into metadata and an AST.
@@ -146,6 +192,10 @@ class Parser:
             for_match = re.match(r"^for\s+(\w+)\s+in\s+(\w+):$", stripped)
             else_match = re.match(r"^else:$", stripped)
             include_match = re.match(r"^\[\[\s*([^]]+)\s*]]$", stripped)
+            effect_match = re.match(r"^@effect\s+(.+)$", stripped)
+            state_match = re.match(r"^@state\s+(\w+)\s*=\s*(.+)$", stripped)
+            import_match = re.match(r"^import\s+.+$", stripped)
+            from_import_match = re.match(r"^from\s+.+\s+import\s+.+$", stripped)
             text_block_start = stripped.startswith("<<")
 
             if if_match:
@@ -198,6 +248,30 @@ class Parser:
                         params[key] = value
 
                 nodes.append(IncludeNode(template_name, params))
+                self.pos += 1
+
+            elif effect_match:
+                # Parse @effect directive
+                # Capture everything after "@effect " and store as raw_content
+                raw_content = effect_match.group(1).strip()
+                nodes.append(EffectNode(raw_content))
+                self.is_mgx = True
+                self.pos += 1
+
+            elif state_match:
+                # Parse @state directive
+                # Capture the variable name and initial value
+                variable_name = state_match.group(1)
+                initial_value = state_match.group(2).strip()
+                nodes.append(StateNode(variable_name, initial_value))
+                self.is_mgx = True
+                self.pos += 1
+
+            elif import_match or from_import_match:
+                # Parse Python-style import statement
+                # Store the entire import line as-is
+                nodes.append(ImportNode(stripped))
+                self.is_mgx = True
                 self.pos += 1
 
             elif text_block_start:
