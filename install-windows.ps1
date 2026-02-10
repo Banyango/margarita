@@ -9,12 +9,13 @@
 #   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "https://github.com/owner/repo/releases/download/v0.3.3/margarita-windows-0.3.3.exe"
 
 # Manual version variable - update before running if you want a different release
-$VERSION = '0.3.5'
-
 param(
-  [string]$Repository = Banyango/margarita,
-  [string]$Asset = margarita-windows-$VERSION.exe
+  [string]$Repository = "Banyango/margarita",
+  [string]$Asset = ""
 )
+
+$VERSION = '0.3.5'
+$Asset = "margarita-windows-$VERSION.exe"
 
 function Get-Repo($repo) {
   if ($repo) { return $repo }
@@ -98,4 +99,5 @@ if ($userPath -notlike "*$installDir*") {
   Write-Host "Note: You may need to open a new terminal for PATH changes to take effect."
 }
 
+Write-Host "You may need to run Unblock-File -Path C:/Program Files/Margarita/margarita.exe if you get a security warning when running margarita.exe for the first time."
 Write-Host "Done. Run 'margarita.exe --help' to verify."
