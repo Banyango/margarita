@@ -9,7 +9,7 @@
 #   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "https://github.com/owner/repo/releases/download/v0.3.3/margarita-windows-0.3.3.exe"
 
 # Manual version variable - update before running if you want a different release
-$VERSION = '0.3.4'
+$VERSION = '0.3.5'
 
 param(
   [string]$Repository = Banyango/margarita,

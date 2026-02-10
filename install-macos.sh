@@ -10,7 +10,7 @@ set -euo pipefail
 #   bash install-macos.sh Banyango/margarita margarita-macos-0.3.3
 #   bash install-macos.sh Banyango/margarita https://github.com/owner/repo/releases/download/v0.3.3/margarita-macos-0.3.3
 
-VERSION=0.3.4
+VERSION=0.3.5
 REPO=Banyango/margarita
 ASSET_ARG=margarita-macos-$VERSION
 
