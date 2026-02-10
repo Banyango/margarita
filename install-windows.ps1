@@ -8,13 +8,13 @@
 #   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "margarita-windows-0.3.3.exe"
 #   .\install-windows.ps1 -Repository "Banyango/margarita" -Asset "https://github.com/owner/repo/releases/download/v0.3.3/margarita-windows-0.3.3.exe"
 
-param(
-  [string]$Repository = $env:GITHUB_REPOSITORY,
-  [string]$Asset = ''
-)
-
 # Manual version variable - update before running if you want a different release
 $VERSION = '0.3.4'
+
+param(
+  [string]$Repository = Banyango/margarita,
+  [string]$Asset = margarita-windows-$VERSION.exe
+)
 
 function Get-Repo($repo) {
   if ($repo) { return $repo }

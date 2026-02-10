@@ -10,9 +10,9 @@ set -euo pipefail
 #   bash install-linux.sh Banyango/margarita margarita-linux-0.3.3
 #   bash install-linux.sh Banyango/margarita https://github.com/owner/repo/releases/download/v0.3.3/margarita-linux-0.3.3
 
-VERSION=0.3.4
-REPO=${1:-${GITHUB_REPOSITORY:-}}
-ASSET_ARG=${2:-}
+VERSION=0.3.5
+REPO=Banyango/margarita
+ASSET_ARG=margarita-linux-$VERSION
 
 # Try to infer repo from git remote if not provided
 if [ -z "$REPO" ]; then
