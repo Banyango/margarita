@@ -8,5 +8,5 @@ var_name will need to correspond to a key in the context JSON provided during re
 was passed in from an [include statement](includes.md).
 
 ```margarita
-You are a AI Farming assistant who has ${count} Tractors.
+You are an AI Farming assistant who has ${count} Tractors.
 ```

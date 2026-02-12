@@ -1,8 +1,8 @@
 # Include Files
 
-Reuse template fragments using `[[ file ]]`. Includes are resolved relative to the including template's directory.
+Reuse template fragments using `[[ file ]]` or `[[ file.mg ]]`. Includes are resolved relative to the including template's directory.
 
-Example
+### Example:
 
 ```margarita
 // filename: header.mg

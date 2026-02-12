@@ -6,7 +6,7 @@ Syntax
 
 ```margarita
 << # Items >>
-for item in items
+for item in items:
     <<
     - {{item}}
     >>
