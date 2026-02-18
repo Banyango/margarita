@@ -546,3 +546,21 @@ class TestMargaritaIntegration:
         assert "nested.mg" in results
         assert "include.mg" in results
         assert "unicode.mg" in results
+
+    def test_conditional_should_parse_properly(self, parser, files_dir):
+        """Test conditional_failure.mg a test case that failed in the wild."""
+        template_file = files_dir / "conditional_failure.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        # Parse
+        metadata, nodes = parser.parse(content)
+
+        # Render with authenticated context
+        renderer = Renderer(context={"tone": "formal", "text": "ABC"}, base_path=files_dir)
+        result = renderer.render(nodes)
+
+        # Expected output
+        expected = "You are a Tone Adjustment Expert. Your task is to rewrite the provided text in a specific tone suitable for the target audience, while maintaining the original meaning and intent. Below are templates for different tones:\n- If the input text is very short, add 1–2 supporting sentences for better rewrites.\n- If length is not specified, keep the rewritten text concise and a similar length to the original.\nTemplate: Rewrite the following text in a formal, professional tone for ; keep it concise and fact-focused and under  words.\nText: ABC\nExample: \"To increase product registrations, we should enhance the website's call-to-action to improve conversion rates.\"\n"
+
+        assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"

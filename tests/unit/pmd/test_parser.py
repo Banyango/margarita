@@ -718,3 +718,76 @@ if show_items:
 
         # Empty text blocks don't create nodes, which is reasonable
         assert len(nodes) == 0
+
+    def test_parse_should_capture_string_comparison_when_if_has_equality_check(self):
+        """Parser should capture the full condition expression including string comparisons."""
+        template = """if node == "formal":
+    <<Formal mode>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == 'node == "formal"'
+        assert len(nodes[0].true_block) == 1
+
+    def test_parse_should_capture_numeric_comparison_when_if_has_greater_than(self):
+        """Parser should capture numeric comparison operators."""
+        template = """if count > 5:
+    <<Many items>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "count > 5"
+        assert len(nodes[0].true_block) == 1
+
+    def test_parse_should_capture_inequality_when_if_has_not_equal(self):
+        """Parser should capture != operator."""
+        template = """if status != "active":
+    <<Status is not active>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == 'status != "active"'
+
+    def test_parse_should_capture_less_than_when_if_has_comparison(self):
+        """Parser should capture < operator."""
+        template = """if age < 18:
+    <<Minor>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "age < 18"
+
+    def test_parse_should_capture_greater_equal_when_if_has_comparison(self):
+        """Parser should capture >= operator."""
+        template = """if score >= 90:
+    <<Grade A>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "score >= 90"
+
+    def test_parse_should_capture_less_equal_when_if_has_comparison(self):
+        """Parser should capture <= operator."""
+        template = """if temperature <= 32:
+    <<Freezing>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "temperature <= 32"
+
+    def test_parse_should_capture_comparison_with_single_quotes(self):
+        """Parser should handle string comparisons with single quotes."""
+        template = """if mode == 'debug':
+    <<Debug mode active>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "mode == 'debug'"
+

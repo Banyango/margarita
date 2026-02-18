@@ -72,9 +72,9 @@ class Renderer:
             return str(value) if value is not None else ""
 
         elif isinstance(node, IfNode):
-            condition_value = self._get_variable_value(node.condition)
-            # Evaluate truthiness
-            if self._is_truthy(condition_value):
+            # Evaluate the condition expression
+            condition_result = self._evaluate_condition(node.condition)
+            if condition_result:
                 return self.render(node.true_block)
             elif node.false_block:
                 return self.render(node.false_block)
@@ -151,6 +151,86 @@ class Renderer:
                 return None
 
         return value
+
+    def _evaluate_condition(self, condition: str) -> bool:
+        """Evaluate a condition expression.
+
+        Args:
+            condition: The condition string to evaluate (e.g., "var", "var == 'test'", "x > 5")
+
+        Returns:
+            True if the condition is true, False otherwise
+        """
+        condition = condition.strip()
+
+        # Check for comparison operators
+        # Support ==, !=, >, <, >=, <=
+        comparison_pattern = r'^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$'
+        match = re.match(comparison_pattern, condition)
+
+        if match:
+            left_expr = match.group(1).strip()
+            operator = match.group(2)
+            right_expr = match.group(3).strip()
+
+            # Evaluate left side
+            left_value = self._evaluate_expression(left_expr)
+            # Evaluate right side
+            right_value = self._evaluate_expression(right_expr)
+
+            # Perform comparison
+            if operator == "==":
+                return left_value == right_value
+            elif operator == "!=":
+                return left_value != right_value
+            elif operator == ">":
+                return left_value > right_value
+            elif operator == "<":
+                return left_value < right_value
+            elif operator == ">=":
+                return left_value >= right_value
+            elif operator == "<=":
+                return left_value <= right_value
+
+        # No comparison operator, just evaluate as a simple expression
+        value = self._evaluate_expression(condition)
+        return self._is_truthy(value)
+
+    def _evaluate_expression(self, expr: str) -> Any:
+        """Evaluate an expression (variable or literal).
+
+        Args:
+            expr: The expression to evaluate
+
+        Returns:
+            The evaluated value
+        """
+        expr = expr.strip()
+
+        # Check if it's a string literal (quoted)
+        if (expr.startswith('"') and expr.endswith('"')) or \
+           (expr.startswith("'") and expr.endswith("'")):
+            return expr[1:-1]  # Remove quotes
+
+        # Check if it's a number
+        try:
+            if '.' in expr:
+                return float(expr)
+            else:
+                return int(expr)
+        except ValueError:
+            pass
+
+        # Check if it's a boolean
+        if expr.lower() == 'true':
+            return True
+        elif expr.lower() == 'false':
+            return False
+        elif expr.lower() == 'none':
+            return None
+
+        # Otherwise, treat it as a variable name
+        return self._get_variable_value(expr)
 
     @staticmethod
     def _is_truthy(value: Any) -> bool:

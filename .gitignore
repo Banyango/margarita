@@ -9,6 +9,7 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+temp/
 # IDEs
 
 cython_debug/
