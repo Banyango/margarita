@@ -1,35 +1,35 @@
-@task: multi-model-agent
-@version: 1.0.0
+---
+task: multi-model-agent
+version: 1.0.0
+---
 
-# System Instructions
+<<# System Instructions>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/system.mg" %}
-{% else %}
-{% include "claude/system.mg" %}
-{% endif %}
+if model == "gpt5":
+    [[ chatgpt5/system.mg ]]
+else:
+    [[ claude/system.mg" ]]
 
-## Core Responsibilities
+<<## Core Responsibilities>>
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/responsibilities.mg" %}
-{% else %}
-{% include "claude/responsibilities.mg" %}
-{% endif %}
+if model == "gpt5":
+    [[ chatgpt5/responsibilities.mg ]]
+else:
+    [[ claude/responsibilities.mg" ]]
 
-## Available Tools
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/tools.mg" %}
-{% else %}
-{% include "claude/tools.mg" %}
-{% endif %}
+<<## Available Tools>>
 
-## Response Format
+if model == "gpt5":
+    [[ "chatgpt5/tools.mg" ]]
+else:
+    [[ claude/tools.mg ]]
 
-{% if model == "gpt5" %}
-{% include "chatgpt5/response_format.mg" %}
-{% else %}
-{% include "claude/response_format.mg" %}
-{% endif %}
+<<## Response Format>>
+
+if model == "gpt5":
+    [[ chatgpt5/response_format.mg ]]
+else:
+    [[ claude/response_format.mg ]]
+
 

@@ -2,16 +2,17 @@ from margarita.parser import Parser
 from margarita.renderer import Renderer
 
 template = """
+<<
 You are a helpful assistant.
+Task: ${task}
+>>
 
-Task: {{task}}
+if context:
+    <<Context:
+    ${context}
+    >>
 
-{% if context %}
-Context:
-{{context}}
-{% endif %}
-
-Please provide a detailed response.
+<<Please provide a detailed response.>>
 """
 
 # Parse the template
