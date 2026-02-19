@@ -791,3 +791,68 @@ if show_items:
         assert isinstance(nodes[0], IfNode)
         assert nodes[0].condition == "mode == 'debug'"
 
+    def test_parse_should_parse_elif_node_when_template_has_elif(self):
+        template = "if a:\n    <<A>>\nelif b:\n    <<B>>"
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "a"
+        assert nodes[0].false_block is not None
+        assert len(nodes[0].false_block) == 1
+        assert isinstance(nodes[0].false_block[0], IfNode)
+        assert nodes[0].false_block[0].condition == "b"
+        assert nodes[0].false_block[0].false_block is None
+
+    def test_parse_should_parse_elif_else_blocks_when_template_has_elif_and_else(self):
+        template = "if a:\n    <<A>>\nelif b:\n    <<B>>\nelse:\n    <<C>>"
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert nodes[0].condition == "a"
+        inner = nodes[0].false_block
+        assert inner is not None and len(inner) == 1
+        assert isinstance(inner[0], IfNode)
+        assert inner[0].condition == "b"
+        assert inner[0].false_block is not None
+        assert len(inner[0].false_block) == 1
+        assert isinstance(inner[0].false_block[0], TextNode)
+        assert "C" in inner[0].false_block[0].content
+
+    def test_parse_should_parse_multiple_elif_branches_when_template_has_chained_elif(self):
+        template = "if a:\n    <<A>>\nelif b:\n    <<B>>\nelif c:\n    <<C>>\nelse:\n    <<D>>"
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        top = nodes[0]
+        assert isinstance(top, IfNode)
+        assert top.condition == "a"
+        level1 = top.false_block
+        assert level1 is not None and isinstance(level1[0], IfNode)
+        assert level1[0].condition == "b"
+        level2 = level1[0].false_block
+        assert level2 is not None and isinstance(level2[0], IfNode)
+        assert level2[0].condition == "c"
+
+    def test_parse_should_parse_elif_with_comparison_when_elif_uses_operator(self):
+        template = 'if x == "a":\n    <<A>>\nelif x == "b":\n    <<B>>'
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        inner = nodes[0].false_block
+        assert inner is not None and isinstance(inner[0], IfNode)
+        assert inner[0].condition == 'x == "b"'
+
+    def test_parse_should_not_parse_else_as_elif_when_only_else_is_present(self):
+        template = "if a:\n    <<A>>\nelse:\n    <<B>>"
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        # false_block should be a plain list of TextNode, not a nested IfNode
+        assert nodes[0].false_block is not None
+        assert len(nodes[0].false_block) == 1
+        assert isinstance(nodes[0].false_block[0], TextNode)
+

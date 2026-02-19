@@ -205,7 +205,18 @@ class Parser:
                 # Parse the true block - content should be more indented than the if statement
                 true_block = self._parse_block(indent)
 
-                # Check for else at the same indent level as the if
+                # Collect elif branches as (condition, block) pairs
+                elif_branches: list[tuple[str, list[Node]]] = []
+                while self.pos < len(self.lines):
+                    next_indent, next_line = self.lines[self.pos]
+                    next_elif_match = re.match(r"^elif\s+(.+):$", next_line.strip())
+                    if next_indent == indent and next_elif_match:
+                        self.pos += 1
+                        elif_branches.append((next_elif_match.group(1), self._parse_block(indent)))
+                    else:
+                        break
+
+                # Check for optional final else
                 false_block = None
                 if self.pos < len(self.lines):
                     next_indent, next_line = self.lines[self.pos]
@@ -214,7 +225,12 @@ class Parser:
                         # Parse the false block - content should be more indented than the else
                         false_block = self._parse_block(indent)
 
-                nodes.append(IfNode(condition, true_block, false_block))
+                # Build nested IfNode chain from right to left
+                current_false = false_block
+                for elif_cond, elif_block in reversed(elif_branches):
+                    current_false = [IfNode(elif_cond, elif_block, current_false)]
+
+                nodes.append(IfNode(condition, true_block, current_false))
 
             elif for_match:
                 # Parse for loop
@@ -227,6 +243,10 @@ class Parser:
 
             elif else_match:
                 # We've hit an else at this level, return to let parent handle it
+                break
+
+            elif re.match(r"^elif\s+(.+):$", stripped):
+                # We've hit an elif at this level, return to let parent handle it
                 break
 
             elif include_match:

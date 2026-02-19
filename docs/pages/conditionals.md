@@ -25,10 +25,27 @@ Thanks for subscribing, Dana!
 Please consider subscribing.
 ```
 
+## elif
+
+Use `elif` to add additional branches without nesting:
+
+```margarita
+if status == "premium":
+    << Premium user >>
+elif status == "standard":
+    << Standard user >>
+elif status == "trial":
+    << Trial user >>
+else:
+    << Unknown status >>
+```
+
+Any number of `elif` branches can follow an `if`. An optional `else` branch at the end catches all remaining cases.
+
 Notes
 
 - Conditions evaluate truthiness: missing, false, empty, or null values are treated as false.
 - You can reference nested values with dotted paths, e.g. `user.active`.
-- There is no support for complex expressions — stick to presence and simple boolean checks.
+- `elif` is syntactic sugar for a nested `if` in the false branch; no additional AST nodes are needed.
 
 Tip: Use `margarita metadata` or a dry render to ensure required context keys are present before running in production.

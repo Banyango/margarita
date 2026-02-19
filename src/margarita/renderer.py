@@ -54,14 +54,12 @@ class Renderer:
             Rendered string for this node
         """
         if isinstance(node, TextNode):
-            # Process ${variable} syntax in text
             content = node.content
 
-            # Replace ${var} with actual values
             def replace_var(match):
                 var_name = match.group(1)
-                value = self._get_variable_value(var_name)
-                return str(value) if value is not None else ""
+                _val = self._get_variable_value(var_name)
+                return str(_val) if _val is not None else ""
 
             content = re.sub(r"\$\{([\w\.]+)\}", replace_var, content)
             return content
@@ -152,7 +150,7 @@ class Renderer:
 
         return value
 
-    def _evaluate_condition(self, condition: str) -> bool:
+    def _evaluate_condition(self, condition: str) -> bool | None:
         """Evaluate a condition expression.
 
         Args:
@@ -163,8 +161,6 @@ class Renderer:
         """
         condition = condition.strip()
 
-        # Check for comparison operators
-        # Support ==, !=, >, <, >=, <=
         comparison_pattern = r'^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$'
         match = re.match(comparison_pattern, condition)
 
@@ -173,24 +169,22 @@ class Renderer:
             operator = match.group(2)
             right_expr = match.group(3).strip()
 
-            # Evaluate left side
             left_value = self._evaluate_expression(left_expr)
-            # Evaluate right side
             right_value = self._evaluate_expression(right_expr)
 
-            # Perform comparison
-            if operator == "==":
-                return left_value == right_value
-            elif operator == "!=":
-                return left_value != right_value
-            elif operator == ">":
-                return left_value > right_value
-            elif operator == "<":
-                return left_value < right_value
-            elif operator == ">=":
-                return left_value >= right_value
-            elif operator == "<=":
-                return left_value <= right_value
+            result = {
+                "==": left_value == right_value,
+                "!=": left_value != right_value,
+                ">": left_value > right_value,
+                "<": left_value < right_value,
+                ">=": left_value >= right_value,
+                "<=": left_value <= right_value,
+            }
+
+            if operator in result:
+                return result[operator]
+            else:
+                return None
 
         # No comparison operator, just evaluate as a simple expression
         value = self._evaluate_expression(condition)

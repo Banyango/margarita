@@ -547,6 +547,62 @@ class TestMargaritaIntegration:
         assert "include.mg" in results
         assert "unicode.mg" in results
 
+    def test_elif_template_renders_premium_when_status_is_premium(self, parser, files_dir):
+        template_file = files_dir / "elif.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        metadata, nodes = parser.parse(content)
+        renderer = Renderer(context={"status": "premium"})
+        result = renderer.render(nodes)
+
+        assert "Premium user" in result
+        assert "Standard user" not in result
+        assert "Trial user" not in result
+        assert "Unknown status" not in result
+
+    def test_elif_template_renders_standard_when_status_is_standard(self, parser, files_dir):
+        template_file = files_dir / "elif.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        metadata, nodes = parser.parse(content)
+        renderer = Renderer(context={"status": "standard"})
+        result = renderer.render(nodes)
+
+        assert "Standard user" in result
+        assert "Premium user" not in result
+        assert "Trial user" not in result
+        assert "Unknown status" not in result
+
+    def test_elif_template_renders_trial_when_status_is_trial(self, parser, files_dir):
+        template_file = files_dir / "elif.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        metadata, nodes = parser.parse(content)
+        renderer = Renderer(context={"status": "trial"})
+        result = renderer.render(nodes)
+
+        assert "Trial user" in result
+        assert "Premium user" not in result
+        assert "Standard user" not in result
+        assert "Unknown status" not in result
+
+    def test_elif_template_renders_else_when_status_is_unknown(self, parser, files_dir):
+        template_file = files_dir / "elif.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        metadata, nodes = parser.parse(content)
+        renderer = Renderer(context={"status": "other"})
+        result = renderer.render(nodes)
+
+        assert "Unknown status" in result
+        assert "Premium user" not in result
+        assert "Standard user" not in result
+        assert "Trial user" not in result
+
     def test_conditional_should_parse_properly(self, parser, files_dir):
         """Test conditional_failure.mg a test case that failed in the wild."""
         template_file = files_dir / "conditional_failure.mg"
@@ -561,6 +617,6 @@ class TestMargaritaIntegration:
         result = renderer.render(nodes)
 
         # Expected output
-        expected = "You are a Tone Adjustment Expert. Your task is to rewrite the provided text in a specific tone suitable for the target audience, while maintaining the original meaning and intent. Below are templates for different tones:\n- If the input text is very short, add 1–2 supporting sentences for better rewrites.\n- If length is not specified, keep the rewritten text concise and a similar length to the original.\nTemplate: Rewrite the following text in a formal, professional tone for ; keep it concise and fact-focused and under  words.\nText: ABC\nExample: \"To increase product registrations, we should enhance the website's call-to-action to improve conversion rates.\"\n"
+        expected = "You are a Tone Adjustment Expert. Your task is to rewrite the provided text in a specific tone suitable for the target audience, while maintaining the original meaning and intent. Below are templates for different tones:\n- If the input text is very short, add 1–2 supporting sentences for better rewrites.\n- If length is not specified, keep the rewritten text concise and a similar length to the original.\nTemplate: Rewrite the following text in a formal, professional tone for ; keep it concise and fact-focused and under  words.\nText: ABC\nExample: \"To increase product registrations, we should enhance the website's call-to-action to improve conversion rates.\"\n"  # type: ignore  # noqa: RUF001
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"

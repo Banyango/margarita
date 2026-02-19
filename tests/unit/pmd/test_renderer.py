@@ -244,3 +244,58 @@ else:
 
         assert "Feature is not disabled" in result
 
+    def test_render_should_render_elif_block_when_if_condition_is_false(self):
+        template = 'if status == "a":\n    <<A>>\nelif status == "b":\n    <<B>>'
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": "b"})
+        result = renderer.render(nodes)
+
+        assert "B" in result
+        assert "A" not in result
+
+    def test_render_should_render_true_block_when_if_is_true_with_elif_present(self):
+        template = 'if status == "a":\n    <<A>>\nelif status == "b":\n    <<B>>'
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": "a"})
+        result = renderer.render(nodes)
+
+        assert "A" in result
+        assert "B" not in result
+
+    def test_render_should_render_else_block_when_all_elif_conditions_are_false(self):
+        template = 'if status == "a":\n    <<A>>\nelif status == "b":\n    <<B>>\nelse:\n    <<C>>'
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": "c"})
+        result = renderer.render(nodes)
+
+        assert "C" in result
+        assert "A" not in result
+        assert "B" not in result
+
+    def test_render_should_evaluate_multiple_elif_branches_in_sequence(self):
+        template = (
+            'if v == "a":\n    <<A>>\n'
+            'elif v == "b":\n    <<B>>\n'
+            'elif v == "c":\n    <<C>>\n'
+            'elif v == "d":\n    <<D>>'
+        )
+        _, nodes = self.parser.parse(template)
+        for val, expected, not_expected in [
+            ("a", "A", ["B", "C", "D"]),
+            ("b", "B", ["A", "C", "D"]),
+            ("c", "C", ["A", "B", "D"]),
+            ("d", "D", ["A", "B", "C"]),
+        ]:
+            result = Renderer(context={"v": val}).render(nodes)
+            assert expected in result
+            for other in not_expected:
+                assert other not in result
+
+    def test_render_should_render_nothing_when_elif_condition_is_false_and_no_else(self):
+        template = "if x:\n    <<X>>\nelif y:\n    <<Y>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"x": False, "y": False})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
