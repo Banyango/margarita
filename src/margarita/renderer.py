@@ -79,7 +79,7 @@ class Renderer:
             return ""
 
         elif isinstance(node, ForNode):
-            iterable = self._get_variable_value(node.iterable)
+            iterable = self._resolve_iterable(node.iterable)
             if not iterable:
                 return ""
 
@@ -125,6 +125,25 @@ class Renderer:
         else:
             return ""
 
+    def _resolve_iterable(self, expr: str) -> Any:
+        """Resolve a for-loop iterable — either a context variable or a range() call."""
+        expr = expr.strip()
+        range_match = re.match(r"^range\((.+)\)$", expr)
+        if range_match:
+            args_str = range_match.group(1)
+            args = [arg.strip() for arg in args_str.split(",")]
+            int_args = []
+            for arg in args:
+                try:
+                    int_args.append(int(arg))
+                except ValueError:
+                    val = self._get_variable_value(arg)
+                    if val is None:
+                        return []
+                    int_args.append(int(val))
+            return range(*int_args)
+        return self._get_variable_value(expr)
+
     def _get_variable_value(self, name: str) -> Any:
         """Get a variable value from context, supporting dotted notation.
 
@@ -161,7 +180,7 @@ class Renderer:
         """
         condition = condition.strip()
 
-        comparison_pattern = r'^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$'
+        comparison_pattern = r"^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$"
         match = re.match(comparison_pattern, condition)
 
         if match:
@@ -202,13 +221,14 @@ class Renderer:
         expr = expr.strip()
 
         # Check if it's a string literal (quoted)
-        if (expr.startswith('"') and expr.endswith('"')) or \
-           (expr.startswith("'") and expr.endswith("'")):
+        if (expr.startswith('"') and expr.endswith('"')) or (
+            expr.startswith("'") and expr.endswith("'")
+        ):
             return expr[1:-1]  # Remove quotes
 
         # Check if it's a number
         try:
-            if '.' in expr:
+            if "." in expr:
                 return float(expr)
             else:
                 return int(expr)
@@ -216,11 +236,11 @@ class Renderer:
             pass
 
         # Check if it's a boolean
-        if expr.lower() == 'true':
+        if expr.lower() == "true":
             return True
-        elif expr.lower() == 'false':
+        elif expr.lower() == "false":
             return False
-        elif expr.lower() == 'none':
+        elif expr.lower() == "none":
             return None
 
         # Otherwise, treat it as a variable name

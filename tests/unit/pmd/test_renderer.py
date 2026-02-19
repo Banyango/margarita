@@ -299,3 +299,47 @@ else:
 
         assert result.strip() == ""
 
+    def test_render_should_iterate_when_template_has_range_with_stop(self):
+        template = """for i in range(3):
+    <<Iteration ${i}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        assert "Iteration 0" in result
+        assert "Iteration 1" in result
+        assert "Iteration 2" in result
+
+    def test_render_should_iterate_when_template_has_range_with_start_and_stop(self):
+        template = """for i in range(1, 4):
+    <<Step ${i}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        assert "Step 1" in result
+        assert "Step 2" in result
+        assert "Step 3" in result
+        assert "Step 0" not in result
+
+    def test_render_should_iterate_when_template_has_range_with_start_stop_step(self):
+        template = """for i in range(0, 6, 2):
+    <<Value ${i}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        assert "Value 0" in result
+        assert "Value 2" in result
+        assert "Value 4" in result
+        assert "Value 1" not in result
+        assert "Value 3" not in result
+
+    def test_render_should_return_empty_when_range_is_zero(self):
+        template = """for i in range(0):
+    <<Iteration ${i}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        assert result == ""

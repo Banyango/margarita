@@ -189,7 +189,7 @@ class Parser:
 
             # Check for control structures
             if_match = re.match(r"^if\s+(.+):$", stripped)
-            for_match = re.match(r"^for\s+(\w+)\s+in\s+(\w+):$", stripped)
+            for_match = re.match(r"^for\s+(\w+)\s+in\s+(range\([^)]*\)|\w+):$", stripped)
             else_match = re.match(r"^else:$", stripped)
             include_match = re.match(r"^\[\[\s*([^]]+)\s*]]$", stripped)
             effect_match = re.match(r"^@effect\s+(.+)$", stripped)

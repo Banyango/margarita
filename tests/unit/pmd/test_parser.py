@@ -548,6 +548,36 @@ email: user@example.com
         assert nodes[0].iterator == "list_item"
         assert nodes[0].iterable == "my_list"
 
+    def test_parse_should_parse_for_node_when_template_has_range_with_stop(self):
+        template = """for i in range(5):
+    <<${i}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], ForNode)
+        assert nodes[0].iterator == "i"
+        assert nodes[0].iterable == "range(5)"
+
+    def test_parse_should_parse_for_node_when_template_has_range_with_start_and_stop(self):
+        template = """for i in range(1, 5):
+    <<${i}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], ForNode)
+        assert nodes[0].iterator == "i"
+        assert nodes[0].iterable == "range(1, 5)"
+
+    def test_parse_should_parse_for_node_when_template_has_range_with_start_stop_step(self):
+        template = """for i in range(0, 10, 2):
+    <<${i}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], ForNode)
+        assert nodes[0].iterator == "i"
+        assert nodes[0].iterable == "range(0, 10, 2)"
+
 
 class TestParserEdgeCases:
     def setup_method(self):
@@ -855,4 +885,3 @@ if show_items:
         assert nodes[0].false_block is not None
         assert len(nodes[0].false_block) == 1
         assert isinstance(nodes[0].false_block[0], TextNode)
-
