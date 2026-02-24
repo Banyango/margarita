@@ -343,3 +343,26 @@ else:
         result = renderer.render(nodes)
 
         assert result == ""
+
+    def test_render_should_stop_iteration_when_break_is_unconditional(self):
+        template = """for item in items:
+    break
+    <<${item}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert result == ""
+
+    def test_render_should_stop_at_matching_item_when_break_is_conditional(self):
+        template = """for item in items:
+    if item == "banana":
+        break
+    <<${item}>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert "apple" in result
+        assert "banana" not in result
+        assert "cherry" not in result

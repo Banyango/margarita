@@ -2,6 +2,7 @@
 
 import json
 import sys
+from importlib.metadata import version
 from pathlib import Path
 from typing import Optional
 
@@ -12,7 +13,7 @@ from margarita.renderer import Renderer
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="margarita")
+@click.version_option(version=version("margarita"), prog_name="margarita")
 def main():
     """Margarita template rendering tool.
 

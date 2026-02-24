@@ -1,4 +1,5 @@
 from margarita.parser import (
+    BreakNode,
     ForNode,
     IfNode,
     ImportNode,
@@ -885,3 +886,27 @@ if show_items:
         assert nodes[0].false_block is not None
         assert len(nodes[0].false_block) == 1
         assert isinstance(nodes[0].false_block[0], TextNode)
+
+    def test_parse_should_parse_break_when_break_is_inside_for_loop(self):
+        template = """for item in items:
+    break"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], ForNode)
+        assert len(nodes[0].block) == 1
+        assert isinstance(nodes[0].block[0], BreakNode)
+
+    def test_parse_should_parse_break_when_break_is_inside_conditional_in_for_loop(self):
+        template = """for item in items:
+    <<${item}>>
+    if item == "stop":
+        break"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], ForNode)
+        for_node = nodes[0]
+        if_node = next(n for n in for_node.block if isinstance(n, IfNode))
+        assert len(if_node.true_block) == 1
+        assert isinstance(if_node.true_block[0], BreakNode)

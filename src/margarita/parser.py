@@ -93,6 +93,19 @@ class ImportNode(Node):
     raw_import: str  # The full import statement
 
 
+@dataclass
+class BreakNode(Node):
+    """Represents a break statement inside a for loop.
+
+    Example:
+        for item in items:
+            if item == "stop":
+                break
+    """
+
+    pass
+
+
 # -------------------------
 # Parser
 # -------------------------
@@ -196,6 +209,7 @@ class Parser:
             state_match = re.match(r"^@state\s+(\w+)\s*=\s*(.+)$", stripped)
             import_match = re.match(r"^import\s+.+$", stripped)
             from_import_match = re.match(r"^from\s+.+\s+import\s+.+$", stripped)
+            break_match = stripped == "break"
             text_block_start = stripped.startswith("<<")
 
             if if_match:
@@ -292,6 +306,11 @@ class Parser:
                 # Store the entire import line as-is
                 nodes.append(ImportNode(stripped))
                 self.is_mgx = True
+                self.pos += 1
+
+            elif break_match:
+                # Parse break statement
+                nodes.append(BreakNode())
                 self.pos += 1
 
             elif text_block_start:

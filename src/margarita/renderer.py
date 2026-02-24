@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from margarita.parser import (
+    BreakNode,
     ForNode,
     IfNode,
     IncludeNode,
@@ -17,6 +18,12 @@ from margarita.parser import (
     TextNode,
     VariableNode,
 )
+
+
+class _BreakSignal(Exception):
+    """Internal signal raised when a BreakNode is encountered inside a for loop."""
+
+    pass
 
 
 class Renderer:
@@ -88,7 +95,14 @@ class Renderer:
                 old_value = self.context.get(node.iterator)
 
                 self.context[node.iterator] = item
-                output.append(self.render(node.block))
+                try:
+                    output.append(self.render(node.block))
+                except _BreakSignal:
+                    if old_value is not None:
+                        self.context[node.iterator] = old_value
+                    else:
+                        self.context.pop(node.iterator, None)
+                    break
 
                 if old_value is not None:
                     self.context[node.iterator] = old_value
@@ -96,6 +110,9 @@ class Renderer:
                     self.context.pop(node.iterator, None)
 
             return "".join(output)
+
+        elif isinstance(node, BreakNode):
+            raise _BreakSignal()
 
         elif isinstance(node, IncludeNode):
             template_name = node.template_name
