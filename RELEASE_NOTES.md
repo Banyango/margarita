@@ -1,3 +1,14 @@
+# Release Notes - Margarita v0.3.6
+
+**Release Date:** February 23, 2026
+
+Fix issue with version reporting in CLI tool.
+Added break support in for loops.
+Added range() support in for loops.
+Added elif support in conditionals.
+Fix issue with if statement and strings.
+Updated examples files.
+
 # Release Notes - Margarita v0.3.5
 
 **Release Date:** February 4, 2026

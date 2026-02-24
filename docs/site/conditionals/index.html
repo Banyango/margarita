@@ -508,6 +508,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditionals
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -524,6 +542,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#elif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        elif
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1015,6 +1063,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#elif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        elif
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1052,11 +1119,23 @@ else:
 </ul>
 <div class="highlight"><pre><span></span><code>Please consider subscribing.
 </code></pre></div>
+<h2 id="elif">elif<a class="headerlink" href="#elif" title="Permanent link">&para;</a></h2>
+<p>Use <code>elif</code> to add additional branches without nesting:</p>
+<div class="highlight"><pre><span></span><code>if status == &quot;premium&quot;:
+    &lt;&lt; Premium user &gt;&gt;
+elif status == &quot;standard&quot;:
+    &lt;&lt; Standard user &gt;&gt;
+elif status == &quot;trial&quot;:
+    &lt;&lt; Trial user &gt;&gt;
+else:
+    &lt;&lt; Unknown status &gt;&gt;
+</code></pre></div>
+<p>Any number of <code>elif</code> branches can follow an <code>if</code>. An optional <code>else</code> branch at the end catches all remaining cases.</p>
 <p>Notes</p>
 <ul>
 <li>Conditions evaluate truthiness: missing, false, empty, or null values are treated as false.</li>
 <li>You can reference nested values with dotted paths, e.g. <code>user.active</code>.</li>
-<li>There is no support for complex expressions — stick to presence and simple boolean checks.</li>
+<li><code>elif</code> is syntactic sugar for a nested <code>if</code> in the false branch; no additional AST nodes are needed.</li>
 </ul>
 <p>Tip: Use <code>margarita metadata</code> or a dry render to ensure required context keys are present before running in production.</p>
 

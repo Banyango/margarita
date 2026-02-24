@@ -536,6 +536,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Loops
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -552,6 +570,36 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#range-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Range Loops
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1015,6 +1063,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#range-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Range Loops
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1060,6 +1127,41 @@ for item in items:
 <li>Nested loops are supported by composing loop blocks.</li>
 </ul>
 <p>Tip: Prepare and validate list data in the context rather than trying to transform large datasets inside the template.</p>
+<h2 id="range-loops">Range Loops<a class="headerlink" href="#range-loops" title="Permanent link">&para;</a></h2>
+<p>Use the <code>range()</code> function to iterate a fixed number of times without passing a list in context.</p>
+<div class="highlight"><pre><span></span><code>for i in range(3):
+    &lt;&lt; Step ${i} &gt;&gt;
+</code></pre></div>
+<p>Rendered result:</p>
+<div class="highlight"><pre><span></span><code>Step 0
+Step 1
+Step 2
+</code></pre></div>
+<ul>
+<li><code>range(stop)</code> — iterate from 0 to stop (exclusive)</li>
+<li><code>range(start, stop)</code> — iterate from start to stop (exclusive)</li>
+<li><code>range(start, stop, step)</code> — iterate with a custom step</li>
+</ul>
+<p>Example using <code>range(1, 4)</code>:</p>
+<div class="highlight"><pre><span></span><code>for i in range(1, 4):
+    &lt;&lt; Item ${i} &gt;&gt;
+</code></pre></div>
+<p>Rendered result:</p>
+<div class="highlight"><pre><span></span><code>Item 1
+Item 2
+Item 3
+</code></pre></div>
+<p>Example using <code>range(0, 10, 2)</code>:</p>
+<div class="highlight"><pre><span></span><code>for i in range(0, 10, 2):
+    &lt;&lt; Even ${i} &gt;&gt;
+</code></pre></div>
+<p>Rendered result:</p>
+<div class="highlight"><pre><span></span><code>Even 0
+Even 2
+Even 4
+Even 6
+Even 8
+</code></pre></div>
 
 
 
