@@ -1,3 +1,11 @@
+# Release Notes - Margarita v0.3.7
+
+**Release Date:** March 1, 2026
+
+## 🎉 Overview
+
+Added `MemoryNode` — a new parser node type triggered by the `@memory` directive. Everything after `@memory` is captured as `params`.
+
 # Release Notes - Margarita v0.3.6
 
 **Release Date:** February 23, 2026

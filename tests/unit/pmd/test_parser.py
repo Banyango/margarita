@@ -4,6 +4,7 @@ from margarita.parser import (
     IfNode,
     ImportNode,
     IncludeNode,
+    MemoryNode,
     Parser,
     StateNode,
     TextNode,
@@ -910,3 +911,43 @@ if show_items:
         if_node = next(n for n in for_node.block if isinstance(n, IfNode))
         assert len(if_node.true_block) == 1
         assert isinstance(if_node.true_block[0], BreakNode)
+
+    def test_parse_should_parse_memory_when_template_has_memory_directive(self):
+        template = """@memory store result as key
+<<The result is ${result}.>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 2
+        assert isinstance(nodes[0], MemoryNode)
+        assert nodes[0].params == "store result as key"
+        assert isinstance(nodes[1], TextNode)
+
+    def test_parse_should_parse_memory_params_as_full_string(self):
+        template = "@memory recall context with extra details"
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], MemoryNode)
+        assert nodes[0].params == "recall context with extra details"
+
+    def test_parse_should_parse_memory_when_inside_if(self):
+        template = """if condition:
+    @memory store something"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert len(nodes[0].true_block) == 1
+        assert isinstance(nodes[0].true_block[0], MemoryNode)
+        assert nodes[0].true_block[0].params == "store something"
+
+    def test_parse_should_parse_multiple_memory_nodes(self):
+        template = """@memory first instruction
+@memory second instruction
+<<Content>>"""
+        _, nodes = self.parser.parse(template)
+
+        memory_nodes = [n for n in nodes if isinstance(n, MemoryNode)]
+        assert len(memory_nodes) == 2
+        assert memory_nodes[0].params == "first instruction"
+        assert memory_nodes[1].params == "second instruction"
