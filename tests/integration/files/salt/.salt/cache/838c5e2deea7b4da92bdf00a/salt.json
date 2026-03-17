@@ -1,0 +1,11 @@
+{
+  "name": "salt-test-package2",
+  "version": "0.1.1",
+  "description": "",
+  "dependencies": {
+    "salt-test-package3": {
+      "git": "file:///Users/admin/Development/Projects/salt-test-package3",
+      "tag": "0.1.0"
+    }
+  }
+}

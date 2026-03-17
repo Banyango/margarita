@@ -1,0 +1,10 @@
+[metadata]
+lock-version = "1.0"
+content-hash = "sha256:d74149284ddd70e44082b78b528ed181a4a832373786ff39c57868d0ea400791"
+
+[[package]]
+name = "salt-test-package3"
+version = "0.1.0"
+category = "direct"
+git = "file:///Users/admin/Development/Projects/salt-test-package3"
+sha = "b51bc1556ec9f2f92dbb53ce2f78d06e339508f4"

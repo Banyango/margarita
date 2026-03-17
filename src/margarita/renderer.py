@@ -27,15 +27,29 @@ class _BreakSignal(Exception):
 
 
 class Renderer:
-    def __init__(self, context: dict[str, Any] | None = None, base_path: Path | None = None):
+    def __init__(
+        self,
+        context: dict[str, Any] | None = None,
+        base_path: Path | None = None,
+        include_paths: list[Path] | None = None,
+        package_paths: dict[str, Path] | None = None,
+    ):
         """Initialize the renderer with a context dictionary.
 
         Args:
             context: Dictionary containing variable values for rendering
             base_path: Base directory path for resolving include statements
+            include_paths: Additional search paths checked in order when an include
+                is not found under base_path
+            package_paths: Mapping of package name to its src/ directory.
+                Enables conflict-free includes via ``[[ pkg_name/file ]]`` syntax.
+                When the first path component matches a key, the rest of the path
+                is resolved relative to that package's src/ directory.
         """
         self.context = context or {}
         self.base_path = base_path or Path.cwd()
+        self.include_paths = include_paths or []
+        self.package_paths = package_paths or {}
 
     def render(self, nodes: list[Node]) -> str:
         """Render a list of AST nodes into a string.
@@ -119,7 +133,11 @@ class Renderer:
             if not template_name.endswith(".mg"):
                 template_name += ".mg"
 
-            include_path = self.base_path / template_name
+            include_path = self._resolve_include_path(template_name)
+
+            if include_path is None:
+                print(f"Included template not found: {template_name}")
+                return ""
 
             try:
                 template_content = include_path.read_text()
@@ -131,16 +149,51 @@ class Renderer:
                 include_context = self.context.copy()
                 include_context.update(node.params)
 
-                included_renderer = Renderer(context=include_context, base_path=self.base_path)
+                included_renderer = Renderer(
+                    context=include_context,
+                    base_path=self.base_path,
+                    include_paths=self.include_paths,
+                    package_paths=self.package_paths,
+                )
                 return included_renderer.render(included_nodes)
 
-            except FileNotFoundError:
-                print(f"Included template not found: {include_path}")
-                return ""
             except Exception:
                 return ""
         else:
             return ""
+
+    def _resolve_include_path(self, template_name: str) -> Path | None:
+        """Resolve the path to an included template.
+
+        Resolution order:
+        1. base_path / template_name (local files always win)
+        2. If the first path component matches a key in package_paths, resolve
+           the remainder relative to that package's src/ directory.
+        3. Each path in include_paths in order (unnamespaced fallback)
+
+        Args:
+            template_name: Template filename (with .mg extension)
+
+        Returns:
+            Resolved Path if found, None otherwise
+        """
+        candidate = self.base_path / template_name
+        if candidate.exists():
+            return candidate
+
+        parts = Path(template_name).parts
+        if len(parts) > 1 and parts[0] in self.package_paths:
+            pkg_src = self.package_paths[parts[0]]
+            candidate = pkg_src.joinpath(*parts[1:])
+            if candidate.exists():
+                return candidate
+
+        for search_path in self.include_paths:
+            candidate = search_path / template_name
+            if candidate.exists():
+                return candidate
+
+        return None
 
     def _resolve_iterable(self, expr: str) -> Any:
         """Resolve a for-loop iterable — either a context variable or a range() call."""

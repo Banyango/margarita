@@ -620,3 +620,184 @@ class TestMargaritaIntegration:
         expected = 'You are a Tone Adjustment Expert. Your task is to rewrite the provided text in a specific tone suitable for the target audience, while maintaining the original meaning and intent. Below are templates for different tones:\n- If the input text is very short, add 1–2 supporting sentences for better rewrites.\n- If length is not specified, keep the rewritten text concise and a similar length to the original.\nTemplate: Rewrite the following text in a formal, professional tone for ; keep it concise and fact-focused and under  words.\nText: ABC\nExample: "To increase product registrations, we should enhance the website\'s call-to-action to improve conversion rates."\n'  # type: ignore  # noqa: RUF001
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
+
+
+class TestUvPackageIncludes:
+    """Tests for resolving includes from a .venv site-packages tree."""
+
+    @pytest.fixture
+    def parser(self):
+        return Parser()
+
+    @pytest.fixture
+    def uv_project(self, tmp_path):
+        """Build a project with two uv packages, each with a tone.mg.
+
+        project/
+          src/
+            main.mg
+          .venv/lib/python3.12/site-packages/
+            writing_templates/
+              templates/
+                tone.mg
+                sub/
+                  deep.mg
+            writing_templates-0.1.0.dist-info/
+              METADATA          (Name: writing)
+              top_level.txt     (writing_templates)
+            editing_templates/
+              templates/
+                tone.mg          (same filename — different package)
+            editing_templates-0.1.0.dist-info/
+              METADATA          (Name: editing)
+              top_level.txt     (editing_templates)
+        """
+        site_packages = tmp_path / ".venv" / "lib" / "python3.12" / "site-packages"
+
+        for pkg_name, module_name in (
+            ("writing", "writing_templates"),
+            ("editing", "editing_templates"),
+        ):
+            templates_dir = site_packages / module_name / "templates"
+            templates_dir.mkdir(parents=True)
+            (templates_dir / "tone.mg").write_text(f"<<\nFrom {pkg_name}\n>>\n")
+
+            dist_info = site_packages / f"{module_name}-0.1.0.dist-info"
+            dist_info.mkdir()
+            (dist_info / "METADATA").write_text(f"Metadata-Version: 2.1\nName: {pkg_name}\n")
+            (dist_info / "top_level.txt").write_text(f"{module_name}\n")
+
+        sub_dir = site_packages / "writing_templates" / "templates" / "sub"
+        sub_dir.mkdir()
+        (sub_dir / "deep.mg").write_text("<<\nFrom deep\n>>\n")
+
+        (tmp_path / "src").mkdir()
+        return tmp_path
+
+    def test_namespaced_include_resolves_to_correct_package(self, parser, uv_project):
+        site_packages = uv_project / ".venv" / "lib" / "python3.12" / "site-packages"
+        (uv_project / "src" / "main.mg").write_text("[[ writing/tone ]]\n[[ editing/tone ]]\n")
+        _, nodes = parser.parse((uv_project / "src" / "main.mg").read_text())
+
+        package_paths = {
+            "writing": site_packages / "writing_templates" / "templates",
+            "editing": site_packages / "editing_templates" / "templates",
+        }
+        renderer = Renderer(context={}, base_path=uv_project / "src", package_paths=package_paths)
+        result = renderer.render(nodes)
+
+        assert result == "From writing\nFrom editing\n"
+
+    def test_namespaced_include_supports_subdirectory_paths(self, parser, uv_project):
+        site_packages = uv_project / ".venv" / "lib" / "python3.12" / "site-packages"
+        (uv_project / "src" / "main.mg").write_text("[[ writing/sub/deep ]]\n")
+        _, nodes = parser.parse((uv_project / "src" / "main.mg").read_text())
+
+        package_paths = {
+            "writing": site_packages / "writing_templates" / "templates",
+        }
+        renderer = Renderer(context={}, base_path=uv_project / "src", package_paths=package_paths)
+        result = renderer.render(nodes)
+
+        assert result == "From deep\n"
+
+    def test_base_path_takes_priority_over_package_paths(self, parser, uv_project):
+        """A local file shadows a package file even when using the namespaced syntax."""
+        site_packages = uv_project / ".venv" / "lib" / "python3.12" / "site-packages"
+        (uv_project / "src" / "writing").mkdir()
+        (uv_project / "src" / "writing" / "tone.mg").write_text("<<\nLocal tone\n>>\n")
+
+        (uv_project / "src" / "main.mg").write_text("[[ writing/tone ]]\n")
+        _, nodes = parser.parse((uv_project / "src" / "main.mg").read_text())
+
+        package_paths = {
+            "writing": site_packages / "writing_templates" / "templates",
+        }
+        renderer = Renderer(context={}, base_path=uv_project / "src", package_paths=package_paths)
+        result = renderer.render(nodes)
+
+        assert result == "Local tone\n"
+
+    def test_missing_include_returns_empty_string(self, parser, tmp_path):
+        (tmp_path / "main.mg").write_text("[[ nonexistent ]]\n")
+        _, nodes = parser.parse((tmp_path / "main.mg").read_text())
+
+        renderer = Renderer(context={}, base_path=tmp_path)
+        result = renderer.render(nodes)
+
+        assert result == ""
+
+    def test_build_uv_package_paths_maps_names_to_templates_dirs(self, tmp_path):
+        from margarita.cli import _build_uv_package_paths
+
+        site_packages = tmp_path / ".venv" / "lib" / "python3.12" / "site-packages"
+        for pkg_name, module_name in (("alpha", "alpha_pkg"), ("beta", "beta_pkg")):
+            templates_dir = site_packages / module_name / "templates"
+            templates_dir.mkdir(parents=True)
+            dist_info = site_packages / f"{module_name}-1.0.dist-info"
+            dist_info.mkdir()
+            (dist_info / "METADATA").write_text(f"Name: {pkg_name}\n")
+            (dist_info / "top_level.txt").write_text(f"{module_name}\n")
+
+        paths = _build_uv_package_paths(tmp_path / "src")
+
+        assert set(paths.keys()) == {"alpha", "beta"}
+        assert paths["alpha"] == site_packages / "alpha_pkg" / "templates"
+        assert paths["beta"] == site_packages / "beta_pkg" / "templates"
+
+    def test_build_uv_package_paths_walks_up_to_find_venv(self, tmp_path):
+        from margarita.cli import _build_uv_package_paths
+
+        site_packages = tmp_path / ".venv" / "lib" / "python3.12" / "site-packages"
+        templates_dir = site_packages / "mypkg" / "templates"
+        templates_dir.mkdir(parents=True)
+        dist_info = site_packages / "mypkg-1.0.dist-info"
+        dist_info.mkdir()
+        (dist_info / "METADATA").write_text("Name: mypkg\n")
+        (dist_info / "top_level.txt").write_text("mypkg\n")
+
+        nested = tmp_path / "a" / "b" / "c"
+        nested.mkdir(parents=True)
+
+        paths = _build_uv_package_paths(nested)
+
+        assert paths == {"mypkg": templates_dir}
+
+    def test_build_uv_package_paths_returns_empty_when_no_venv(self, tmp_path):
+        from margarita.cli import _build_uv_package_paths
+
+        assert _build_uv_package_paths(tmp_path) == {}
+
+    def test_build_uv_package_paths_warns_on_duplicate_name(self, tmp_path, capsys):
+        from margarita.cli import _build_uv_package_paths
+
+        site_packages = tmp_path / ".venv" / "lib" / "python3.12" / "site-packages"
+        for module_name in ("dupe_a", "dupe_b"):
+            templates_dir = site_packages / module_name / "templates"
+            templates_dir.mkdir(parents=True)
+            dist_info = site_packages / f"{module_name}-1.0.dist-info"
+            dist_info.mkdir()
+            (dist_info / "METADATA").write_text("Name: dupe\n")
+            (dist_info / "top_level.txt").write_text(f"{module_name}\n")
+
+        paths = _build_uv_package_paths(tmp_path)
+
+        assert list(paths.keys()) == ["dupe"]
+        captured = capsys.readouterr()
+        assert "dupe" in captured.err
+        assert "duplicate" in captured.err
+
+    def test_build_uv_package_paths_falls_back_when_no_top_level_txt(self, tmp_path):
+        from margarita.cli import _build_uv_package_paths
+
+        site_packages = tmp_path / ".venv" / "lib" / "python3.12" / "site-packages"
+        templates_dir = site_packages / "my_lib" / "templates"
+        templates_dir.mkdir(parents=True)
+        dist_info = site_packages / "my_lib-2.0.dist-info"
+        dist_info.mkdir()
+        (dist_info / "METADATA").write_text("Name: my-lib\n")
+        # no top_level.txt — fallback: strip version, normalize dashes to underscores
+
+        paths = _build_uv_package_paths(tmp_path)
+
+        assert paths == {"my-lib": templates_dir}

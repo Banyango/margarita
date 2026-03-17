@@ -1,5 +1,6 @@
 """Command-line interface for margarita template rendering."""
 
+import contextlib
 import json
 import sys
 from importlib.metadata import version
@@ -110,6 +111,66 @@ def render(
         sys.exit(1)
 
 
+def _build_uv_package_paths(base_dir: Path) -> dict[str, Path]:
+    """Build a mapping of package name -> templates/ directory from the .venv tree.
+
+    Walks up from base_dir to the filesystem root looking for a .venv/ directory,
+    then reads each dist-info's METADATA to extract the package Name and maps it
+    to its templates/ directory. If two packages share a name the duplicate is
+    skipped and a warning is printed — callers can use ``[[ <name>/<file> ]]`` safely.
+    """
+    search = base_dir.resolve()
+    while True:
+        venv = search / ".venv"
+        if venv.is_dir():
+            site_packages_matches = sorted(venv.glob("lib/python*/site-packages"))
+            if site_packages_matches:
+                site_packages = site_packages_matches[0]
+                result: dict[str, Path] = {}
+                for dist_info in sorted(site_packages.glob("*.dist-info")):
+                    metadata_file = dist_info / "METADATA"
+                    if not metadata_file.is_file():
+                        continue
+                    name = ""
+                    try:
+                        for line in metadata_file.read_text().splitlines():
+                            if line.lower().startswith("name:"):
+                                name = line.split(":", 1)[1].strip()
+                                break
+                    except Exception:
+                        continue
+                    if not name:
+                        continue
+
+                    module_name = ""
+                    top_level_file = dist_info / "top_level.txt"
+                    if top_level_file.is_file():
+                        with contextlib.suppress(Exception):
+                            module_name = top_level_file.read_text().strip().splitlines()[0].strip()
+                    if not module_name:
+                        stem = dist_info.name[: -len(".dist-info")]
+                        module_name = stem.rsplit("-", 1)[0].replace("-", "_")
+
+                    templates_dir = site_packages / module_name / "templates"
+                    if not templates_dir.is_dir():
+                        continue
+
+                    if name in result:
+                        click.echo(
+                            f"Warning: uv package '{name}' appears more than once in site-packages; "
+                            f"skipping duplicate at {dist_info}",
+                            err=True,
+                        )
+                        continue
+                    result[name] = templates_dir
+                return result
+        parent = search.parent
+        if parent == search:
+            break
+        search = parent
+    return {}
+
+
 def _render_single_file(
     template_file: Path, output: Optional[Path], context_dict: dict, show_metadata: bool
 ):
@@ -145,7 +206,12 @@ def _render_single_file(
 
     # Render the template
     try:
-        renderer = Renderer(context=context_dict, base_path=template_file.parent)
+        package_paths = _build_uv_package_paths(template_file.parent)
+        renderer = Renderer(
+            context=context_dict,
+            base_path=template_file.parent,
+            package_paths=package_paths,
+        )
         result = renderer.render(nodes)
     except Exception as e:
         click.echo(f"Error rendering template: {e}", err=True)

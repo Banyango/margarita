@@ -5,8 +5,15 @@ from margarita.renderer import Renderer
 
 
 class Composer:
-    def __init__(self, template_dir: Path):
+    def __init__(
+        self,
+        template_dir: Path,
+        include_paths: list[Path] | None = None,
+        package_paths: dict[str, Path] | None = None,
+    ):
         self.template_dir = template_dir
+        self.include_paths = include_paths or []
+        self.package_paths = package_paths or {}
         self.parser = Parser()
         self._template_cache: dict[str, tuple] = {}
 
@@ -41,7 +48,12 @@ class Composer:
         """
         _, nodes = self.load_template(template_path)
 
-        renderer = Renderer(context=context, base_path=self.template_dir)
+        renderer = Renderer(
+            context=context,
+            base_path=self.template_dir,
+            include_paths=self.include_paths,
+            package_paths=self.package_paths,
+        )
 
         return renderer.render(nodes)
 
