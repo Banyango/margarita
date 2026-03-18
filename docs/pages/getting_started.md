@@ -2,23 +2,19 @@
 
 # Installation
 
-Run the following command to install MARGARITA:
+## With uvx (recommended)
 
-Linux:
+If you have [uv](https://docs.astral.sh/uv/) installed, you can run MARGARITA without a permanent install:
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-linux.sh | bash -s -- --option
+uvx margarita render greeting.mg
 ```
 
-MacOS:
+To install it as a persistent tool:
+
 ```sh
-curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-macos.sh | bash -s -- --option
+uv tool install margarita
 ```
-
-Windows (PowerShell):
-```powershell
-iwr -useb https://raw.githubusercontent.com/Banyango/margarita/main/install-windows.ps1 | iex
-```
-
 
 A minimal walkthrough to render your first MARGARITA template.
 

@@ -19,21 +19,10 @@ Margarita extends Markdown with templating features like variables, conditionals
 
 # Installation
 
-Run the following command for your platform to install MARGARITA:
+Run the following command for your platform to install MARGARITA using uv:
 
-Linux:
-```sh
-curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-linux.sh | bash -s -- --option
-```
-
-MacOS:
-```sh
-curl -fsSL https://raw.githubusercontent.com/Banyango/margarita/main/install-macos.sh | bash -s -- --option
-```
-
-Windows (PowerShell):
-```powershell
-iwr -useb https://raw.githubusercontent.com/Banyango/margarita/main/install-windows.ps1 | iex
+```shell
+uv tool install margarita
 ```
 
 
