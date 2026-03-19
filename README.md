@@ -25,6 +25,11 @@ Run the following command for your platform to install MARGARITA using uv:
 uv tool install margarita
 ```
 
+or run it without installing:
+
+```shell
+uvx margarita render greeting.mg
+```
 
 ## Get Started
 

@@ -2,6 +2,7 @@
 
 import contextlib
 import json
+import os
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -11,6 +12,8 @@ import click
 
 from margarita.parser import Parser
 from margarita.renderer import Renderer
+from margarita.resources.skill import skill
+from margarita.resources.syntax import syntax
 
 
 @click.group()
@@ -21,6 +24,36 @@ def main():
     Render margarita template files with variable substitution.
     """
     pass
+
+
+@main.command()
+def install_claude_skill():
+    """Install the claude skill for margarita."""
+    margarita_dir = Path(os.getcwd()) / ".claude" / "skills" / "margarita"
+    if not margarita_dir.exists():
+        try:
+            margarita_dir.mkdir(parents=True)
+        except Exception as e:
+            click.echo(f"Error creating margarita directory: {e}", err=True)
+            sys.exit(1)
+
+    # Copy SKILL.md to the margarita skill directory
+    skill_md = margarita_dir / "SKILL.md"
+    try:
+        skill_md.write_text(skill)
+    except Exception as e:
+        click.echo(f"Error writing skill file: {e}", err=True)
+        sys.exit(1)
+
+    syntax_md = margarita_dir / "references" / "syntax.md"
+    try:
+        syntax_md.parent.mkdir(parents=True, exist_ok=True)
+        syntax_md.write_text(syntax)
+    except Exception as e:
+        click.echo(f"Error writing syntax reference: {e}", err=True)
+        sys.exit(1)
+
+    click.echo(f"Margarita skill installed successfully")
 
 
 @main.command()

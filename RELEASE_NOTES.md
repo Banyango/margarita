@@ -1,3 +1,10 @@
+# Release Notes - Margarita v0.3.8
+
+**Release Date:** March 17, 2026
+
+- Removed the executable scripts, moving to just using uvx for recommended install for simplicity.
+- Added support for .venv packages to be used with the IncludeNode.
+
 # Release Notes - Margarita v0.3.7
 
 **Release Date:** March 1, 2026

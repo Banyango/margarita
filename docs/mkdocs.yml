@@ -12,7 +12,8 @@ nav:
         - Contexts: contexts.md
     - Other Tools:
         - Template Packages in your .venv: uv_packages.md
-        - MGX: mgx.md
+        - Claude Skill: claude_skill.md
+        - Lime: mgx.md
         - MCP Server: mcp.md
         - Jetbrains IDE Plugin: jetbrains_plugin.md
     - Python API:

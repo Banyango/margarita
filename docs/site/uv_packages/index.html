@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../contexts/">
       
       
-        <link rel="next" href="../conditionals/">
+        <link rel="next" href="../mgx/">
       
       
         
@@ -23,7 +23,7 @@
     
     
       
-        <title>Getting Started - MARGARITA</title>
+        <title>Template Packages in your .venv - MARGARITA</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#template-packages" class="md-skip">
           Skip to content
         </a>
       
@@ -129,7 +129,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              Template Packages in your .venv
             
           </span>
         </div>
@@ -397,19 +397,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
         
   
   
@@ -425,7 +416,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -680,6 +670,8 @@
                 
   
   
+    
+  
   
   
     
@@ -705,11 +697,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" checked>
         
           
           <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="">
@@ -730,7 +722,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -745,10 +737,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../uv_packages/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Packages in your .venv
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -764,6 +783,131 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-template-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a template package
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a template package">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-a-template-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing a template package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-package-includes-in-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using package includes in templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-a-template-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering a template directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-files-take-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local files take priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1043,6 +1187,119 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-template-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating a template package
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a template package">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#directory-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directory layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-a-template-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing a template package
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-package-includes-in-templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using package includes in templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-a-template-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering a template directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-files-take-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local files take priority
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1061,47 +1318,97 @@
   
 
 
-<h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<h2 id="with-uvx-recommended">With uvx (recommended)<a class="headerlink" href="#with-uvx-recommended" title="Permanent link">&para;</a></h2>
-<p>If you have <a href="https://docs.astral.sh/uv/">uv</a> installed, you can run MARGARITA without a permanent install:</p>
-<div class="highlight"><pre><span></span><code>uvx<span class="w"> </span>margarita<span class="w"> </span>render<span class="w"> </span>greeting.mg
+<h1 id="template-packages">Template Packages<a class="headerlink" href="#template-packages" title="Permanent link">&para;</a></h1>
+<p>MARGARITA integrates with your .venv <a href="https://docs.astral.sh/uv/">uv</a> to let you share and reuse <code>.mg</code> templates as ordinary Python packages. Install a template package once with <code>uv add</code> and reference its templates from any <code>.mg</code> file in your project.</p>
+<hr />
+<h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
+<p>When you render a template, MARGARITA walks up the directory tree from the template file, finds the nearest <code>.venv/</code>, and scans its <code>site-packages</code> for installed packages that expose a <code>templates/</code> directory. Each package is registered under its distribution name (e.g. <code>writing-templates</code>), and you reference its templates with the <code>[[ package-name/file ]]</code> include syntax.</p>
+<hr />
+<h2 id="creating-a-template-package">Creating a template package<a class="headerlink" href="#creating-a-template-package" title="Permanent link">&para;</a></h2>
+<p>A template package is a normal Python package. The only convention is that <code>.mg</code> files live under a <code>templates/</code> subdirectory inside the top-level package directory.</p>
+<h3 id="directory-layout">Directory layout<a class="headerlink" href="#directory-layout" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>writing-templates/
+  pyproject.toml
+  writing_templates/
+    __init__.py
+    templates/
+      tone.mg
+      style.mg
+      techniques/
+        show_dont_tell.mg
 </code></pre></div>
-<p>To install it as a persistent tool:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>margarita
+<h3 id="pyprojecttoml"><code>pyproject.toml</code><a class="headerlink" href="#pyprojecttoml" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;writing-templates&quot;</span>
+<span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span>
+
+<span class="k">[tool.setuptools.package-data]</span>
+<span class="s2">&quot;writing_templates&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;templates/*.mg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;templates/**/*.mg&quot;</span><span class="p">]</span>
 </code></pre></div>
-<p>A minimal walkthrough to render your first MARGARITA template.</p>
-<ol>
-<li>Create a template file <code>greeting.mg</code>:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>&lt;&lt;
-Hello, ${name}!
+<p>The <code>package-data</code> entry ensures <code>.mg</code> files are included when the package is built and installed.</p>
+<hr />
+<h2 id="installing-a-template-package">Installing a template package<a class="headerlink" href="#installing-a-template-package" title="Permanent link">&para;</a></h2>
+<p>From your project directory:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>writing-templates
+</code></pre></div>
+<p>Or from a local path during development:</p>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>--editable<span class="w"> </span>../writing-templates
+</code></pre></div>
+<p>MARGARITA automatically picks up any package installed in the project's <code>.venv</code> — no extra configuration needed.</p>
+<hr />
+<h2 id="using-package-includes-in-templates">Using package includes in templates<a class="headerlink" href="#using-package-includes-in-templates" title="Permanent link">&para;</a></h2>
+<p>Reference an installed package's templates with the <code>[[ package-name/path ]]</code> syntax, where <code>path</code> is relative to that package's <code>templates/</code> directory (no <code>.mg</code> extension needed).</p>
+<div class="highlight"><pre><span></span><code>// filename: src/article.mg
+&lt;&lt;
+# Article Draft
 &gt;&gt;
+
+[[ writing-templates/tone ]]
+
+[[ writing-templates/techniques/show_dont_tell ]]
 </code></pre></div>
-<ol>
-<li>Provide a context (JSON) either inline or in a file <code>greeting.json</code>:</li>
-</ol>
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Batman&quot;</span><span class="p">}</span>
+<p>Subdirectory paths work the same way:</p>
+<div class="highlight"><pre><span></span><code>[[ writing-templates/techniques/show_dont_tell ]]
 </code></pre></div>
-<ol>
-<li>Render the template with the CLI:</li>
-</ol>
-<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>greeting.mg<span class="w"> </span>-f<span class="w"> </span>greeting.json
+<hr />
+<h2 id="rendering-a-template-directory">Rendering a template directory<a class="headerlink" href="#rendering-a-template-directory" title="Permanent link">&para;</a></h2>
+<p>When your project has a <code>src/</code> directory of templates alongside a <code>.venv/</code>, render them all at once:</p>
+<div class="highlight"><pre><span></span><code>my-project/
+  .venv/              ← uv-managed virtual environment
+  src/
+    article.mg
+    article.json      ← auto-detected context
+    brief.mg
+    brief.json
 </code></pre></div>
-<p>Rendered result</p>
-<p>Using the template and context above the output will be:</p>
-<div class="highlight"><pre><span></span><code>Hello, Batman!
+<p>Render a single file:</p>
+<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>src/article.mg
+<span class="c1"># Output written to: src/article.md</span>
 </code></pre></div>
-<p>Alternate options</p>
-<ul>
-<li>Pass context as a JSON string: <code>-c '{"name": "Bob"}'</code></li>
-<li>Render a directory of <code>.mg</code> files: <code>margarita render templates/ -o output/</code></li>
-<li>Inspect template metadata before rendering: <code>margarita render template.mg --show-metadata</code></li>
-</ul>
-<blockquote>
-<p>Tip: When rendering a single file, MARGARITA will auto-detect a same-name <code>.json</code> file (e.g. <code>greeting.json</code>) if no context is supplied.
-</p>
-</blockquote>
+<p>Render the whole directory:</p>
+<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>src/<span class="w"> </span>-o<span class="w"> </span>output/
+<span class="c1"># Output written to: output/article.md</span>
+<span class="c1"># Output written to: output/brief.md</span>
+</code></pre></div>
+<p>MARGARITA walks up from <code>src/</code> to find <code>.venv/</code> and resolves all <code>[[ writing-templates/... ]]</code> includes automatically.</p>
+<hr />
+<h2 id="local-files-take-priority">Local files take priority<a class="headerlink" href="#local-files-take-priority" title="Permanent link">&para;</a></h2>
+<p>A local <code>.mg</code> file always shadows a package template with the same path. This lets you override individual templates without forking the package:</p>
+<div class="highlight"><pre><span></span><code>src/
+  writing-templates/
+    tone.mg       ← this takes priority over the installed package&#39;s tone.mg
+  article.mg
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>// filename: src/article.mg
+[[ writing-templates/tone ]]   ← resolves to src/writing-templates/tone.mg
+</code></pre></div>
+<hr />
+<h2 id="multiple-packages">Multiple packages<a class="headerlink" href="#multiple-packages" title="Permanent link">&para;</a></h2>
+<p>You can install as many template packages as you like. Each is namespaced by its distribution name, so files with the same name in different packages never conflict:</p>
+<div class="highlight"><pre><span></span><code>[[ writing-templates/tone ]]
+[[ editing-templates/tone ]]
+</code></pre></div>
+<p>If two installed packages share the same distribution name, MARGARITA skips the duplicate and prints a warning to stderr.</p>
 
 
 
@@ -1131,7 +1438,7 @@ Hello, ${name}!
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: MARGARITA">
+          <a href="../contexts/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Contexts">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1141,20 +1448,20 @@ Hello, ${name}!
                 Previous
               </span>
               <div class="md-ellipsis">
-                MARGARITA
+                Contexts
               </div>
             </div>
           </a>
         
         
           
-          <a href="../conditionals/" class="md-footer__link md-footer__link--next" aria-label="Next: Conditionals">
+          <a href="../mgx/" class="md-footer__link md-footer__link--next" aria-label="Next: MGX">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Conditionals
+                MGX
               </div>
             </div>
             <div class="md-footer__button md-icon">
