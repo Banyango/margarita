@@ -12,7 +12,7 @@
         <link rel="prev" href="../contexts/">
       
       
-        <link rel="next" href="../mgx/">
+        <link rel="next" href="../claude_skill/">
       
       
         
@@ -872,28 +872,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rendering-a-template-directory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rendering a template directory
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#local-files-take-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local files take priority
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#multiple-packages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -920,14 +898,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -948,14 +926,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1266,28 +1244,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#rendering-a-template-directory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rendering a template directory
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#local-files-take-priority" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Local files take priority
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#multiple-packages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1319,15 +1275,29 @@
 
 
 <h1 id="template-packages">Template Packages<a class="headerlink" href="#template-packages" title="Permanent link">&para;</a></h1>
-<p>MARGARITA integrates with your .venv <a href="https://docs.astral.sh/uv/">uv</a> to let you share and reuse <code>.mg</code> templates as ordinary Python packages. Install a template package once with <code>uv add</code> and reference its templates from any <code>.mg</code> file in your project.</p>
+<p>Margarita supports using python virtual environments to add additional includes in your templates.</p>
 <hr />
 <h2 id="how-it-works">How it works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
-<p>When you render a template, MARGARITA walks up the directory tree from the template file, finds the nearest <code>.venv/</code>, and scans its <code>site-packages</code> for installed packages that expose a <code>templates/</code> directory. Each package is registered under its distribution name (e.g. <code>writing-templates</code>), and you reference its templates with the <code>[[ package-name/file ]]</code> include syntax.</p>
+<p>When you render a template, MARGARITA finds the nearest <code>.venv/</code> and finds installed packages that expose a <code>templates/</code> directory.</p>
+<div class="language-shell highlight"><pre><span></span><code>my-project/
+<span class="w">  </span>.venv/<span class="w">              </span>←<span class="w"> </span>virtual<span class="w"> </span>environment
+<span class="w">    </span>...
+<span class="w">      </span>example-package/
+<span class="w">        </span>templates/
+<span class="w">          </span>tone.mg
+<span class="w">          </span>style.mg
+<span class="w">  </span>src/
+<span class="w">    </span>article.mg
+</code></pre></div>
+<p>When rendering <code>article.mg</code>, MARGARITA detects the <code>.venv/</code>, finds installed packages with templates, and allows you to include them:</p>
+<div class="language-text highlight"><pre><span></span><code>// filename: src/article.mg
+[[ example-package/tone ]]
+</code></pre></div>
 <hr />
 <h2 id="creating-a-template-package">Creating a template package<a class="headerlink" href="#creating-a-template-package" title="Permanent link">&para;</a></h2>
 <p>A template package is a normal Python package. The only convention is that <code>.mg</code> files live under a <code>templates/</code> subdirectory inside the top-level package directory.</p>
 <h3 id="directory-layout">Directory layout<a class="headerlink" href="#directory-layout" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>writing-templates/
+<div class="language-text highlight"><pre><span></span><code>writing-templates/
   pyproject.toml
   writing_templates/
     __init__.py
@@ -1338,7 +1308,7 @@
         show_dont_tell.mg
 </code></pre></div>
 <h3 id="pyprojecttoml"><code>pyproject.toml</code><a class="headerlink" href="#pyprojecttoml" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="k">[project]</span>
+<div class="language-toml highlight"><pre><span></span><code><span class="k">[project]</span>
 <span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;writing-templates&quot;</span>
 <span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span>
 
@@ -1349,64 +1319,31 @@
 <hr />
 <h2 id="installing-a-template-package">Installing a template package<a class="headerlink" href="#installing-a-template-package" title="Permanent link">&para;</a></h2>
 <p>From your project directory:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>writing-templates
+<div class="language-sh highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>writing-templates
 </code></pre></div>
 <p>Or from a local path during development:</p>
-<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>--editable<span class="w"> </span>../writing-templates
+<div class="language-sh highlight"><pre><span></span><code>uv<span class="w"> </span>add<span class="w"> </span>--editable<span class="w"> </span>../writing-templates
 </code></pre></div>
 <p>MARGARITA automatically picks up any package installed in the project's <code>.venv</code> — no extra configuration needed.</p>
 <hr />
 <h2 id="using-package-includes-in-templates">Using package includes in templates<a class="headerlink" href="#using-package-includes-in-templates" title="Permanent link">&para;</a></h2>
 <p>Reference an installed package's templates with the <code>[[ package-name/path ]]</code> syntax, where <code>path</code> is relative to that package's <code>templates/</code> directory (no <code>.mg</code> extension needed).</p>
-<div class="highlight"><pre><span></span><code>// filename: src/article.mg
-&lt;&lt;
-# Article Draft
-&gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: src/article.mg</span>
+<span class="dl">&lt;&lt;</span>
+<span class="gh"># Article Draft</span>
+<span class="dl">&gt;&gt;</span>
 
-[[ writing-templates/tone ]]
+<span class="p">[[ </span><span class="nn">writing</span><span class="err">-</span><span class="nn">templates</span><span class="err">/</span><span class="nn">tone</span><span class="p"> ]]</span>
 
-[[ writing-templates/techniques/show_dont_tell ]]
+<span class="p">[[ </span><span class="nn">writing</span><span class="err">-</span><span class="nn">templates</span><span class="err">/</span><span class="nn">techniques</span><span class="err">/</span><span class="nn">show_dont_tell</span><span class="p"> ]]</span>
 </code></pre></div>
 <p>Subdirectory paths work the same way:</p>
-<div class="highlight"><pre><span></span><code>[[ writing-templates/techniques/show_dont_tell ]]
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">[[ </span><span class="nn">writing</span><span class="err">-</span><span class="nn">templates</span><span class="err">/</span><span class="nn">techniques</span><span class="err">/</span><span class="nn">show_dont_tell</span><span class="p"> ]]</span>
 </code></pre></div>
-<hr />
-<h2 id="rendering-a-template-directory">Rendering a template directory<a class="headerlink" href="#rendering-a-template-directory" title="Permanent link">&para;</a></h2>
-<p>When your project has a <code>src/</code> directory of templates alongside a <code>.venv/</code>, render them all at once:</p>
-<div class="highlight"><pre><span></span><code>my-project/
-  .venv/              ← uv-managed virtual environment
-  src/
-    article.mg
-    article.json      ← auto-detected context
-    brief.mg
-    brief.json
-</code></pre></div>
-<p>Render a single file:</p>
-<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>src/article.mg
-<span class="c1"># Output written to: src/article.md</span>
-</code></pre></div>
-<p>Render the whole directory:</p>
-<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>src/<span class="w"> </span>-o<span class="w"> </span>output/
-<span class="c1"># Output written to: output/article.md</span>
-<span class="c1"># Output written to: output/brief.md</span>
-</code></pre></div>
-<p>MARGARITA walks up from <code>src/</code> to find <code>.venv/</code> and resolves all <code>[[ writing-templates/... ]]</code> includes automatically.</p>
-<hr />
-<h2 id="local-files-take-priority">Local files take priority<a class="headerlink" href="#local-files-take-priority" title="Permanent link">&para;</a></h2>
-<p>A local <code>.mg</code> file always shadows a package template with the same path. This lets you override individual templates without forking the package:</p>
-<div class="highlight"><pre><span></span><code>src/
-  writing-templates/
-    tone.mg       ← this takes priority over the installed package&#39;s tone.mg
-  article.mg
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>// filename: src/article.mg
-[[ writing-templates/tone ]]   ← resolves to src/writing-templates/tone.mg
-</code></pre></div>
-<hr />
 <h2 id="multiple-packages">Multiple packages<a class="headerlink" href="#multiple-packages" title="Permanent link">&para;</a></h2>
 <p>You can install as many template packages as you like. Each is namespaced by its distribution name, so files with the same name in different packages never conflict:</p>
-<div class="highlight"><pre><span></span><code>[[ writing-templates/tone ]]
-[[ editing-templates/tone ]]
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">[[ </span><span class="nn">writing</span><span class="err">-</span><span class="nn">templates</span><span class="err">/</span><span class="nn">tone</span><span class="p"> ]]</span>
+<span class="p">[[ </span><span class="nn">editing</span><span class="err">-</span><span class="nn">templates</span><span class="err">/</span><span class="nn">tone</span><span class="p"> ]]</span>
 </code></pre></div>
 <p>If two installed packages share the same distribution name, MARGARITA skips the duplicate and prints a warning to stderr.</p>
 
@@ -1455,13 +1392,13 @@
         
         
           
-          <a href="../mgx/" class="md-footer__link md-footer__link--next" aria-label="Next: MGX">
+          <a href="../claude_skill/" class="md-footer__link md-footer__link--next" aria-label="Next: Claude Skill">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                MGX
+                Claude Skill
               </div>
             </div>
             <div class="md-footer__button md-icon">

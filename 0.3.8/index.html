@@ -764,14 +764,14 @@
   
   
     <li class="md-nav__item">
-      <a href="mgx/" class="md-nav__link">
+      <a href="claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -792,14 +792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="mcp/" class="md-nav__link">
+      <a href="mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1061,16 +1061,16 @@
 </ul>
 <p>Quick example</p>
 <p>Create <code>hello.mg</code> containing:</p>
-<div class="highlight"><pre><span></span><code>&lt;&lt;
-Hello, ${name}!
-&gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="dl">&lt;&lt;</span>
+Hello, <span class="nv">${name}</span>!
+<span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Render with a JSON context:</p>
-<div class="highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>hello.mg<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;World&quot;}&#39;</span>
+<div class="language-sh highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>hello.mg<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;World&quot;}&#39;</span>
 </code></pre></div>
 <p>Rendered result</p>
 <p>Given the template above and the context <code>{"name": "World"}</code>, the rendered output will be:</p>
-<div class="highlight"><pre><span></span><code>Hello, World!
+<div class="language-text highlight"><pre><span></span><code>Hello, World!
 </code></pre></div>
 <p>See also: <code>Getting Started</code>, <code>Language Reference</code> pages (Contexts, Metadata, Conditionals, Loops, Include Files).</p>
 

@@ -766,14 +766,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -794,14 +794,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1293,16 +1293,16 @@
 When the renderer encounters this directive, it loads and renders the specified file,
 inserting its content into the current template.</p>
 <p>You can also pass parameters to the included template by specifying them as key-value pairs:</p>
-<div class="highlight"><pre><span></span><code>//filename: main.mg
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">//filename: main.mg</span>
 Welcome to the system!
-[[ header is_admin=True show_menu=False ]]
+<span class="p">[[ </span><span class="nn">header</span><span class="w"> </span><span class="nn">is_admin</span><span class="err">=</span><span class="nn">True</span><span class="w"> </span><span class="nn">show_menu</span><span class="err">=</span><span class="nn">False</span><span class="p"> ]]</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>//filename: header.mg
-User Admin Status: ${is_admin}
-Menu Visible: ${show_menu}
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">//filename: header.mg</span>
+User Admin Status: <span class="nv">${is_admin}</span>
+Menu Visible: <span class="nv">${show_menu}</span>
 </code></pre></div>
 <p>This will render as:</p>
-<div class="highlight"><pre><span></span><code>Welcome to the system!
+<div class="language-markdown highlight"><pre><span></span><code>Welcome to the system!
 User Admin Status: True
 Menu Visible: False
 </code></pre></div>
@@ -1313,7 +1313,7 @@ Menu Visible: False
 </blockquote>
 <h3 id="setting-up-the-renderer">Setting Up the Renderer<a class="headerlink" href="#setting-up-the-renderer" title="Permanent link">&para;</a></h3>
 <p>The key to using includes is setting the <code>base_path</code> parameter when creating a <code>Renderer</code>. This tells MARGARITA where to resolve relative include paths:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderer</span>
 
@@ -1345,7 +1345,7 @@ Menu Visible: False
 <p>Includes can reference other includes, creating a hierarchy of snippets. <strong>Important</strong>: All include paths are always resolved relative to the <code>base_path</code> set in the renderer, not relative to the file doing the including.</p>
 <h3 id="understanding-base-path-resolution">Understanding Base Path Resolution<a class="headerlink" href="#understanding-base-path-resolution" title="Permanent link">&para;</a></h3>
 <p>Given this directory structure:</p>
-<div class="highlight"><pre><span></span><code>templates/
+<div class="language-text highlight"><pre><span></span><code>templates/
   main.mg
   snippets/
     complete_prompt.mg
@@ -1356,23 +1356,23 @@ Menu Visible: False
     footer_section.mg
 </code></pre></div>
 <p><strong>templates/snippets/complete_prompt.mg</strong>:
-<div class="highlight"><pre><span></span><code>[[ snippets/header_section ]]
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">[[ </span><span class="nn">snippets</span><span class="err">/</span><span class="nn">header_section</span><span class="p"> ]]</span>
 
-[[ snippets/body_section ]]
+<span class="p">[[ </span><span class="nn">snippets</span><span class="err">/</span><span class="nn">body_section</span><span class="p"> ]]</span>
 
-[[ snippets/footer_section ]]
+<span class="p">[[ </span><span class="nn">snippets</span><span class="err">/</span><span class="nn">footer_section</span><span class="p"> ]]</span>
 </code></pre></div></p>
 <p><strong>templates/snippets/header_section.mg</strong>:
-<div class="highlight"><pre><span></span><code>[[ snippets/system_role ]]
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">[[ </span><span class="nn">snippets</span><span class="err">/</span><span class="nn">system_role</span><span class="p"> ]]</span>
 
-[[ snippets/safety_guidelines ]]
+<span class="p">[[ </span><span class="nn">snippets</span><span class="err">/</span><span class="nn">safety_guidelines</span><span class="p"> ]]</span>
 </code></pre></div></p>
 <p>Notice that even though <code>header_section.mg</code> is in the <code>snippets/</code> directory, it <strong>still uses
 <code>"snippets/system_role.mg"</code></strong> in its include statement, not just <code>"system_role.mg"</code>.
 This is because all paths are resolved from <code>base_path</code>.</p>
 <h3 id="practical-tip-organizing-nested-structures">Practical Tip: Organizing Nested Structures<a class="headerlink" href="#practical-tip-organizing-nested-structures" title="Permanent link">&para;</a></h3>
 <p>Use consistent path prefixes to make nested includes clear:</p>
-<div class="highlight"><pre><span></span><code>templates/
+<div class="language-text highlight"><pre><span></span><code>templates/
   prompts/
     agent/
       researcher.mg    -&gt; includes &quot;components/agent/...&quot;
@@ -1388,7 +1388,7 @@ This is because all paths are resolved from <code>base_path</code>.</p>
 </code></pre></div>
 <p>This structure makes it obvious that all includes use the full path from <code>templates/</code>.</p>
 <h2 id="real-world-example-multi-agent-system">Real-World Example: Multi-Agent System<a class="headerlink" href="#real-world-example-multi-agent-system" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>//filename: prompts/agent/researcher.mg
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">//filename: prompts/agent/researcher.mg</span>
 You are a Researcher Agent.
 
 You have access to the following tools:
@@ -1397,21 +1397,21 @@ You have access to the following tools:
 
 Output your findings in a structured report.
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>//filename: prompts/agent/analyzer.mg
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">//filename: prompts/agent/analyzer.mg</span>
 You are an Analyzer Agent. You analyze data provided by other agents.
 
 Use statistical methods and visualization tools to derive insights.
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>//filename: agent_router.mg
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">//filename: agent_router.mg</span>
 
-if type == &quot;researcher&quot;:
-    [[ prompts/agent/researcher ]]
-elif type == &quot;analyzer&quot;:
-    [[ prompts/agent/analyzer ]]
-else:
-    &lt;&lt;You are a General Agent. Adapt to any task given.&gt;&gt;
+<span class="k">if</span><span class="w"> </span><span class="nv">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;researcher&quot;</span><span class="p">:</span>
+    <span class="p">[[ </span><span class="nn">prompts</span><span class="err">/</span><span class="nn">agent</span><span class="err">/</span><span class="nn">researcher</span><span class="p"> ]]</span>
+<span class="k">elif</span><span class="w"> </span><span class="nv">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;analyzer&quot;</span><span class="p">:</span>
+    <span class="p">[[ </span><span class="nn">prompts</span><span class="err">/</span><span class="nn">agent</span><span class="err">/</span><span class="nn">analyzer</span><span class="p"> ]]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span>You are a General Agent. Adapt to any task given.<span class="dl">&gt;&gt;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderer</span>
 
