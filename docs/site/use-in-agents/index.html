@@ -764,14 +764,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -792,14 +792,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1262,7 +1262,7 @@
 </ul>
 <h2 id="agentic-loop-example">Agentic Loop Example<a class="headerlink" href="#agentic-loop-example" title="Permanent link">&para;</a></h2>
 <p>Here's a practical example of using MARGARITA in a multi-step agent workflow:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<div class="language-python highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">margarita.renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Renderer</span>
 
@@ -1339,72 +1339,72 @@
 </code></pre></div>
 <h2 id="template-examples">Template Examples<a class="headerlink" href="#template-examples" title="Permanent link">&para;</a></h2>
 <h3 id="researchmg">research.mg<a class="headerlink" href="#researchmg" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>---
-name: research-prompt
-version: 1.0.0
-description: Iterative research prompt for agent loops
----
-&lt;&lt;
-You are a research assistant conducting iteration ${iteration} of your research.
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">---</span>
+<span class="na">name</span><span class="p">:</span> research-prompt
+<span class="na">version</span><span class="p">:</span> <span class="m">1.0</span>.<span class="m">0</span>
+<span class="na">description</span><span class="p">:</span> Iterative research prompt for agent loops
+<span class="p">---</span>
+<span class="dl">&lt;&lt;</span>
+You are a research assistant conducting iteration <span class="nv">${iteration}</span> of your research.
 
-Topic: ${topic}
-&gt;&gt;
+Topic: <span class="nv">${topic}</span>
+<span class="dl">&gt;&gt;</span>
 
-if previous_findings:
-    &lt;&lt;
+<span class="k">if</span><span class="w"> </span><span class="nv">previous_findings</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span>
     ## Previous Findings
-    &gt;&gt;
-    for finding in previous_findings:
-        &lt;&lt;
-        ### Iteration ${finding.iteration}
-        ${finding.result}
-        &gt;&gt;
+    <span class="dl">&gt;&gt;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nv">finding</span><span class="w"> </span><span class="k k-Operator">in</span><span class="w"> </span><span class="nv">previous_findings</span><span class="p">:</span>
+        <span class="dl">&lt;&lt;</span>
+        ### Iteration <span class="nv">${finding.iteration}</span>
+        <span class="nv">${finding.result}</span>
+        <span class="dl">&gt;&gt;</span>
 
-if history:
-    &lt;&lt;## Conversation History&gt;&gt;
-    for message in history:
-        &lt;&lt;
-        **${message.role}**: ${message.content}
-        &gt;&gt;
-&lt;&lt; ## Your Task &gt;&gt;
+<span class="k">if</span><span class="w"> </span><span class="nv">history</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span>## Conversation History<span class="dl">&gt;&gt;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nv">message</span><span class="w"> </span><span class="k k-Operator">in</span><span class="w"> </span><span class="nv">history</span><span class="p">:</span>
+        <span class="dl">&lt;&lt;</span>
+        **<span class="nv">${message.role}</span>**: <span class="nv">${message.content}</span>
+        <span class="dl">&gt;&gt;</span>
+<span class="dl">&lt;&lt;</span> ## Your Task <span class="dl">&gt;&gt;</span>
 
 Continue researching this topic. Build upon previous findings and provide new insights.
 When your research is complete, include the word COMPLETE in your response.
 </code></pre></div>
 <h3 id="summarymg">summary.mg<a class="headerlink" href="#summarymg" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>---
-name: summary-prompt
-version: 1.0.0
-description: Generate final summary from research findings
----
-&lt;&lt;
-# Research Summary
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">---</span>
+<span class="na">name</span><span class="p">:</span> summary-prompt
+<span class="na">version</span><span class="p">:</span> <span class="m">1.0</span>.<span class="m">0</span>
+<span class="na">description</span><span class="p">:</span> Generate final summary from research findings
+<span class="p">---</span>
+<span class="dl">&lt;&lt;</span>
+<span class="gh"># Research Summary</span>
 
-Topic: ${topic}
-Total Iterations: ${total_iterations}
+Topic: <span class="nv">${topic}</span>
+Total Iterations: <span class="nv">${total_iterations}</span>
 
-## All Findings
-&gt;&gt;
+<span class="gu">## All Findings</span>
+<span class="dl">&gt;&gt;</span>
 
-for finding in findings
-    &lt;&lt;
-    ### Research Phase ${finding.iteration}
+<span class="k">for</span><span class="w"> </span><span class="nv">finding</span><span class="w"> </span><span class="k k-Operator">in</span><span class="w"> </span><span class="nv">findings</span>
+<span class="w">    </span><span class="o">&lt;&lt;</span>
+<span class="w">    </span><span class="err">###</span><span class="w"> </span><span class="nv">Research</span><span class="w"> </span><span class="nv">Phase</span><span class="w"> </span><span class="err">${</span><span class="nv">finding.iteration</span><span class="err">}</span>
 
-    **Query**: ${finding.query}
+<span class="w">    </span><span class="err">**</span><span class="nv">Query</span><span class="err">**</span><span class="p">:</span> <span class="nv">${finding.query}</span>
 
     **Results**:
-    ${finding.result}
+    <span class="nv">${finding.result}</span>
     &gt;&gt;
-&lt;&lt;
-## Your Task
+<span class="dl">&lt;&lt;</span>
+<span class="gu">## Your Task</span>
 
 Synthesize all the above findings into a coherent, comprehensive summary.
 Highlight key insights and actionable takeaways.
-&gt;&gt;
+<span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <h2 id="dynamic-context-updates">Dynamic Context Updates<a class="headerlink" href="#dynamic-context-updates" title="Permanent link">&para;</a></h2>
 <p>MARGARITA's renderer allows you to update context dynamically within your agent loop:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Initial context</span>
+<div class="language-python highlight"><pre><span></span><code><span class="c1"># Initial context</span>
 <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;user_query&quot;</span><span class="p">:</span> <span class="s2">&quot;Explain quantum computing&quot;</span><span class="p">,</span>
     <span class="s2">&quot;difficulty&quot;</span><span class="p">:</span> <span class="s2">&quot;intermediate&quot;</span><span class="p">,</span>

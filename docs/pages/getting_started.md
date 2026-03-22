@@ -1,8 +1,6 @@
 # Getting Started
 
-# Installation
-
-## With uvx (recommended)
+## Install with uvx (recommended)
 
 If you have [uv](https://docs.astral.sh/uv/) installed, you can run MARGARITA without a permanent install:
 
@@ -16,9 +14,10 @@ To install it as a persistent tool:
 uv tool install margarita
 ```
 
-A minimal walkthrough to render your first MARGARITA template.
+<br/>
+## Walkthrough
 
-1. Create a template file `greeting.mg`:
+### Create a template file `greeting.mg`:
 
 ```margarita
 <<
@@ -26,19 +25,23 @@ Hello, ${name}!
 >>
 ```
 
-2. Provide a context (JSON) either inline or in a file `greeting.json`:
+### Provide context
+
+Add JSON either inline or in a file `greeting.json`:
 
 ```json
 {"name": "Batman"}
 ```
 
-3. Render the template with the CLI:
+### Render
+
+Render the template with the CLI:
 
 ```sh
 margarita render greeting.mg -f greeting.json
 ```
 
-Rendered result
+### Rendered result
 
 Using the template and context above the output will be:
 
@@ -46,7 +49,8 @@ Using the template and context above the output will be:
 Hello, Batman!
 ```
 
-Alternate options
+<br/>
+### Alternate options
 
 - Pass context as a JSON string: `-c '{"name": "Bob"}'`
 - Render a directory of `.mg` files: `margarita render templates/ -o output/`

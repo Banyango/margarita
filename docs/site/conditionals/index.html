@@ -826,14 +826,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -854,14 +854,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1133,32 +1133,32 @@
 <h1 id="conditionals">Conditionals<a class="headerlink" href="#conditionals" title="Permanent link">&para;</a></h1>
 <p>Use conditionals to render sections conditionally based on context values.</p>
 <p>Syntax</p>
-<div class="highlight"><pre><span></span><code>if subscribed:
-    &lt;&lt; Thanks for subscribing, ${name}! &gt;&gt;
-else:
-    &lt;&lt;&lt; Please consider subscribing. &gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="nv">subscribed</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Thanks for subscribing, <span class="nv">${name}</span>! <span class="dl">&gt;&gt;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Please consider subscribing. <span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Rendered results</p>
 <ul>
 <li>When <code>subscribed</code> is true and <code>name</code> is <code>Dana</code>:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>Thanks for subscribing, Dana!
+<div class="language-text highlight"><pre><span></span><code>Thanks for subscribing, Dana!
 </code></pre></div>
 <ul>
 <li>When <code>subscribed</code> is false or missing:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>Please consider subscribing.
+<div class="language-text highlight"><pre><span></span><code>Please consider subscribing.
 </code></pre></div>
 <h2 id="elif">elif<a class="headerlink" href="#elif" title="Permanent link">&para;</a></h2>
 <p>Use <code>elif</code> to add additional branches without nesting:</p>
-<div class="highlight"><pre><span></span><code>if status == &quot;premium&quot;:
-    &lt;&lt; Premium user &gt;&gt;
-elif status == &quot;standard&quot;:
-    &lt;&lt; Standard user &gt;&gt;
-elif status == &quot;trial&quot;:
-    &lt;&lt; Trial user &gt;&gt;
-else:
-    &lt;&lt; Unknown status &gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;premium&quot;</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Premium user <span class="dl">&gt;&gt;</span>
+<span class="k">elif</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;standard&quot;</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Standard user <span class="dl">&gt;&gt;</span>
+<span class="k">elif</span><span class="w"> </span><span class="nv">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;trial&quot;</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Trial user <span class="dl">&gt;&gt;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="dl">&lt;&lt;</span> Unknown status <span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Any number of <code>elif</code> branches can follow an <code>if</code>. An optional <code>else</code> branch at the end catches all remaining cases.</p>
 <p>Notes</p>

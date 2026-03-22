@@ -8,7 +8,7 @@ Syntax
 if subscribed:
     << Thanks for subscribing, ${name}! >>
 else:
-    <<< Please consider subscribing. >>
+    << Please consider subscribing. >>
 ```
 
 Rendered results

@@ -33,7 +33,7 @@ Can you create a new margarita template for a product description? I want it to 
 
 output:
 
-```
+```margarita
 // file: product_description.mg
 <<
 Product Name: ${product_name}

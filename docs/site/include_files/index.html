@@ -848,14 +848,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -876,14 +876,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1177,20 +1177,20 @@
 <h1 id="include-files">Include Files<a class="headerlink" href="#include-files" title="Permanent link">&para;</a></h1>
 <p>Reuse template fragments using <code>[[ file ]]</code> or <code>[[ file.mg ]]</code>. Includes are resolved relative to the including template's directory.</p>
 <h3 id="example">Example:<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>// filename: header.mg
-&lt;&lt;This is the header content.&gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: header.mg</span>
+<span class="dl">&lt;&lt;</span>This is the header content.<span class="dl">&gt;&gt;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>// filename: page.mg
-[[ header ]]
-&lt;&lt;
-# Page Title
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: page.mg</span>
+<span class="p">[[ </span><span class="nn">header</span><span class="p"> ]]</span>
+<span class="dl">&lt;&lt;</span>
+<span class="gh"># Page Title</span>
 
 Content goes here using the same context.
-&gt;&gt;
+<span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Rendered result</p>
 <p>When rendering <code>page.mg</code>, the output will include the header content followed by the page body:</p>
-<div class="highlight"><pre><span></span><code>This is the header content.
+<div class="language-text highlight"><pre><span></span><code>This is the header content.
 
 # Page Title
 
@@ -1204,15 +1204,15 @@ Content goes here using the same context.
 </ul>
 <h2 id="composable-templates">Composable Templates<a class="headerlink" href="#composable-templates" title="Permanent link">&para;</a></h2>
 <p>You can pass variables to included templates by defining them in the parent context. For example:</p>
-<div class="highlight"><pre><span></span><code>// filename: greeting.mg
-&lt;&lt;Hello, ${name}!&gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: greeting.mg</span>
+<span class="dl">&lt;&lt;</span>Hello, <span class="nv">${name}</span>!<span class="dl">&gt;&gt;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>// filename: main.mg
-[[ greeting name=&quot;Alice&quot; ]]
+<div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: main.mg</span>
+<span class="p">[[ </span><span class="nn">greeting</span><span class="w"> </span><span class="nn">name</span><span class="err">=&quot;</span><span class="nn">Alice</span><span class="err">&quot;</span><span class="p"> ]]</span>
 </code></pre></div>
 <p>Rendered result</p>
 <p>When rendering <code>main.mg</code>, the output will be:</p>
-<div class="highlight"><pre><span></span><code>Hello, Alice!
+<div class="language-text highlight"><pre><span></span><code>Hello, Alice!
 </code></pre></div>
 <h2 id="more-examples">More Examples<a class="headerlink" href="#more-examples" title="Permanent link">&para;</a></h2>
 <p>See the <a href="../includes/">Using Includes</a> page for comprehensive examples and patterns.</p>

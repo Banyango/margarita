@@ -778,14 +778,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mgx/" class="md-nav__link">
+      <a href="../claude_skill/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MGX
+    Claude Skill
   
 
     
@@ -806,14 +806,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp/" class="md-nav__link">
+      <a href="../mgx/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    MCP Server
+    Lime
   
 
     
@@ -1066,7 +1066,7 @@
 <h1 id="contexts">Contexts<a class="headerlink" href="#contexts" title="Permanent link">&para;</a></h1>
 <p>Contexts are plain JSON objects that supply variables to templates. Keys map to template variables and can include nested objects and arrays.</p>
 <p>Example context</p>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Batman&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;active&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
 <span class="w">  </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;c&quot;</span><span class="p">]</span>
@@ -1074,12 +1074,12 @@
 </code></pre></div>
 <p>Rendered result</p>
 <p>Given the following template:</p>
-<div class="highlight"><pre><span></span><code>&lt;&lt;
-Hello, ${name}! (id=${user.id}, active=${user.active})
-&gt;&gt;
+<div class="language-margarita highlight"><pre><span></span><code><span class="dl">&lt;&lt;</span>
+Hello, <span class="nv">${name}</span>! (id=<span class="nv">${user.id}</span>, active=<span class="nv">${user.active}</span>)
+<span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Rendering with the example context produces:</p>
-<div class="highlight"><pre><span></span><code>Hello, Batman! (id=42, active=True)
+<div class="language-text highlight"><pre><span></span><code>Hello, Batman! (id=42, active=True)
 </code></pre></div>
 <p>See also: <code>Metadata</code> page for template header metadata and usage.</p>
 <p>Behavior and precedence</p>

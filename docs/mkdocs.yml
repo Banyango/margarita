@@ -14,7 +14,6 @@ nav:
         - Template Packages in your .venv: uv_packages.md
         - Claude Skill: claude_skill.md
         - Lime: mgx.md
-        - MCP Server: mcp.md
         - Jetbrains IDE Plugin: jetbrains_plugin.md
     - Python API:
         - Basic Usage: basic.md
@@ -62,8 +61,15 @@ markdown_extensions:
   - md_in_html
   - admonition
   - pymdownx.details
-  - pymdownx.highlight
-  - pymdownx.superfences
+  - pymdownx.highlight:
+      use_pygments: true
+      pygments_lang_class: true
+      linenums: false
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - def_list
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
@@ -75,11 +81,6 @@ markdown_extensions:
         kwds:
           case: lower
       alternate_style: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
   - toc:
       permalink: true
 plugins:
@@ -98,6 +99,8 @@ plugins:
             filters:
               - "!^_"
               - "^__init__$"
+hooks:
+  - hooks.py
 extra_css:
   - stylesheets/extra.css
 docs_dir: pages

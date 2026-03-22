@@ -8,7 +8,7 @@ Syntax
 << # Items >>
 for item in items:
     <<
-    - {{item}}
+    - ${item}
     >>
 ```
 

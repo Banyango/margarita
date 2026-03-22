@@ -1,12 +1,31 @@
 # Template Packages
 
-MARGARITA integrates with your .venv [uv](https://docs.astral.sh/uv/) to let you share and reuse `.mg` templates as ordinary Python packages. Install a template package once with `uv add` and reference its templates from any `.mg` file in your project.
+Margarita supports using python virtual environments to add additional includes in your templates.
 
 ---
 
 ## How it works
 
-When you render a template, MARGARITA walks up the directory tree from the template file, finds the nearest `.venv/`, and scans its `site-packages` for installed packages that expose a `templates/` directory. Each package is registered under its distribution name (e.g. `writing-templates`), and you reference its templates with the `[[ package-name/file ]]` include syntax.
+When you render a template, MARGARITA finds the nearest `.venv/` and finds installed packages that expose a `templates/` directory.
+
+```shell
+my-project/
+  .venv/              ← virtual environment
+    ...
+      example-package/
+        templates/
+          tone.mg
+          style.mg
+  src/
+    article.mg
+```
+
+When rendering `article.mg`, MARGARITA detects the `.venv/`, finds installed packages with templates, and allows you to include them:
+
+```
+// filename: src/article.mg
+[[ example-package/tone ]]
+```
 
 ---
 
@@ -79,61 +98,10 @@ Reference an installed package's templates with the `[[ package-name/path ]]` sy
 Subdirectory paths work the same way:
 
 ```margarita
+
 [[ writing-templates/techniques/show_dont_tell ]]
-```
-
----
-
-## Rendering a template directory
-
-When your project has a `src/` directory of templates alongside a `.venv/`, render them all at once:
 
 ```
-my-project/
-  .venv/              ← uv-managed virtual environment
-  src/
-    article.mg
-    article.json      ← auto-detected context
-    brief.mg
-    brief.json
-```
-
-Render a single file:
-
-```sh
-margarita render src/article.mg
-# Output written to: src/article.md
-```
-
-Render the whole directory:
-
-```sh
-margarita render src/ -o output/
-# Output written to: output/article.md
-# Output written to: output/brief.md
-```
-
-MARGARITA walks up from `src/` to find `.venv/` and resolves all `[[ writing-templates/... ]]` includes automatically.
-
----
-
-## Local files take priority
-
-A local `.mg` file always shadows a package template with the same path. This lets you override individual templates without forking the package:
-
-```
-src/
-  writing-templates/
-    tone.mg       ← this takes priority over the installed package's tone.mg
-  article.mg
-```
-
-```margarita
-// filename: src/article.mg
-[[ writing-templates/tone ]]   ← resolves to src/writing-templates/tone.mg
-```
-
----
 
 ## Multiple packages
 
