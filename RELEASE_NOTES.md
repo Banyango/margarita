@@ -1,3 +1,23 @@
+# Release Notes - Margarita v0.3.9
+
+**Release Date:** Apr 3, 2026
+
+### Logical operators in conditionals
+
+Conditions now support `and`, `or`, `not`, `in`, and `not in`:
+
+### Syntax highlighting
+
+Added a Pygments lexer for `.mg` files with support for control keywords, operators, output blocks, variables, and front matter in the docs.
+
+### Claude skill installation
+
+New CLI command to install the Margarita skill into Claude Code:
+
+```sh
+margarita install-claude-skill
+```
+
 # Release Notes - Margarita v0.3.8
 
 **Release Date:** March 17, 2026
