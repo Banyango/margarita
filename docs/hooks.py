@@ -2,13 +2,13 @@
 MkDocs hooks to register custom Pygments lexers.
 """
 
-import os
 import sys
+from pathlib import Path
 
 
 def _register_margarita_lexer():
     # Ensure docs/ is on the import path so local lexers resolve reliably.
-    docs_dir = os.path.dirname(os.path.abspath(__file__))
+    docs_dir = str(Path(__file__).resolve().parent)
     if docs_dir not in sys.path:
         sys.path.insert(0, docs_dir)
 
@@ -21,19 +21,19 @@ def _register_margarita_lexer():
     from pygments.lexers import _mapping
 
     # Register the Margarita lexer in Pygments' internal mapping
-    if 'MargaritaLexer' not in _mapping.LEXERS:
+    if "MargaritaLexer" not in _mapping.LEXERS:
         module_path = MargaritaLexer.__module__
-        _mapping.LEXERS['MargaritaLexer'] = (
+        _mapping.LEXERS["MargaritaLexer"] = (
             module_path,
-            'Margarita',
-            ('margarita', 'marg', 'mg'),
-            ('*.mg', '*.margarita'),
-            ('text/x-margarita',)
+            "Margarita",
+            ("margarita", "marg", "mg"),
+            ("*.mg", "*.margarita"),
+            ("text/x-margarita",),
         )
         print("✓ Registered MARGARITA syntax highlighter")
 
 
-def on_startup(**kwargs):
+def on_startup(**_kwargs):
     """
     Register custom Pygments lexers when MkDocs starts.
 
@@ -48,7 +48,7 @@ def on_startup(**kwargs):
         print(f"Warning: Could not register MARGARITA lexer: {e}")
 
 
-def on_config(config, **kwargs):
+def on_config(config, **_kwargs):
     """Register lexers before MkDocs config is finalized."""
     try:
         _register_margarita_lexer()
@@ -58,4 +58,3 @@ def on_config(config, **kwargs):
     except Exception as e:
         print(f"Warning: Could not register MARGARITA lexer: {e}")
     return config
-

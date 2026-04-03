@@ -63,6 +63,26 @@ else:
         assert "This is formal mode" in result
         assert "This is not formal mode" not in result
 
+    def test_render_should_not_render_logical_not_equal_when_condition_has_inequality(self):
+        template = """if status != "active":
+        <<Status is not active>>"""
+
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": "active"})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_not_render_when_condition_uses_not_prefix(self):
+        template = """if not status:
+        <<Status is falsy>>"""
+
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": True})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
     def test_render_should_render_false_block_when_string_equals_comparison_is_false(self):
         template = """if node == "formal":
     <<This is formal mode>>
@@ -366,3 +386,140 @@ else:
         assert "apple" in result
         assert "banana" not in result
         assert "cherry" not in result
+
+    def test_render_should_negate_truthy_value_when_not_prefix_is_used(self):
+        template = """if not show:
+    <<Hidden>>
+else:
+    <<Visible>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"show": True})
+        result = renderer.render(nodes)
+
+        assert "Visible" in result
+        assert "Hidden" not in result
+
+    def test_render_should_render_when_not_negates_falsy_value(self):
+        template = """if not show:
+    <<Hidden>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"show": False})
+        result = renderer.render(nodes)
+
+        assert "Hidden" in result
+
+    def test_render_should_render_when_not_negates_comparison(self):
+        template = """if not status == "active":
+    <<Inactive>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"status": "inactive"})
+        result = renderer.render(nodes)
+
+        assert "Inactive" in result
+
+    def test_render_should_render_when_value_is_in_list(self):
+        template = """if item in items:
+    <<Found>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"item": "apple", "items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert "Found" in result
+
+    def test_render_should_not_render_when_value_is_not_in_list(self):
+        template = """if item in items:
+    <<Found>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"item": "grape", "items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_render_when_value_is_substring_with_in(self):
+        template = """if word in sentence:
+    <<Contains word>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"word": "hello", "sentence": "say hello world"})
+        result = renderer.render(nodes)
+
+        assert "Contains word" in result
+
+    def test_render_should_render_when_value_is_not_in_list(self):
+        template = """if item not in items:
+    <<Not found>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"item": "grape", "items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert "Not found" in result
+
+    def test_render_should_not_render_when_not_in_but_value_exists(self):
+        template = """if item not in items:
+    <<Not found>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"item": "apple", "items": ["apple", "banana", "cherry"]})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_render_when_both_and_conditions_are_true(self):
+        template = """if x and y:
+    <<Both true>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"x": True, "y": True})
+        result = renderer.render(nodes)
+
+        assert "Both true" in result
+
+    def test_render_should_not_render_when_one_and_condition_is_false(self):
+        template = """if x and y:
+    <<Both true>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"x": True, "y": False})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_render_when_at_least_one_or_condition_is_true(self):
+        template = """if x or y:
+    <<At least one>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"x": False, "y": True})
+        result = renderer.render(nodes)
+
+        assert "At least one" in result
+
+    def test_render_should_not_render_when_all_or_conditions_are_false(self):
+        template = """if x or y:
+    <<At least one>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"x": False, "y": False})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_evaluate_compound_and_or_condition(self):
+        template = """if a == 1 and b == 2:
+    <<Match>>
+else:
+    <<No match>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"a": 1, "b": 2})
+        result = renderer.render(nodes)
+
+        assert "Match" in result
+        assert "No match" not in result
+
+    def test_render_should_evaluate_or_with_comparisons(self):
+        template = """if role == "admin" or role == "moderator":
+    <<Elevated>>
+else:
+    <<Normal>>"""
+        _, nodes = self.parser.parse(template)
+        for role, expected in [
+            ("admin", "Elevated"),
+            ("moderator", "Elevated"),
+            ("user", "Normal"),
+        ]:
+            result = Renderer(context={"role": role}).render(nodes)
+            assert expected in result

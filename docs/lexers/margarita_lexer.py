@@ -1,11 +1,21 @@
 """
 Pygments lexer for MARGARITA templating language.
 """
-from pygments.lexer import RegexLexer, bygroups, include, using
+
+from typing import ClassVar
+
+from pygments.lexer import RegexLexer, bygroups, using
 from pygments.lexers.markup import MarkdownLexer
 from pygments.token import (
-    Comment, Keyword, Name, Number, Operator, Punctuation,
-    String, Text, Whitespace
+    Comment,
+    Keyword,
+    Name,
+    Number,
+    Operator,
+    Punctuation,
+    String,
+    Text,
+    Whitespace,
 )
 
 __all__ = ["MargaritaLexer"]
@@ -25,140 +35,117 @@ class MargaritaLexer(RegexLexer):
     - Metadata: --- YAML front matter ---
     """
 
-    name = 'Margarita'
-    aliases = ['margarita', 'marg', 'mg']
-    filenames = ['*.mg', '*.margarita']
-    mimetypes = ['text/x-margarita']
+    name = "Margarita"
+    aliases: ClassVar[list[str]] = ["margarita", "marg", "mg"]
+    filenames: ClassVar[list[str]] = ["*.mg", "*.margarita"]
+    mimetypes: ClassVar[list[str]] = ["text/x-margarita"]
 
-    tokens = {
-        'root': [
+    tokens: ClassVar[dict] = {
+        "root": [
             # YAML front matter
-            (r'^---\s*$', Punctuation, 'frontmatter'),
-
+            (r"^---\s*$", Punctuation, "frontmatter"),
             # Comments
-            (r'//.*?$', Comment.Single),
-
+            (r"//.*?$", Comment.Single),
             # Else blocks
-            (r'^(\s*)(else)(\s*)(:)', bygroups(Whitespace, Keyword, Whitespace, Punctuation)),
-
+            (r"^(\s*)(else)(\s*)(:)", bygroups(Whitespace, Keyword, Whitespace, Punctuation)),
             # Control structures
-            (r'^(\s*)(if|elif|else|for)(\s+)', bygroups(Whitespace, Keyword, Whitespace), 'control'),
-
+            (
+                r"^(\s*)(if|elif|else|for)(\s+)",
+                bygroups(Whitespace, Keyword, Whitespace),
+                "control",
+            ),
             # Include statements
-            (r'\[\[\s*', Punctuation, 'include'),
-
+            (r"\[\[\s*", Punctuation, "include"),
             # Output blocks (double chevrons)
-            (r'<<', String.Delimiter, 'output-block'),
-
+            (r"<<", String.Delimiter, "output-block"),
             # Variables
-            (r'\$\{', Name.Variable, 'variable'),
-
+            (r"\$\{", Name.Variable, "variable"),
             # Plain text
-            (r'.', Text),
-            (r'\n', Whitespace),
+            (r".", Text),
+            (r"\n", Whitespace),
         ],
-
-        'frontmatter': [
+        "frontmatter": [
             # End of front matter
-            (r'^---\s*$', Punctuation, '#pop'),
-
+            (r"^---\s*$", Punctuation, "#pop"),
             # YAML keys
-            (r'^(\s*)([a-zA-Z_][\w]*?)(\s*)(:)',
-             bygroups(Whitespace, Name.Attribute, Whitespace, Punctuation)),
-
+            (
+                r"^(\s*)([a-zA-Z_][\w]*?)(\s*)(:)",
+                bygroups(Whitespace, Name.Attribute, Whitespace, Punctuation),
+            ),
             # Strings
             (r'"[^"]*"', String.Double),
             (r"'[^']*'", String.Single),
-
             # Numbers
-            (r'\d+\.?\d*', Number),
-
+            (r"\d+\.?\d*", Number),
             # Everything else
-            (r'.', Text),
-            (r'\n', Whitespace),
+            (r".", Text),
+            (r"\n", Whitespace),
         ],
-
-        'control': [
+        "control": [
             # Keywords in control statements
-            (r'\b(in|and|or|not)\b', Keyword.Operator),
-
+            (r"\b(in|and|or|not)\b", Keyword.Operator),
             # Function calls
-            (r'\b(range)(\s*)(\()', bygroups(Name.Builtin, Whitespace, Punctuation), 'function-args'),
-
+            (
+                r"\b(range)(\s*)(\()",
+                bygroups(Name.Builtin, Whitespace, Punctuation),
+                "function-args",
+            ),
             # Operators
-            (r'==|!=|<=|>=|<|>', Operator),
-
+            (r"==|!=|<=|>=|<|>", Operator),
             # Variables/identifiers
-            (r'[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*', Name.Variable),
-
+            (r"[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*", Name.Variable),
             # Strings
             (r'"[^"]*"', String.Double),
             (r"'[^']*'", String.Single),
-
             # Numbers
-            (r'\d+', Number.Integer),
-
+            (r"\d+", Number.Integer),
             # Colon ends control statement
-            (r':', Punctuation, '#pop'),
-
+            (r":", Punctuation, "#pop"),
             # Whitespace
-            (r'\s+', Whitespace),
+            (r"\s+", Whitespace),
         ],
-
-        'function-args': [
+        "function-args": [
             # Numbers
-            (r'\d+', Number.Integer),
-
+            (r"\d+", Number.Integer),
             # Comma
-            (r',', Punctuation),
-
+            (r",", Punctuation),
             # Closing paren
-            (r'\)', Punctuation, '#pop'),
-
+            (r"\)", Punctuation, "#pop"),
             # Whitespace
-            (r'\s+', Whitespace),
+            (r"\s+", Whitespace),
         ],
-
-        'include': [
+        "include": [
             # Filename
-            (r'[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*', Name.Namespace),
-
+            (r"[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*", Name.Namespace),
             # Closing brackets
-            (r'\s*\]\]', Punctuation, '#pop'),
-
+            (r"\s*\]\]", Punctuation, "#pop"),
             # Whitespace
-            (r'\s+', Whitespace),
+            (r"\s+", Whitespace),
         ],
-
-        'output-block': [
+        "output-block": [
             # Variables inside output blocks
-            (r'(\$\{)([a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*)(\})',
-             bygroups(Name.Variable, Name.Variable, Name.Variable)),
-            (r'\$\{', Name.Variable, 'variable'),
-            (r'\{\{', Name.Variable, 'variable'),
-
+            (
+                r"(\$\{)([a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*)(\})",
+                bygroups(Name.Variable, Name.Variable, Name.Variable),
+            ),
+            (r"\$\{", Name.Variable, "variable"),
+            (r"\{\{", Name.Variable, "variable"),
             # Closing triple chevrons
-            (r'>>>', String.Delimiter, '#pop'),
-
+            (r">>>", String.Delimiter, "#pop"),
             # Closing double chevrons
-            (r'>>', String.Delimiter, '#pop'),
-
+            (r">>", String.Delimiter, "#pop"),
             # Content
-            (r'[^>$\{]+', using(MarkdownLexer)),
-            (r'.', using(MarkdownLexer)),
+            (r"[^>$\{]+", using(MarkdownLexer)),
+            (r".", using(MarkdownLexer)),
         ],
-
-        'variable': [
+        "variable": [
             # Variable name with dot notation
-            (r'[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*', Name.Variable),
-
+            (r"[a-zA-Z_][\w]*(?:\.[a-zA-Z_][\w]*)*", Name.Variable),
             # Closing for ${...}
-            (r'\}', Name.Variable, '#pop'),
-
+            (r"\}", Name.Variable, "#pop"),
             # Closing for {{...}}
-            (r'\}\}', Name.Variable, '#pop'),
-
+            (r"\}\}", Name.Variable, "#pop"),
             # Whitespace
-            (r'\s+', Whitespace),
+            (r"\s+", Whitespace),
         ],
     }

@@ -6,6 +6,7 @@ by applying variable substitution and control flow logic.
 
 import re
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 from margarita.parser import (
@@ -17,6 +18,20 @@ from margarita.parser import (
     Parser,
     TextNode,
     VariableNode,
+)
+
+EQUALITY_OR_LOGICAL_OPERATORS = (
+    "==",
+    "!=",
+    ">=",
+    "<=",
+    ">",
+    "<",
+    " in ",
+    " not in ",
+    " and ",
+    " or ",
+    "not ",
 )
 
 
@@ -239,82 +254,47 @@ class Renderer:
 
         return value
 
+    def _context_to_eval_namespace(self) -> dict:
+        """Convert context to an eval namespace, converting nested dicts to SimpleNamespace for dotted access."""
+
+        def convert(obj: Any) -> Any:
+            if isinstance(obj, dict):
+                return SimpleNamespace(**{k: convert(v) for k, v in obj.items()})
+            elif isinstance(obj, list):
+                return [convert(item) for item in obj]
+            return obj
+
+        return {k: convert(v) for k, v in self.context.items()}
+
     def _evaluate_condition(self, condition: str) -> bool | None:
-        """Evaluate a condition expression.
+        """Evaluate a condition expression using Python eval with a restricted namespace.
+
+        Supports: or, and, not, in, not in, ==, !=, >, <, >=, <=, and simple truthy checks.
 
         Args:
-            condition: The condition string to evaluate (e.g., "var", "var == 'test'", "x > 5")
+            condition: The condition string to evaluate
 
         Returns:
             True if the condition is true, False otherwise
         """
         condition = condition.strip()
 
-        comparison_pattern = r"^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$"
-        match = re.match(comparison_pattern, condition)
+        does_condition_contain_equality_or_logical = any(
+            op in condition for op in EQUALITY_OR_LOGICAL_OPERATORS
+        )
 
-        if match:
-            left_expr = match.group(1).strip()
-            operator = match.group(2)
-            right_expr = match.group(3).strip()
-
-            left_value = self._evaluate_expression(left_expr)
-            right_value = self._evaluate_expression(right_expr)
-
-            result = {
-                "==": left_value == right_value,
-                "!=": left_value != right_value,
-                ">": left_value > right_value,
-                "<": left_value < right_value,
-                ">=": left_value >= right_value,
-                "<=": left_value <= right_value,
-            }
-
-            if operator in result:
-                return result[operator]
-            else:
+        if does_condition_contain_equality_or_logical:
+            try:
+                namespace = self._context_to_eval_namespace()
+                namespace.update({"true": True, "false": False, "none": None})
+                result = eval(condition, {"__builtins__": {}}, namespace)
+                return result
+            except Exception:
                 return None
 
-        # No comparison operator, just evaluate as a simple expression
-        value = self._evaluate_expression(condition)
+        # Simple variable — evaluate as a truthy check
+        value = self._get_variable_value(condition)
         return self._is_truthy(value)
-
-    def _evaluate_expression(self, expr: str) -> Any:
-        """Evaluate an expression (variable or literal).
-
-        Args:
-            expr: The expression to evaluate
-
-        Returns:
-            The evaluated value
-        """
-        expr = expr.strip()
-
-        # Check if it's a string literal (quoted)
-        if (expr.startswith('"') and expr.endswith('"')) or (
-            expr.startswith("'") and expr.endswith("'")
-        ):
-            return expr[1:-1]  # Remove quotes
-
-        # Check if it's a number
-        try:
-            if "." in expr:
-                return float(expr)
-            else:
-                return int(expr)
-        except ValueError:
-            pass
-
-        # Check if it's a boolean
-        if expr.lower() == "true":
-            return True
-        elif expr.lower() == "false":
-            return False
-        elif expr.lower() == "none":
-            return None
-
-        # Otherwise, treat it as a variable name
-        return self._get_variable_value(expr)
 
     @staticmethod
     def _is_truthy(value: Any) -> bool:

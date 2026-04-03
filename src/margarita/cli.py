@@ -2,7 +2,6 @@
 
 import contextlib
 import json
-import os
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -29,7 +28,7 @@ def main():
 @main.command()
 def install_claude_skill():
     """Install the claude skill for margarita."""
-    margarita_dir = Path(os.getcwd()) / ".claude" / "skills" / "margarita"
+    margarita_dir = Path.cwd() / ".claude" / "skills" / "margarita"
     if not margarita_dir.exists():
         try:
             margarita_dir.mkdir(parents=True)
@@ -53,7 +52,7 @@ def install_claude_skill():
         click.echo(f"Error writing syntax reference: {e}", err=True)
         sys.exit(1)
 
-    click.echo(f"Margarita skill installed successfully")
+    click.echo("Margarita skill installed successfully")
 
 
 @main.command()
