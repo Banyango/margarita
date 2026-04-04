@@ -149,3 +149,4 @@ output/
 *.py[cod]
 __pycache__/
 
+.claude/

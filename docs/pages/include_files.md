@@ -15,7 +15,7 @@ Reuse template fragments using `[[ file ]]` or `[[ file.mg ]]`. Includes are res
 <<
 # Page Title
 
-Content goes here using the same context.
+Content goes here.
 >>
 ```
 
@@ -28,18 +28,18 @@ This is the header content.
 
 # Page Title
 
-Content goes here using the same context.
+Content goes here.
 ```
 
 Behavior
 
-- Included files have access to the same rendering context as the parent template.
+- Included files only have access to variables explicitly passed as parameters in the include directive.
 - Paths are resolved relative to the parent template's directory (the CLI and renderer set `base_path`).
 - Avoid circular includes; they can cause infinite loops or errors.
 
 ## Composable Templates
 
-You can pass variables to included templates by defining them in the parent context. For example:
+Pass variables to included templates as explicit parameters in the include directive. For example:
 
 ```margarita
 // filename: greeting.mg

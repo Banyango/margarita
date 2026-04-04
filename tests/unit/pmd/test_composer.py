@@ -105,22 +105,22 @@ for item in items:
         self._create_template("header_test.mg", "<<# ${title}>>")
         self._create_template(
             "main.mg",
-            """[[ header_test ]]
+            """[[ header_test title="My Document" ]]
 
 <<Content here.>>""",
         )
 
-        result = self.composer.render("main.mg", {"title": "My Document"})
+        result = self.composer.render("main.mg", {})
 
         assert "# My Document" in result
         assert "Content here." in result
 
     def test_render_should_render_nested_includes_when_template_has_nested_includes(self):
         self._create_template("snippets/role.mg", "<<You are a ${role}.>>")
-        self._create_template("snippets/header1.mg", "[[ snippets/role.mg ]]")
+        self._create_template("snippets/header1.mg", '[[ snippets/role.mg role="assistant" ]]')
         self._create_template("main.mg", "[[ snippets/header1 ]]\n\n<<Task: ${task}>>")
 
-        result = self.composer.render("main.mg", {"role": "assistant", "task": "Help the user"})
+        result = self.composer.render("main.mg", {"task": "Help the user"})
 
         assert "You are a assistant." in result
         assert "Task: Help the user" in result

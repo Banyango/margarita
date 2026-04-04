@@ -2,6 +2,7 @@
 
 import contextlib
 import json
+import shutil
 import sys
 from importlib.metadata import version
 from pathlib import Path
@@ -29,12 +30,17 @@ def main():
 def install_claude_skill():
     """Install the claude skill for margarita."""
     margarita_dir = Path.cwd() / ".claude" / "skills" / "margarita"
-    if not margarita_dir.exists():
+    if margarita_dir.exists():
         try:
-            margarita_dir.mkdir(parents=True)
+            shutil.rmtree(margarita_dir)
         except Exception as e:
-            click.echo(f"Error creating margarita directory: {e}", err=True)
+            click.echo(f"Error removing existing skill directory: {e}", err=True)
             sys.exit(1)
+    try:
+        margarita_dir.mkdir(parents=True)
+    except Exception as e:
+        click.echo(f"Error creating margarita directory: {e}", err=True)
+        sys.exit(1)
 
     # Copy SKILL.md to the margarita skill directory
     skill_md = margarita_dir / "SKILL.md"
@@ -52,7 +58,37 @@ def install_claude_skill():
         click.echo(f"Error writing syntax reference: {e}", err=True)
         sys.exit(1)
 
+    version_file = margarita_dir / "VERSION"
+    try:
+        version_file.write_text(version("margarita"))
+    except Exception as e:
+        click.echo(f"Error writing version file: {e}", err=True)
+        sys.exit(1)
+
     click.echo("Margarita skill installed successfully")
+
+
+def _warn_if_skill_outdated():
+    """Print a stderr warning if the installed Claude skill is older than the running package."""
+    skill_dir = Path.cwd() / ".claude" / "skills" / "margarita"
+    version_file = skill_dir / "VERSION"
+    if not skill_dir.exists():
+        return
+    if not version_file.exists():
+        click.echo(
+            "Warning: Claude skill VERSION file is missing. "
+            "Run `uvx margarita install_claude_skill` to reinstall.",
+            err=True,
+        )
+        return
+    installed = version_file.read_text().strip()
+    current = version("margarita")
+    if installed != current:
+        click.echo(
+            f"Warning: Claude skill is at v{installed} but margarita is v{current}. "
+            "Run `uvx margarita install_claude_skill` to update.",
+            err=True,
+        )
 
 
 @main.command()
@@ -99,6 +135,8 @@ def render(
         # Show metadata
         margarita render template.mg --show-metadata
     """
+    _warn_if_skill_outdated()
+
     # Parse context
     context_dict = {}
     if context:

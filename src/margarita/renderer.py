@@ -160,9 +160,8 @@ class Renderer:
                 parser = Parser()
                 _, included_nodes = parser.parse(template_content)
 
-                # Create a new context with include parameters merged in
-                include_context = self.context.copy()
-                include_context.update(node.params)
+                # Included templates only see variables explicitly passed as params
+                include_context = dict(node.params)
 
                 included_renderer = Renderer(
                     context=include_context,

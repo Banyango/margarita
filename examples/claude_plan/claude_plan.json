@@ -1,0 +1,27 @@
+{
+  "title": "Add Dark Mode Support",
+  "goal": "Implement a dark mode toggle that persists user preference across sessions.",
+  "context": "The app currently uses a hard-coded light theme. Users have requested dark mode support.",
+  "steps": [
+    {
+      "number": 1,
+      "title": "Add CSS variables for theme tokens",
+      "description": "Define `--color-bg`, `--color-fg`, and related tokens in `:root` and a `[data-theme=dark]` selector.",
+      "files": "src/styles/tokens.css"
+    },
+    {
+      "number": 2,
+      "title": "Build the toggle component",
+      "description": "Create a `<ThemeToggle>` button that switches `data-theme` on `<html>` and writes the choice to `localStorage`.",
+      "files": "src/components/ThemeToggle.tsx"
+    },
+    {
+      "number": 3,
+      "title": "Persist preference on load",
+      "description": "Read `localStorage` on app init and apply the saved theme before first render to avoid a flash.",
+      "files": "src/main.tsx"
+    }
+  ],
+  "constraints": "Must not introduce a layout flash on initial load. No third-party theming libraries.",
+  "acceptance_criteria": "- Toggle switches theme instantly\n- Preference survives a page refresh\n- Works in Chrome, Firefox, and Safari"
+}

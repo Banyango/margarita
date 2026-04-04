@@ -1,14 +1,21 @@
 syntax = """# Margarita Template Syntax Reference
 
 ## Markdown Blocks
-Wrap literal markdown content in `<< >>`:
+**All markdown content MUST be wrapped in `<< >>`.**
+Text outside `<< >>` (other than control flow lines and comments) is ignored during rendering.
+
+Single-line and multi-line forms are both supported:
 ```
+<< This is a single-line markdown block. >>
+
 <<
 You are a helpful assistant.
 
 Task: ${task}
 >>
 ```
+
+Variables inside `<< >>` are interpolated. Common mistake: placing markdown or variables outside `<< >>` — they will silently produce no output.
 
 ## Comments
 ```
@@ -64,7 +71,7 @@ Reuse template fragments. Paths are relative to the including template's directo
 [[ partials/header ]]        // subdirectory path
 ```
 
-Included templates share the parent's rendering context. Override specific variables inline.
+Included templates only see variables explicitly passed as parameters — they do not inherit the parent's context.
 Avoid circular includes — Margarita does not detect them and will loop forever.
 
 ## Metadata
@@ -136,6 +143,7 @@ for item in items:
 
 ## Troubleshooting
 
+- **Content missing from output**: Markdown and variables must be inside `<< >>` — text written outside these delimiters is silently ignored.
 - **Variable not replaced**: Check spelling matches the context key exactly (case-sensitive). No spaces around the name — `${ var }` will not work.
 - **Conditional not triggering**: `0`, `""`, `null`, `false`, and missing keys are all falsy.
 - **Include not found**: Path is relative to the template's own directory. Use `[[ partials/header ]]` for files in subdirectories.

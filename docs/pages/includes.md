@@ -176,9 +176,9 @@ from margarita.renderer import Renderer
 # Define base path for includes
 template_dir = Path("./templates")
 
-# Parse your main template
+# Parse agent_router.mg directly so its variables resolve from the top-level context
 parser = Parser()
-template_content = """[[ agent_router ]]"""
+template_content = (template_dir / "agent_router.mg").read_text()
 metadata, nodes = parser.parse(template_content)
 
 # Create renderer with base_path

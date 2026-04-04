@@ -1,0 +1,25 @@
+{% from "system_macro.j2" import render as render_system %}
+{{ render_system(company_name, "formal" if tier == "premium" else "friendly") }}
+{% if tier == "premium" %}
+This is a premium customer. Prioritize their issue and offer proactive solutions.
+{% elif tier == "business" %}
+This is a business customer. Be concise and solution-oriented.
+{% else %}
+Help this customer as efficiently as possible.
+{% endif %}
+{% if history %}
+Recent conversation history:
+{{ history }}
+{% endif %}
+Customer message:
+{{ message }}
+
+{% if tool_categories %}
+You have access to the following tools:
+{% for category in tool_categories %}
+{{ category.name }}:
+{% for tool in category.tools %}
+  - {{ tool }}
+{% endfor %}
+{% endfor %}
+{% endif %}
