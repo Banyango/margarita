@@ -1,3 +1,9 @@
+# Release Notes - Margarita v0.4.1
+
+**Release Date:** Apr 8, 2026
+
+Push new version to get around github release tag immutability issue. No code changes from v0.4.0.
+
 # Release Notes - Margarita v0.4.0
 
 **Release Date:** Apr 8, 2026
