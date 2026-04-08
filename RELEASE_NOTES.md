@@ -1,3 +1,9 @@
+# Release Notes - Margarita v0.4.2
+
+**Release Date:** Apr 8, 2026
+
+Fix minor issue.
+
 # Release Notes - Margarita v0.4.1
 
 **Release Date:** Apr 8, 2026
