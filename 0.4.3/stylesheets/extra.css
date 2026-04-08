@@ -1,0 +1,52 @@
+/* Custom CSS for MARGARITA documentation */
+
+/* Enhanced syntax highlighting for MARGARITA code blocks */
+.language-margarita.highlight {
+    background-color: var(--md-code-bg-color);
+}
+
+/* Make MARGARITA keywords stand out */
+.language-margarita .k {
+    font-weight: 600;
+}
+
+/* Style variables nicely */
+.language-margarita .nv {
+    color: #e126e1;
+}
+
+/* Style output block delimiters */
+.language-margarita .p {
+    font-weight: 500;
+}
+
+/* Style output block delimiters specifically */
+.language-margarita .dl {
+    color: var(--md-code-hl-delimiter-color, #98c379);
+}
+
+/* Scoped syntax colors for MARGARITA only */
+.language-margarita .k {
+    color: var(--md-code-hl-keyword-color, #c678dd);
+}
+
+.language-margarita .s,
+.language-margarita .s1,
+.language-margarita .s2 {
+    color: var(--md-code-hl-string-color, #98c379);
+}
+
+.language-margarita .mi,
+.language-margarita .mf {
+    color: var(--md-code-hl-number-color, #d19a66);
+}
+
+.language-margarita .c,
+.language-margarita .c1 {
+    color: var(--md-code-hl-comment-color, #5c6370);
+}
+
+.language-margarita .p,
+.language-margarita .o {
+    color: #ef7822;
+}
