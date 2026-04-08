@@ -1185,7 +1185,7 @@
 <span class="dl">&lt;&lt;</span>
 <span class="gh"># Page Title</span>
 
-Content goes here using the same context.
+Content goes here.
 <span class="dl">&gt;&gt;</span>
 </code></pre></div>
 <p>Rendered result</p>
@@ -1194,16 +1194,16 @@ Content goes here using the same context.
 
 # Page Title
 
-Content goes here using the same context.
+Content goes here.
 </code></pre></div>
 <p>Behavior</p>
 <ul>
-<li>Included files have access to the same rendering context as the parent template.</li>
+<li>Included files only have access to variables explicitly passed as parameters in the include directive.</li>
 <li>Paths are resolved relative to the parent template's directory (the CLI and renderer set <code>base_path</code>).</li>
 <li>Avoid circular includes; they can cause infinite loops or errors.</li>
 </ul>
 <h2 id="composable-templates">Composable Templates<a class="headerlink" href="#composable-templates" title="Permanent link">&para;</a></h2>
-<p>You can pass variables to included templates by defining them in the parent context. For example:</p>
+<p>Pass variables to included templates as explicit parameters in the include directive. For example:</p>
 <div class="language-margarita highlight"><pre><span></span><code><span class="c1">// filename: greeting.mg</span>
 <span class="dl">&lt;&lt;</span>Hello, <span class="nv">${name}</span>!<span class="dl">&gt;&gt;</span>
 </code></pre></div>

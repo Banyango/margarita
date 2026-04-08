@@ -1418,9 +1418,9 @@ Use statistical methods and visualization tools to derive insights.
 <span class="c1"># Define base path for includes</span>
 <span class="n">template_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./templates&quot;</span><span class="p">)</span>
 
-<span class="c1"># Parse your main template</span>
+<span class="c1"># Parse agent_router.mg directly so its variables resolve from the top-level context</span>
 <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">()</span>
-<span class="n">template_content</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;[[ agent_router ]]&quot;&quot;&quot;</span>
+<span class="n">template_content</span> <span class="o">=</span> <span class="p">(</span><span class="n">template_dir</span> <span class="o">/</span> <span class="s2">&quot;agent_router.mg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
 <span class="n">metadata</span><span class="p">,</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template_content</span><span class="p">)</span>
 
 <span class="c1"># Create renderer with base_path</span>

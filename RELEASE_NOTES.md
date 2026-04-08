@@ -1,3 +1,18 @@
+# Release Notes - Margarita v0.4.0
+
+**Release Date:** Apr 8, 2026
+
+### BREAKING CHANGE: Includes don't inherit parent context
+
+Included templates now only have access to variables explicitly passed as parameters.
+This prevents unintended side effects and makes data flow more explicit.
+Update your includes to pass necessary variables.
+
+### internal node bump for Lime
+- adds await-all support for lime-ai.
+
+###
+
 # Release Notes - Margarita v0.3.9
 
 **Release Date:** Apr 3, 2026
