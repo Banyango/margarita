@@ -1,3 +1,9 @@
+# Release Notes - Margarita v0.4.3
+
+**Release Date:** Apr 8, 2026
+
+Fix issue with lock file.
+
 # Release Notes - Margarita v0.4.2
 
 **Release Date:** Apr 8, 2026
