@@ -10,6 +10,7 @@ from types import SimpleNamespace
 from typing import Any
 
 from margarita.parser import (
+    AllAwaitNode,
     BreakNode,
     ForNode,
     IfNode,
@@ -142,6 +143,9 @@ class Renderer:
 
         elif isinstance(node, BreakNode):
             raise _BreakSignal()
+
+        elif isinstance(node, AllAwaitNode):
+            return ""
 
         elif isinstance(node, IncludeNode):
             template_name = node.template_name

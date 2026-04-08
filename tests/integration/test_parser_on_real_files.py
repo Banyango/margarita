@@ -621,6 +621,24 @@ class TestMargaritaIntegration:
 
         assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
 
+    def test_await_all_should_skip_effects_when_rendering(self, parser, files_dir):
+        """Test await_all.mg with @await-all to ensure effects are skipped in output."""
+        template_file = files_dir / "await_all.mg"
+        with open(template_file, encoding="utf-8") as f:
+            content = f.read()
+
+        # Parse
+        metadata, nodes = parser.parse(content)
+
+        # Render
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        # Expected output (effects are ignored in render output)
+        expected = "Before\nAfter\n"
+
+        assert result == expected, f"Expected:\n{expected}\nGot:\n{result}"
+
 
 class TestUvPackageIncludes:
     """Tests for resolving includes from a .venv site-packages tree."""

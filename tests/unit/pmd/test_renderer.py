@@ -523,3 +523,15 @@ else:
         ]:
             result = Renderer(context={"role": role}).render(nodes)
             assert expected in result
+
+    def test_render_should_produce_empty_string_when_node_is_await_all(self):
+        template = """@await-all
+    @effect func add(1, 2) => result
+    @effect func sub(3, 1) => other
+<<Done>>"""
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        result = renderer.render(nodes)
+
+        assert "Done" in result
+        assert result.startswith("Done")

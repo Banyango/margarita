@@ -64,8 +64,21 @@ class EffectNode(Node):
 
 
 @dataclass
+class AllAwaitNode(Node):
+    """Represents an @await-all directive.
+
+    Examples:
+        @await-all
+            @effect func add(12, test.data) => result1
+            @effect run
+    """
+
+    effect_nodes: list[EffectNode]
+
+
+@dataclass
 class StateNode(Node):
-    """Represents an @state directive.
+    """Represents a @state directive.
 
     Declares a state variable with an optional type/initial value.
 
@@ -219,6 +232,7 @@ class Parser:
             for_match = re.match(r"^for\s+(\w+)\s+in\s+(range\([^)]*\)|\w+):$", stripped)
             else_match = re.match(r"^else:$", stripped)
             include_match = re.match(r"^\[\[\s*([^]]+)\s*]]$", stripped)
+            await_all_match = re.match(r"^@await-all$", stripped)
             effect_match = re.match(r"^@effect\s+(.+)$", stripped)
             memory_match = re.match(r"^@memory\s+(.+)$", stripped)
             state_match = re.match(r"^@state\s+(\w+)\s*=\s*(.+)$", stripped)
@@ -298,6 +312,27 @@ class Parser:
 
                 nodes.append(IncludeNode(template_name, params))
                 self.pos += 1
+
+            elif await_all_match:
+                # Parse @await-all block — collect indented @effect children
+                self.pos += 1
+                effect_nodes: list[EffectNode] = []
+                while self.pos < len(self.lines):
+                    child_indent, child_line = self.lines[self.pos]
+                    child_stripped = child_line.strip()
+                    if not child_stripped:
+                        self.pos += 1
+                        continue
+                    if child_indent <= indent:
+                        break
+                    child_effect = re.match(r"^@effect\s+(.+)$", child_stripped)
+                    if child_effect:
+                        effect_nodes.append(EffectNode(child_effect.group(1).strip()))
+                        self.pos += 1
+                    else:
+                        break
+                nodes.append(AllAwaitNode(effect_nodes))
+                self.is_mgx = True
 
             elif effect_match:
                 # Parse @effect directive

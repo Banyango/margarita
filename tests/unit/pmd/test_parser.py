@@ -1,5 +1,7 @@
 from margarita.parser import (
+    AllAwaitNode,
     BreakNode,
+    EffectNode,
     ForNode,
     IfNode,
     ImportNode,
@@ -951,3 +953,61 @@ if show_items:
         assert len(memory_nodes) == 2
         assert memory_nodes[0].params == "first instruction"
         assert memory_nodes[1].params == "second instruction"
+
+    def test_parse_should_parse_await_all_when_template_has_await_all_directive(self):
+        template = """@await-all
+    @effect func add(12, test.data) => result1
+    @effect run"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], AllAwaitNode)
+        assert len(nodes[0].effect_nodes) == 2
+        assert isinstance(nodes[0].effect_nodes[0], EffectNode)
+        assert nodes[0].effect_nodes[0].raw_content == "func add(12, test.data) => result1"
+        assert isinstance(nodes[0].effect_nodes[1], EffectNode)
+        assert nodes[0].effect_nodes[1].raw_content == "run"
+
+    def test_parse_should_set_is_mgx_when_template_has_await_all(self):
+        template = """@await-all
+    @effect func add(1, 2) => result"""
+        _, _ = self.parser.parse(template)
+
+        assert self.parser.is_mgx is True
+
+    def test_parse_should_parse_await_all_with_single_effect(self):
+        template = """@await-all
+    @effect tool fetch_data"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], AllAwaitNode)
+        assert len(nodes[0].effect_nodes) == 1
+        assert nodes[0].effect_nodes[0].raw_content == "tool fetch_data"
+
+    def test_parse_should_parse_await_all_with_surrounding_nodes(self):
+        template = """@effect func setup() => ctx
+@await-all
+    @effect func task_a(ctx) => out_a
+    @effect func task_b(ctx) => out_b
+<<Results: ${out_a} ${out_b}>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 3
+        assert isinstance(nodes[0], EffectNode)
+        assert isinstance(nodes[1], AllAwaitNode)
+        assert len(nodes[1].effect_nodes) == 2
+        assert isinstance(nodes[2], TextNode)
+
+    def test_parse_should_parse_await_all_in_if_when_block_is_conditional(self):
+        template = """if run_parallel:
+    @await-all
+        @effect func a() => x
+        @effect func b() => y"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], IfNode)
+        assert len(nodes[0].true_block) == 1
+        assert isinstance(nodes[0].true_block[0], AllAwaitNode)
+        assert len(nodes[0].true_block[0].effect_nodes) == 2
