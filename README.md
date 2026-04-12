@@ -12,10 +12,9 @@ Margarita extends Markdown with templating features like variables, conditionals
 
 ## Features
 
-- ✨ Framework agnostic — works with any LLM or API
-- 🚀 Composable — prompts can be split, reused, and nested
-- 🎯 Static-first — templates are validated before execution
-- 📦 Metadata — version, and provide metadata alongside your prompts.
+- Framework-agnostic — works with any LLM or API
+- Composable — prompts can be split, reused, and nested
+- Metadata — version, and provide metadata alongside your prompts.
 
 # Installation
 
