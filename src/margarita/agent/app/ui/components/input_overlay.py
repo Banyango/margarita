@@ -35,15 +35,15 @@ class InputOverlay(Vertical):
         # value for compatibility with tests/mocks that expect a plain
         # string. Otherwise, use a Rich Text object to include styling.
         if not source and not color_hex:
-            prompt_display = f"❯  {prompt}"
+            prompt_display = f"❯  {prompt}"  # noqa: RUF001
             self.query_one("#input-prompt", Static).update(prompt_display)
         else:
             t = Text()
             if source:
                 t.append(f"{source}", style=f"dim {color_hex}" if color_hex else "dim cyan")
-                t.append("\n❯  ", style="bold")
+                t.append("\n❯  ", style="bold")  # noqa: RUF001
             else:
-                t.append("❯  ", style="bold")
+                t.append("❯  ", style="bold")  # noqa: RUF001
             t.append(prompt)
             self.query_one("#input-prompt", Static).update(t)
         self.query_one("#input-field", Input).focus()

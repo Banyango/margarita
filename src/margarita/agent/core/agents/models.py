@@ -2,12 +2,14 @@ import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from margarita.agent.entities.context import Context
 from margarita.agent.entities.function import FunctionCall
-from margarita.agent.entities.memory import Memory
 from margarita.agent.entities.run import Run, RunStatus
+
+if TYPE_CHECKING:
+    from margarita.agent.entities.memory import Memory
 
 
 @dataclass

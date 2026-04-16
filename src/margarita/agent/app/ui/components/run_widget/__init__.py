@@ -1,20 +1,25 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from rich.console import Group
 from rich.text import Text
 from textual import on
-from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.events import Click
 from textual.message import Message
 from textual.widgets import Static
 
-from margarita.agent.app.config import AppConfig
 from margarita.agent.app.ui.components.run_header import RunHeader
 from margarita.agent.app.ui.components.run_widget.run_widget_content import RunWidgetContent
 from margarita.agent.app.ui.components.run_widget.run_widget_header import RunWidgetHeader
 from margarita.agent.app.ui.status_constants import NUM_SUB_COLORS
-from margarita.agent.entities.run import Run
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+    from margarita.agent.app.config import AppConfig
+    from margarita.agent.entities.run import Run
 
 
 class RunWidget(Vertical):

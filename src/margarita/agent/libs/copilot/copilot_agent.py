@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from copilot import define_tool
 from copilot.generated.session_events import PermissionRequest, SessionEventType
@@ -11,8 +12,10 @@ from copilot.session import (
     UserInputRequest,
     UserInputResponse,
 )
-from copilot.tools import Tool
 from wireup import injectable
+
+if TYPE_CHECKING:
+    from copilot.tools import Tool
 
 from margarita.agent.app.config import AppConfig
 from margarita.agent.core.agents.models import ExecutionModel, InputRequest, PermissionPrompt
@@ -106,7 +109,7 @@ class CopilotQuery(QueryService):
             raise Exception("Copilot client is not connected")
 
         async def on_user_input_request(
-            request: UserInputRequest, properties: dict[str, str]
+            request: UserInputRequest, _properties: dict[str, str]
         ) -> UserInputResponse:
             """Handle a user input request from the Copilot session.
 
@@ -126,7 +129,7 @@ class CopilotQuery(QueryService):
         _INTERNAL_TOOLS = {"get_variable", "set_variable"}
 
         async def on_permission_request(
-            request: PermissionRequest, properties: dict
+            request: PermissionRequest, _properties: dict
         ) -> PermissionRequestResult:
             if self.app_config.ignore_permissions:
                 return PermissionRequestResult(kind="approved")
@@ -178,7 +181,7 @@ class CopilotQuery(QueryService):
         set_var_tool = await create_set_variable_tool(execution_model=execution_model)
 
         # Build tool list for the session (set and get variable tools first)
-        session_tools = [set_var_tool, get_var_tool] + extra_tools
+        session_tools = [set_var_tool, get_var_tool, *extra_tools]
 
         model_value = execution_model.model
         if isinstance(model_value, str):

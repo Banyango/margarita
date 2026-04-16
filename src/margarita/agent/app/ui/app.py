@@ -1,7 +1,9 @@
+import contextlib
 import re
 import sys
 from pathlib import Path
 from time import monotonic
+from typing import ClassVar
 
 from rich.console import Group
 from rich.text import Text
@@ -31,7 +33,7 @@ class Margarita(App):
         else Path(__file__).parent / "margarita.tcss"
     )
 
-    BINDINGS = [
+    BINDINGS: ClassVar = [
         Binding("q", "quit", "Quit"),
         Binding("space", "toggle_auto_scroll", "Auto-scroll"),
         Binding("p", "toggle_permissions", "Use/Ignore Permissions"),
@@ -243,10 +245,10 @@ class Margarita(App):
         save_app_config(config)
         self.notify(f"Context {'on' if config.show_context else 'off'}")
 
-    def on_mouse_scroll_up(self, event) -> None:
+    def on_mouse_scroll_up(self, _event) -> None:
         self._auto_scroll = False
 
-    def on_mouse_scroll_down(self, event) -> None:
+    def on_mouse_scroll_down(self, _event) -> None:
         self._auto_scroll = False
 
     def on_key(self, event) -> None:
@@ -290,9 +292,7 @@ class Margarita(App):
                 try:
                     inp.cursor_position = pos + 1
                 except Exception:
-                    try:
+                    with contextlib.suppress(Exception):
                         inp._cursor_position = pos + 1
-                    except Exception:
-                        pass
                 inp.focus()
                 return

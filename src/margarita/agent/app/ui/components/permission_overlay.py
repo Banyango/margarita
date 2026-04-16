@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from rich.console import Group
 from rich.syntax import Syntax
 from rich.text import Text
@@ -16,7 +18,7 @@ class PermissionOverlay(Vertical):
     PermissionPrompt without coupling this widget to the execution model.
     """
 
-    _KIND_LABELS = {
+    _KIND_LABELS: ClassVar = {
         "shell": "Shell command",
         "write": "File write",
         "read": "File read",

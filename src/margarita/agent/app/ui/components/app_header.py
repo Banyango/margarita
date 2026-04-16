@@ -5,12 +5,7 @@ from rich.text import Text
 
 from margarita.agent.core.agents.models import ExecutionModel
 
-LOGO = Text(
-    "┳┳┓          •   \n"
-    "┃┃┃┏┓┏┓┏┓┏┓┏┓┓╋┏┓\n"
-    "┛ ┗┗┻┛ ┗┫┗┻┛ ┗┗┗┻\n"
-    "        ┛"
-)
+LOGO = Text("┳┳┓          •   \n┃┃┃┏┓┏┓┏┓┏┓┏┓┓╋┏┓\n┛ ┗┗┻┛ ┗┫┗┻┛ ┗┗┗┻\n        ┛")
 
 
 class AppHeader:

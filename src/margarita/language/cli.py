@@ -78,7 +78,8 @@ def _warn_if_skill_outdated():
             click.style(
                 f"[Warning]: Claude skill is at v{installed} but margarita is v{current}. "
                 "Run `uvx margarita install_claude_skill` to update.",
-                fg="yellow"),
+                fg="yellow",
+            ),
         )
 
 

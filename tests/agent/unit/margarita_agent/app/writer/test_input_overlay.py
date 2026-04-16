@@ -78,7 +78,7 @@ def test_show_updates_display_and_prompt():
     assert overlay.display is True
 
     # Verify the prompt was updated
-    mock_static.update.assert_called_once_with("❯  Enter your name:")
+    mock_static.update.assert_called_once_with("❯  Enter your name:")  # noqa: RUF001
 
     # Verify the input was focused
     mock_input.focus.assert_called_once()

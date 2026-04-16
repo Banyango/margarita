@@ -31,7 +31,7 @@ class Memory:
     def get_all(self) -> dict[str, Any]:
         """Get all memory values."""
         output = {}
-        for key in self._memory.keys():
+        for key in self._memory:
             output[key] = self.context.get_variable_value(key)
         return output
 

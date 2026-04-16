@@ -37,7 +37,7 @@ class FuncPlugin(AgentPlugin):
         func_param_str = match.groups()[1] if match and len(match.groups()) > 1 else None
         func_params = func_param_str.split(",") if func_param_str else []
 
-        all_params = dict()
+        all_params = {}
         for param in func_params:
             key_stripped = param.replace(" ", "")
             value = execution_model.context.get_variable_value(key_stripped)
@@ -49,9 +49,7 @@ class FuncPlugin(AgentPlugin):
         try:
             results = eval(method_value, execution_model.globals_dict, all_params)
         except Exception as e:
-            execution_model.import_errors.append(
-                f"Error calling function '{method_value}': {e!s}"
-            )
+            execution_model.import_errors.append(f"Error calling function '{method_value}': {e!s}")
             return
 
         call.result = results

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 
 from rich.text import Text
 
-from margarita.agent.entities.run import ToolCall
+if TYPE_CHECKING:
+    from margarita.agent.entities.run import ToolCall
 
 _STATE_VARIABLE_TOOLS = ("get_variable", "set_variable")
 _MAX_VALUE_LEN = 80
@@ -65,10 +67,9 @@ class MargaritaVarToolCall:
             text.append(f"↳ setting {var_name} = {value_str}", style="dim")
         elif tool_call.success:
             text.append(f"↳ set {var_name}", style="green")
-            if tool_call.result:
-                if value_str:
-                    text.append(" = ", style="green")
-                    text.append(value_str, style="green")
+            if tool_call.result and value_str:
+                text.append(" = ", style="green")
+                text.append(value_str, style="green")
         else:
             text.append(f"X {var_name}", style="red dim")
             if value_str:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 from rich.console import Group
 from rich.markdown import Markdown
@@ -9,10 +10,14 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from margarita.agent.app.config import AppConfig
-from margarita.agent.app.ui.components.run_widget.margarita_var_tool_call import MargaritaVarToolCall
-from margarita.agent.entities.function import FunctionCall
+from margarita.agent.app.ui.components.run_widget.margarita_var_tool_call import (
+    MargaritaVarToolCall,
+)
 from margarita.agent.entities.run import ContentBlock, ContentBlockType, Run, RunStatus, ToolCall
+
+if TYPE_CHECKING:
+    from margarita.agent.app.config import AppConfig
+    from margarita.agent.entities.function import FunctionCall
 
 
 class RunWidgetContent:
@@ -31,16 +36,13 @@ class RunWidgetContent:
         last_text_len = len(run.content_blocks[-1].text) if run.content_blocks else 0
         completed_tool_calls = sum(1 for tc in run.tool_calls if tc.success is not None)
 
-        if (num_content_blocks, tool_calls, status, last_text_len, completed_tool_calls) == (
+        return (num_content_blocks, tool_calls, status, last_text_len, completed_tool_calls) != (
             self.num_content_blocks,
             self.tool_calls,
             self.status,
             self.last_text_len,
             self.completed_tool_calls,
-        ):
-            return False
-
-        return True
+        )
 
     def refresh_content(self, run: Run, app_config: AppConfig):
         parts: list = []
@@ -175,7 +177,7 @@ class RunWidgetContent:
         return [
             Panel(
                 Group(
-                    Text("❯  " + fc.method, style="bold cyan"),
+                    Text("❯  " + fc.method, style="bold cyan"),  # noqa: RUF001
                     Syntax(fc.params, "python", theme="monokai", line_numbers=False),
                     Text((fc.result or "")[0:150], style="dim"),
                 ),

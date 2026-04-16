@@ -3,6 +3,7 @@ import importlib
 import importlib.util
 import os
 import sys
+from pathlib import Path
 
 from margarita.agent.core.agents.models import ExecutionModel
 
@@ -19,10 +20,9 @@ class ImportPlugin:
 
         Registers loaded modules in sys.modules. Raises ModuleNotFoundError if not found.
         """
-        cwd = os.getcwd()
-        pkg_dir = os.path.join(cwd, top_level)
-        init_py = os.path.join(pkg_dir, "__init__.py")
-        if not os.path.isdir(pkg_dir) or not os.path.isfile(init_py):
+        pkg_dir = Path.cwd() / top_level
+        init_py = pkg_dir / "__init__.py"
+        if not pkg_dir.is_dir() or not init_py.is_file():
             raise ModuleNotFoundError(f"Package {top_level!r} not found in cwd")
 
         # load top-level package
@@ -40,11 +40,11 @@ class ImportPlugin:
             cur_name = top_level
             for part in parts:
                 cur_name = f"{cur_name}.{part}"
-                candidate_pkg = os.path.join(base_dir, part)
-                candidate_init = os.path.join(candidate_pkg, "__init__.py")
-                candidate_py = os.path.join(base_dir, part + ".py")
+                candidate_pkg = base_dir / part
+                candidate_init = candidate_pkg / "__init__.py"
+                candidate_py = base_dir / f"{part}.py"
 
-                if os.path.isfile(candidate_init):
+                if candidate_init.is_file():
                     spec = importlib.util.spec_from_file_location(cur_name, candidate_init)
                     if spec is None or spec.loader is None:
                         raise ModuleNotFoundError(f"Cannot create spec for {cur_name!r}")
@@ -52,14 +52,14 @@ class ImportPlugin:
                     spec.loader.exec_module(mod)  # type: ignore
                     sys.modules[cur_name] = mod
                     base_dir = candidate_pkg
-                elif os.path.isfile(candidate_py):
+                elif candidate_py.is_file():
                     spec = importlib.util.spec_from_file_location(cur_name, candidate_py)
                     if spec is None or spec.loader is None:
                         raise ModuleNotFoundError(f"Cannot create spec for {cur_name!r}")
                     mod = importlib.util.module_from_spec(spec)
                     spec.loader.exec_module(mod)  # type: ignore
                     sys.modules[cur_name] = mod
-                    base_dir = os.path.dirname(candidate_py)
+                    base_dir = candidate_py.parent
                 else:
                     raise ModuleNotFoundError(f"Submodule {cur_name!r} not found in cwd package")
 
@@ -84,13 +84,13 @@ class ImportPlugin:
         # Common candidate locations
         pyver = f"python{sys.version_info.major}.{sys.version_info.minor}"
         candidates = [
-            os.path.join(venv, "lib", pyver, "site-packages"),  # Unix venv
-            os.path.join(venv, "Lib", "site-packages"),  # Windows venv
-            os.path.join(venv, "site-packages"),  # fallback
+            Path(venv) / "lib" / pyver / "site-packages",  # Unix venv
+            Path(venv) / "Lib" / "site-packages",  # Windows venv
+            Path(venv) / "site-packages",  # fallback
         ]
         for p in candidates:
-            if os.path.isdir(p) and p not in sys.path:
-                sys.path.insert(0, p)
+            if p.is_dir() and str(p) not in sys.path:
+                sys.path.insert(0, str(p))
                 return True
         return False
 
