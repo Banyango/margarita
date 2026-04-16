@@ -1,0 +1,13 @@
+---
+description: Hello World!
+---
+
+@effect log "Welcome to lime, Let's get started!"
+
+@state variableA = "Hello World"
+
+<<
+Why do we create ${variableA} Programs?
+>>
+
+@effect run

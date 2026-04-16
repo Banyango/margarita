@@ -1,5 +1,5 @@
-from margarita.parser import Parser
-from margarita.renderer import Renderer
+from margarita.language.parser import Parser
+from margarita.language.renderer import Renderer
 
 template = """
 <<

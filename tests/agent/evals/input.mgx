@@ -1,0 +1,17 @@
+---
+description: Test user input
+---
+
+@effect input "Choose a workspace theme (pick one):\n• Light\n• Dark\n• System (follow OS)" => variable
+
+<<
+Ask me a question with 3 options and get my input.
+
+Then write Here was your answer (with the answer)
+
+Then ask me another question based on my first answer with 3 options and get my input.
+
+Then write Here was your answer (with the answer)
+>>
+
+@effect run

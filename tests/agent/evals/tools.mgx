@@ -1,0 +1,23 @@
+---
+description: "Tools for MGX evaluation"
+---
+
+<<
+Test tools
+>>
+from thing import weather, WeatherParams
+
+@state num = "New York"
+
+@effect tools weather(params: WeatherParams) => str
+
+<<
+You are a weather expert.
+
+When given a city name, you should provide the current weather conditions in that city.
+Use the 'weather' tool to get the information and return it as a string.
+
+Tell me the weather in the variable num
+>>
+
+@effect run

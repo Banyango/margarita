@@ -18,8 +18,8 @@ Here's a practical example of using MARGARITA in a multi-step agent workflow:
 
 ```python
 from pathlib import Path
-from margarita.parser import Parser
-from margarita.renderer import Renderer
+from margarita.language.parser import Parser
+from margarita.language.renderer import Renderer
 
 
 class ResearchAgent:

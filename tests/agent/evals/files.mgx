@@ -1,0 +1,18 @@
+---
+description: "A prompt for loading and summarizing files."
+---
+
+from thing import load_file
+
+<<
+You are an Summarization Expert. Your task is to summarize the following text accurately and concisely,
+capturing the main points and key details while maintaining the original meaning and intent of the text.
+>>
+
+@state files = ["Readme.md"]
+
+for i in files:
+    @effect func load_file(i) => file
+    <<${file}>>
+
+@effect run

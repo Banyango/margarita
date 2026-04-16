@@ -1,0 +1,9 @@
+---
+description: "A prompt for loading a small subset of a file"
+---
+
+<<
+I want you to read the first 10 lines of the readme.md
+>>
+
+@effect run

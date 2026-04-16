@@ -11,7 +11,7 @@ from typing import Literal
 
 import openai
 
-from margarita.composer import Composer
+from margarita.language.composer import Composer
 
 
 class SimpleAgent:

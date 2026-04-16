@@ -42,8 +42,8 @@ The key to using includes is setting the `base_path` parameter when creating a `
 
 ```python
 from pathlib import Path
-from margarita.parser import Parser
-from margarita.renderer import Renderer
+from margarita.language.parser import Parser
+from margarita.language.renderer import Renderer
 
 # Define base path for includes
 template_dir = Path("./templates")
@@ -170,8 +170,8 @@ else:
 
 ```python
 from pathlib import Path
-from margarita.parser import Parser
-from margarita.renderer import Renderer
+from margarita.language.parser import Parser
+from margarita.language.renderer import Renderer
 
 # Define base path for includes
 template_dir = Path("./templates")

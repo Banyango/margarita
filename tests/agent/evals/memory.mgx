@@ -1,0 +1,11 @@
+---
+description: Test Memory
+---
+@memory var valueA
+
+<<
+If valueA is not set, Set `valueA` to "This is a test of memory."
+Otherwise write out hahahahah it's set!
+>>
+
+@effect run

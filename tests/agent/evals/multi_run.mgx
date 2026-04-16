@@ -1,0 +1,24 @@
+---
+description: "A prompt for loading and summarizing files."
+---
+
+@state numbers = false
+
+<<
+Say Hello
+>>
+
+@effect run
+
+if numbers is false:
+    <<
+    Say Goodbye too
+    >>
+
+@effect run
+
+<<
+Say Hello 2x
+>>
+
+@effect run

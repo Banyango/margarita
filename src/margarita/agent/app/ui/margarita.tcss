@@ -1,0 +1,118 @@
+/* ── Global ─────────────────────────────────────────────────── */
+
+.block {
+    margin: 1 0 0 0;
+}
+
+VerticalScroll {
+    scrollbar-size: 1 1;
+}
+
+/* ── Layout regions ─────────────────────────────────────────── */
+
+#header-content {
+    height: auto;
+    padding: 1 1 0 1;
+}
+
+#runs-container {
+    height: auto;
+}
+
+#status-line {
+    height: 1;
+    padding: 0 1;
+    color: $text-muted;
+}
+
+/* ── RunWidget ──────────────────────────────────────────────── */
+
+RunWidget {
+    height: auto;
+    border-left: blank;
+}
+
+RunWidget.-expanded {
+    border-left: thick $primary 30%;
+}
+
+RunWidget.-sub-run {
+    margin: 0 0 0 4;
+}
+
+RunWidget.-sub-run.-sub-color-0.-expanded { border-left: thick #00d7ff 70%; }
+RunWidget.-sub-run.-sub-color-1.-expanded { border-left: thick #ff5fff 70%; }
+RunWidget.-sub-run.-sub-color-2.-expanded { border-left: thick #ffd700 70%; }
+RunWidget.-sub-run.-sub-color-3.-expanded { border-left: thick #87ff00 70%; }
+RunWidget.-sub-run.-sub-color-4.-expanded { border-left: thick #ff8700 70%; }
+RunWidget.-sub-run.-sub-color-5.-expanded { border-left: thick #af87ff 70%; }
+
+RunHeader {
+    height: auto;
+    padding: 0 1;
+    &:hover {
+        background: $panel;
+    }
+}
+
+RunWidget > #run-content {
+    display: none;
+    height: auto;
+    padding: 0 0 1 2;
+}
+
+RunWidget.-expanded > #run-content {
+    display: block;
+}
+
+/* ── PermissionOverlay ──────────────────────────────────────── */
+
+PermissionOverlay {
+    height: auto;
+    display: none;
+    padding: 1 2;
+    border-top: solid $warning;
+    background: $surface;
+}
+
+#perm-title {
+    height: auto;
+    padding: 0 0 0 0;
+    color: $warning;
+}
+
+#perm-details {
+    height: auto;
+    padding: 0 0 1 0;
+    color: $text-muted;
+}
+
+/* ── InputOverlay ───────────────────────────────────────────── */
+
+InputOverlay {
+    height: auto;
+    display: none;
+    padding: 1 2;
+    border-top: solid $primary;
+    background: $surface;
+}
+
+#input-prompt {
+    height: auto;
+    padding: 0 0 1 0;
+    color: $primary;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+
+Footer {
+    background: transparent;
+    .footer-key--key {
+        background: transparent;
+        color: $text;
+    }
+    .footer-key--description {
+        color: $text-muted;
+        background: transparent;
+    }
+}

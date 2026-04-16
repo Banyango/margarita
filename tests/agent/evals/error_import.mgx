@@ -1,0 +1,5 @@
+---
+description: "Test for error handling when importing a non-existent module."
+model: "gpt-4"
+---
+import non_existent_module

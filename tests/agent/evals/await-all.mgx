@@ -1,0 +1,14 @@
+---
+description: "Run multiple mgx files at once."
+---
+
+@await-all
+    @effect exec console.mgx
+    @effect exec input.mgx => first_answer
+    @effect exec input.mgx => second_answer
+
+<<
+What was your first answer? ${first_answer}
+>>
+
+@effect run

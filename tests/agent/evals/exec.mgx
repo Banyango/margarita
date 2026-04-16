@@ -1,0 +1,5 @@
+---
+description: "Run multiple mgx files at once."
+---
+
+@effect exec exec_sub.mgx

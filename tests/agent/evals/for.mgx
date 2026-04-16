@@ -1,0 +1,10 @@
+---
+description: Test range with var
+---
+@state test = 5
+
+for i in range(test):
+    @effect log ${i}
+
+for i in range(test, 20):
+    @effect log "second ${i}"

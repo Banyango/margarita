@@ -1,0 +1,7 @@
+---
+description: "Eval: Verify @effect console hello"
+---
+@state variable = "test"
+
+@effect log hello
+@effect log the value of variable=${variable}

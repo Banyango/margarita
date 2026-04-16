@@ -10,10 +10,21 @@ nav:
         - Metadata: metadata.md
         - Includes: include_files.md
         - Contexts: contexts.md
+    - Agent (.mgx):
+        - MGX Overview: mgx.md
+        - Running the Agent: running_the_agent.md
+        - State: state.md
+        - Memory: memory.md
+        - Context Management: context_management.md
+        - User Input: user_input.md
+        - Logging: logging.md
+        - Function Calls: function_calls.md
+        - Custom Tools: custom_tools.md
+        - Prompt Locking: prompt_locking.md
+        - Plugins: coming_soon.md
     - Other Tools:
         - Template Packages in your .venv: uv_packages.md
         - Claude Skill: claude_skill.md
-        - Lime: mgx.md
         - Jetbrains IDE Plugin: jetbrains_plugin.md
     - Python API:
         - Basic Usage: basic.md

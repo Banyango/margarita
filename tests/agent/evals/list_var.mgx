@@ -1,0 +1,20 @@
+---
+description: "A prompt for loading and summarizing files."
+---
+@state numbers = []
+
+<<
+create a list of 10 integers put it in var numbers
+>>
+
+@effect run
+@effect context clear
+
+for i in numbers:
+    <<${i}>>
+
+<<
+Give me the list of numbers you created.
+>>
+
+@effect run

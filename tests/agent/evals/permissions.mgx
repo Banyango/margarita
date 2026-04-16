@@ -1,0 +1,9 @@
+---
+description: "Test permissions."
+---
+
+<<
+Create a file called test.txt and write the following text into it: "This is a test file."
+>>
+
+@effect run

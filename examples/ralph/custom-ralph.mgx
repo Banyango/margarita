@@ -1,0 +1,36 @@
+---
+description: Build a custom Ralph wiggum loop
+---
+
+@state maxIterations = 5
+@state tasks = []
+
+@effect input "What do you want to build?:" => userInput
+
+[[ use-case-task-breakdown.mg input=userInput ]]
+
+@effect run
+
+for task in tasks:
+    @effect context clear
+    @state isDone = false
+
+    <<
+    Check the current state of the project and attempt to implement:
+    ${task}
+    >>
+    // Add some additional guidlines that help the loop run better.
+    [[ additional_guidance.mg ]]
+    <<
+    Mandatory last step: Once you're done check the acceptance criteria ${task.acceptanceCriteria}.
+    Set variable `isDone` = true ONLY if ALL criteria are met.
+    Set variable `isDone` = false if any criteria are not met.
+    >>
+
+    // max iterations 5
+    for i in range(5):
+      // Run the task.
+      @effect run
+
+      if isDone:
+        break

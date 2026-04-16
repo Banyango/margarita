@@ -1,0 +1,64 @@
+---
+description: "Plan Implement - PI"
+---
+@memory var request
+@memory var researchResults
+@memory var implementationPlan
+
+@effect log request
+
+if not request:
+    @effect input "What do you want to build?" => request
+
+    for i in range(5):
+        <<ask the user for clarification on the request to build ${request} if needed. If it is too vague,
+        ask follow up questions to get more details. If the request is clear,
+        set variable isDoneClarifying = True if we have enough information
+        set variable isDoneClarifying = False if not.
+        >>
+
+        @effect run
+
+        if isDoneClarifying:
+            break
+
+
+if not researchResults:
+    <<
+    Research the codebase and figure out how to implement the following feature: ${request}
+
+    Find all the relevant information that we need to implement this feature, including but not limited to:
+    - What files we need to modify
+    - What functions we need to modify
+    - What new functions we need to create
+    - What libraries we need to use
+    - What are the edge cases we need to consider
+    - What are the potential pitfalls and how to avoid them
+
+    Store the information into a variable called `researchResults`
+    >>
+
+    @effect run
+    @effect context clear
+
+if not implementationPlan:
+    <<
+    Fetch the research results variable and create a step by step plan for implementing the feature.
+    The plan should be detailed and include specific actions that we need to take to implement the feature.
+    The plan should also include any potential pitfalls and how to avoid them.
+
+    Store the plan into a variable called `implementationPlan`
+    >>
+
+    @effect run
+    @effect context clear
+
+<<
+Fetch the implementationPlan variable and execute the steps of the plan.
+After executing the step, check if the step was successful and if there are any issues that need to be addressed.
+If there are issues, address them and then move on to the next step of the plan.
+
+Don't prompt me for the next steps just implement them.
+>>
+
+@effect run

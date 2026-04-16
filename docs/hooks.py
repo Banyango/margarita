@@ -16,7 +16,7 @@ def _register_margarita_lexer():
     try:
         from lexers.margarita_lexer import MargaritaLexer
     except ImportError:
-        from margarita.pygments_lexer import MargaritaLexer
+        from margarita.language.pygments_lexer import MargaritaLexer
 
     from pygments.lexers import _mapping
 
@@ -26,8 +26,8 @@ def _register_margarita_lexer():
         _mapping.LEXERS["MargaritaLexer"] = (
             module_path,
             "Margarita",
-            ("margarita", "marg", "mg"),
-            ("*.mg", "*.margarita"),
+            ("margarita", "marg", "mg", "mgx", "margaritascript"),
+            ("*.mg", "*.mgx", "*.margarita"),
             ("text/x-margarita",),
         )
         print("✓ Registered MARGARITA syntax highlighter")

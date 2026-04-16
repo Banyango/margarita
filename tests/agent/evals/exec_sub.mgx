@@ -1,0 +1,6 @@
+---
+description: "Run multiple mgx files at once."
+---
+
+@effect exec console.mgx
+

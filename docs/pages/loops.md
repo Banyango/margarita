@@ -90,3 +90,21 @@ Even 4
 Even 6
 Even 8
 ```
+
+## Dictionary Iteration
+
+Use `for key, value in dict_var:` to iterate over both keys and values of a dictionary.
+
+```margarita
+@state person = {"name": "Alice", "role": "admin"}
+
+for key, value in person:
+    << ${key}: ${value} >>
+```
+
+Rendered result:
+
+```text
+name: Alice
+role: admin
+```

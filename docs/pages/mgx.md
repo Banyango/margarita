@@ -1,44 +1,44 @@
-# MGX
+# MGX Agent Templates
 
-# Overview
+`.mgx` files extend `.mg` Margarita templates with agentic capabilities: Python imports, `@state`, `@memory`, `@effect` directives, and agent execution.
 
-.mgx files are a specialized template format used by Lime Agents.
+Run them with:
 
-Use them with [Lime](https://github.com/Banyango/lime) to execute workflows using your coding agents.
+```bash
+margarita run example.mgx
+```
 
 # Features
 
-- All the features of .mg margarita templates. Such as includes, conditionals, loops, and variable interpolation.
-- Adds the ability to import python functions.
-- `@effect` give commands to the agent. These can be used to define tools, run the agent, and manage context.
+- All the features of `.mg` Margarita templates: includes, conditionals, loops, and variable interpolation.
+- Python imports (`from my_module import fn`).
+- `@state` — define variables accessible by the agent during a run.
+- `@memory` — persist variables across runs via `memory.json`.
+- `@effect` — give commands to the agent: define tools, run the agent, manage context, log output, and more.
 
-```margaritascript
+# Example
+
+```mgx
 ---
-description: "the description of the addition tool"
+description: "Example agent template"
 ---
-// import python function.
+
+// Import Python functions
 from math import add, subtract, multiply, load_files
 
-// Each markdown block in .mgx files gets evaluated and then loaded into the agent's context.
+// Load context into the agent
 <<
 You are an expert mathematician.
 Your task is to solve addition problems accurately and efficiently.
-
-When given a problem, you should:
-1. Read the problem carefully.
-2. Identify the two numbers to be added.
-3. Calculate the sum of the two numbers.
-4. Provide the final answer clearly.
 >>
 
-// We can load mg files into the context using includes as well
+// Include other Margarita files
 [[ create-a-react-component ]]
-[[ create-a-test ]]
-[[ validate-test-works ]]
 
-// call the add function with 12 and test.data stored into result
+// Run a Python function and store the result in state
 @effect func add(12, test.data) => result
 
+// Conditionally add more context
 if result != 24:
     <<
     The addition tool did not return the expected result.
@@ -48,37 +48,27 @@ if result != 24:
 
 @state result = {}
 
-// define a new tool that the agent should use
-@effect tool add
-@effect tool subtract
-@effect tool multiply
-@effect tool load_files
+// Register tools for the agent
+@effect tools add(x: int, y: int) => int
+@effect tools subtract(x: int, y: int) => int
 
-// run the agent call
+// Run the agent
 @effect run
 
-// clear the context
+// Clear context and tools after running
 @effect context clear
+@effect tools clear
 
-// clear the tool cache
-@effect tool clear
-
-// Load new state into the context.
 <<
 Validate the following:
 - The addition tool correctly adds two numbers.
 - The subtraction tool correctly subtracts two numbers.
-- The multiplication tool correctly multiplies two numbers.
-- The load_files function correctly loads and reads files from the specified directory.
-
-Store the result into the variable 'result'.
 >>
 
 if result.failed:
     <<
-    The test failed. Please review the implementation of the math tools and the
-    load_files function for any errors.
+    The test failed. Please review the implementation.
     >>
-
-
 ```
+
+See the [Agent](running_the_agent.md) section for full documentation on `@state`, `@memory`, `@effect`, and more.

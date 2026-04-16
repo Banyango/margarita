@@ -1,0 +1,29 @@
+---
+description: "the description of the addition tool"
+---
+<<
+You are an expert mathematician.
+Your task is to solve addition problems accurately and efficiently.
+
+When given a problem, you should:
+1. Read the problem carefully.
+2. Identify the two numbers to be added.
+3. Calculate the sum of the two numbers.
+4. Provide the final answer clearly.
+>>
+
+@state value = 0
+@state bald = 5
+@state yarr = 3
+
+<<
+Add 12 + test and store the result in the variable result
+>>
+
+@effect context clear
+
+<<
+If you are a mathematician, echo 'I am a mathematician' to the console. Otherwise, Echo 'I am a banana' to the console.
+>>
+
+@effect tools 

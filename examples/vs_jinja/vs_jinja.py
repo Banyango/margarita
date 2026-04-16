@@ -77,7 +77,7 @@ def build_prompt_jinja(context: dict) -> str:
 
 # ─── MARGARITA VERSION ────────────────────────────────────────────────────────
 
-from margarita.composer import Composer
+from margarita.language.composer import Composer
 
 
 def build_prompt_margarita(context: dict) -> str:
