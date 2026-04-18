@@ -10,11 +10,12 @@ class QueryService(ABC):
     """
 
     @abstractmethod
-    async def execute_query(self, execution_model: ExecutionModel) -> str:
+    async def execute_query(self, execution_model: ExecutionModel, params: str) -> str:
         """Execute the agent with the given context.
 
         Args:
             execution_model (ExecutionModel): The execution model for the current agent run.
+            params (str): The query parameters for the execution model.
         """
 
     @abstractmethod

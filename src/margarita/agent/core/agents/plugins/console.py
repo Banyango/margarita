@@ -26,18 +26,20 @@ class ConsoleLogPlugin(AgentPlugin):
         """
         final_string = execution_model.context.replace_variables_in_content(params)
 
-        # If start_run above failed due to awkward annotation logic fallback to creating Run via Run class
-        try:
-            self.logger_service.print(f"[Log.Info] {final_string}")
-            execution_model.current_run.content_blocks.append(
+        self.logger_service.print(f"[Log.Info] {final_string}")
+
+        # Find the most recent active run to record the log message.
+        # current_run can be None after a @effect run causes start_turn() to create a new empty turn.
+        target_run = execution_model.current_run
+        if target_run is None:
+            for turn in reversed(execution_model.turns):
+                if turn.run is not None:
+                    target_run = turn.run
+                    break
+
+        if target_run is not None:
+            target_run.content_blocks.append(
                 ContentBlock(type=ContentBlockType.LOGGING, text=final_string)
             )
-        except Exception:
-            # Last-resort: append to turns[-1].run.content_blocks if possible
-            if execution_model.turns and execution_model.turns[-1].run is not None:
-                execution_model.turns[-1].run.content_blocks.append(
-                    ContentBlock(type=ContentBlockType.LOGGING, text=final_string)
-                )
-            else:
-                # Cannot record output into run; print to stdout for harness capture as fallback
-                print(final_string)
+        else:
+            print(final_string)

@@ -57,6 +57,7 @@ async def test_current_run_should_return_run_when_turn_has_run():
     model.start_turn()
     now = datetime.now()
     run = model.start_run(
+        name="test",
         prompt="test prompt",
         provider="openai",
         status=RunStatus.RUNNING,
@@ -80,6 +81,7 @@ async def test_start_run_should_create_run_on_current_turn_when_called():
 
     # Act
     run = model.start_run(
+        name="test",
         prompt="hello",
         provider="anthropic",
         status=RunStatus.PENDING,

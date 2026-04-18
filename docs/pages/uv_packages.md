@@ -1,12 +1,12 @@
 # Template Packages
 
-Margarita supports using python virtual environments to add additional includes in your templates.
+Margarita supports using python virtual environments to add additional includes in your .mg files.
 
 ---
 
 ## How it works
 
-When you render a template, MARGARITA finds the nearest `.venv/` and finds installed packages that expose a `templates/` directory.
+When you render a .mg file, MARGARITA finds the nearest `.venv/` and finds installed packages that expose a `templates/` directory.
 
 ```shell
 my-project/

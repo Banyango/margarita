@@ -40,6 +40,29 @@ version: 1.0
         assert len(nodes) == 1
         assert isinstance(nodes[0], TextNode)
 
+    def test_parse_should_combine_parameter_metadata_when_template_has_multiple_parameters(self):
+        template = """---
+task: summarization
+parameter: team (string) - The team param
+parameter: tone (enum) - Angry, Sad, Happy
+parameter: focus (bool) - True if focused; false otherwise
+---
+
+<<Content here>>"""
+        metadata, nodes = self.parser.parse(template)
+
+        assert metadata == {
+            "task": "summarization",
+            "parameters": {
+                "team": "(string) - The team param",
+                "tone": "(enum) - Angry, Sad, Happy",
+                "focus": "(bool) - True if focused; false otherwise",
+            },
+        }
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], TextNode)
+
     def test_parse_should_parse_variables_when_template_has_variable_placeholders(self):
         template = "<<Hello, ${name}!>>"
         _, nodes = self.parser.parse(template)

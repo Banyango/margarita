@@ -113,6 +113,7 @@ class ExecuteAgentOperation:
         self.execution_model.start_turn()
         # Start a run record so plugins that write to current_run.content_blocks work
         run = self.execution_model.start_run(
+            name="Setup",
             prompt=metadata.get("description", ""),
             provider="local",
             status=RunStatus.RUNNING,
@@ -142,6 +143,9 @@ class ExecuteAgentOperation:
             context = self.execution_model.context
 
         for node in nodes:
+            if self.execution_model.stopped:
+                return
+
             if isinstance(node, TextNode):
                 if context is None:
                     context = self.execution_model.context
@@ -361,6 +365,13 @@ class ExecuteAgentOperation:
         Returns:
             The evaluated value of the condition
         """
+        condition = condition.strip()
+
+        literal_values = {"true": True, "false": False, "none": None}
+        lowered_condition = condition.lower()
+        if lowered_condition in literal_values:
+            return literal_values[lowered_condition]
+
         does_condition_contain_equality_or_logical = any(
             op in condition for op in EQUALITY_OR_LOGICAL_OPERATORS
         )
@@ -368,6 +379,7 @@ class ExecuteAgentOperation:
         if does_condition_contain_equality_or_logical:
             try:
                 namespace = dict(context.data)
+                namespace.update(literal_values)
                 result = eval(condition, {"__builtins__": {}}, namespace)
                 return result
             except Exception:

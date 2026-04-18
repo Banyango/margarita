@@ -138,7 +138,7 @@ class MemoryNode(Node):
 # -------------------------
 class Parser:
     def __init__(self):
-        self.metadata: dict[str, str] = {}
+        self.metadata: dict[str, str | dict[str, str]] = {}
         self.lines: list[tuple[int, str]] = []  # (indent_level, line_content)
         self.pos: int = 0
         self.is_mgx: bool = False
@@ -192,7 +192,21 @@ class Parser:
                 # Parse metadata line
                 metadata_match = re.match(r"^(\w+):\s*(.+)$", stripped)
                 if metadata_match:
-                    self.metadata[metadata_match.group(1)] = metadata_match.group(2).strip()
+                    if metadata_match.group(1) == "parameter":
+                        # parse name (string) description from match group 2
+                        param_match = re.match(
+                            r"^(\w+)\s*\(([^)]+)\)\s*(.+)$", metadata_match.group(2).strip()
+                        )
+                        if param_match:
+                            param_name = param_match.group(1)
+                            param_type = param_match.group(2)
+                            param_desc = param_match.group(3)
+                            self.metadata.setdefault("parameters", {})[param_name] = (
+                                f"({param_type}) {param_desc}"
+                            )
+
+                    else:
+                        self.metadata[metadata_match.group(1)] = metadata_match.group(2).strip()
                 i += 1
         else:
             # No metadata block, reset to start

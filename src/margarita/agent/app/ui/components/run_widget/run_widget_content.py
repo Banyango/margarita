@@ -10,13 +10,22 @@ from rich.syntax import Syntax
 from rich.table import Table
 from rich.text import Text
 
-from margarita.agent.app.ui.components.run_widget.margarita_var_tool_call import (
+from margarita.agent.app.ui.components.run_widget.tool_call_handlers.default_tool_call import (
+    DefaultToolCallHandler,
+)
+from margarita.agent.app.ui.components.run_widget.tool_call_handlers.internal_var_tool_call import (
     MargaritaVarToolCall,
+)
+from margarita.agent.app.ui.components.run_widget.tool_call_handlers.view_tool_call import (
+    MargaritaViewToolCall,
 )
 from margarita.agent.entities.run import ContentBlock, ContentBlockType, Run, RunStatus, ToolCall
 
 if TYPE_CHECKING:
     from margarita.agent.app.config import AppConfig
+    from margarita.agent.app.ui.components.run_widget.tool_call_handlers.interfaces import (
+        ToolcallHandler,
+    )
     from margarita.agent.entities.function import FunctionCall
 
 
@@ -28,8 +37,21 @@ class RunWidgetContent:
         self.last_text_len: int = 0
         self.completed_tool_calls: int = 0
         self._tool_call_cache: dict = {}
+        self._tool_call_handlers: list[ToolcallHandler] = [
+            MargaritaVarToolCall(),
+            MargaritaViewToolCall(),
+        ]
+        self._default_tool_call_handler = DefaultToolCallHandler()
 
     def should_render(self, run: Run) -> bool:
+        """True if the run should be rendered; False otherwise
+
+        Args:
+            run (Run): the run model.
+
+        Returns:
+            bool: True if the run should be rendered; False otherwise
+        """
         num_content_blocks = len(run.content_blocks)
         tool_calls = len(run.tool_calls)
         status = run.status
@@ -45,6 +67,12 @@ class RunWidgetContent:
         )
 
     def refresh_content(self, run: Run, app_config: AppConfig):
+        """Refresh the content of the run
+
+        Args:
+            run (Run): the run model.
+            app_config (AppConfig): the app config.
+        """
         parts: list = []
 
         parts.extend(self.render_run(run, app_config))
@@ -52,6 +80,12 @@ class RunWidgetContent:
         return parts
 
     def render_run(self, run: Run, app_config: AppConfig) -> list:
+        """Render the Run
+
+        Args:
+            run (Run): Run model.
+            app_config (AppConfig): app config settings.
+        """
         parts = []
 
         if app_config.show_context and run.provider != "local":
@@ -60,6 +94,7 @@ class RunWidgetContent:
 
         tool_call_map = {tc.tool_call_id: tc for tc in run.tool_calls}
 
+        # todo split these out into a handler pattern.
         for block in run.content_blocks:
             if block.type == ContentBlockType.REASONING:
                 continue
@@ -122,51 +157,26 @@ class RunWidgetContent:
         return parts
 
     def _get_or_render_tool_call(self, tc: ToolCall):
+        should_cache = False
         if tc.success is not None:
             cached = self._tool_call_cache.get(tc.tool_call_id)
             if cached is not None:
                 return cached
-            rendered = (
-                MargaritaVarToolCall.render(tc)
-                if MargaritaVarToolCall.handles(tc.tool_name)
-                else self._render_tool_call(tc)
-            )
+            should_cache = True
+
+        rendered = None
+        for handler in self._tool_call_handlers:
+            if handler.handles(tc.tool_name):
+                rendered = handler.render(tc)
+                break
+
+        if rendered is None:
+            rendered = self._default_tool_call_handler.render(tc)
+
+        if should_cache:
             self._tool_call_cache[tc.tool_call_id] = rendered
-            return rendered
-        if MargaritaVarToolCall.handles(tc.tool_name):
-            return MargaritaVarToolCall.render(tc)
-        return self._render_tool_call(tc)
 
-    @staticmethod
-    def _render_tool_call(tc: ToolCall) -> Panel:
-        import json
-
-        if tc.success is None:
-            status_icon, status_style, border_style = "⌛", "yellow", "yellow dim"
-        elif tc.success:
-            status_icon, status_style, border_style = "✔", "green", "green dim"
-        else:
-            status_icon, status_style, border_style = "✗", "red", "red dim"
-
-        tool_text = Text()
-        tool_text.append(f"{status_icon} ", style=status_style)
-        tool_text.append(tc.tool_name, style="bold")
-        if tc.duration_ms is not None:
-            tool_text.append(f"  {tc.duration_ms:.0f}ms", style="dim")
-
-        tool_parts = [tool_text]
-
-        if tc.arguments:
-            try:
-                args_str = json.dumps(tc.arguments, indent=2)
-                tool_parts.append(Syntax(args_str, "json", theme="monokai", line_numbers=False))
-            except (TypeError, ValueError):
-                tool_parts.append(Text(str(tc.arguments), style="dim"))
-
-        if tc.result:
-            tool_parts.append(Text(tc.result, style="dim"))
-
-        return Panel(Group(*tool_parts), border_style=border_style, expand=True, padding=(0, 1))
+        return rendered
 
     @staticmethod
     def _render_input(tc: ContentBlock) -> Panel:

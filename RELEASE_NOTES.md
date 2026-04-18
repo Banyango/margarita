@@ -1,3 +1,15 @@
+# Release Notes - Margarita v0.5.0
+
+**Release Date:** Apr 16, 2026
+
+## 🎉 Overview
+- Merged the Lime tool into Margarita (integration and internal restructuring)
+- Added @effect stop
+- View tool calls don't render the whole file and keeps performance up.
+- Add support for naming the runs.
+- Fixed linting and packaging issues (moved py.typed to package root)
+- Updated documentation links.
+
 # Release Notes - Margarita v0.4.3
 
 **Release Date:** Apr 8, 2026

@@ -14,6 +14,7 @@ from margarita.agent.core.agents.plugins.context import ContextPlugin
 from margarita.agent.core.agents.plugins.func import FuncPlugin
 from margarita.agent.core.agents.plugins.input import InputPlugin
 from margarita.agent.core.agents.plugins.run_agent import RunAgentPlugin
+from margarita.agent.core.agents.plugins.stop import StopPlugin
 from margarita.agent.core.agents.plugins.tools import ToolsPlugin
 from margarita.agent.core.agents.services.memory import MemoryService
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
@@ -26,6 +27,7 @@ from margarita.agent.entities.prompt_integrity import (
     PROMPT_MANIFEST_FILE_NAME,
     PromptIntegrityError,
 )
+from margarita.agent.entities.run import StopError
 
 
 def make_plugins(
@@ -42,6 +44,7 @@ def make_plugins(
         ContextPlugin(),
         ConsoleLogPlugin(logger_service=logger_service),
         InputPlugin(),
+        StopPlugin(),
         ExecPlugin(
             plugin_factory=lambda: make_plugins(
                 query_service, logger_service, memory_service, prompt_integrity, allow_unverified
@@ -121,6 +124,8 @@ async def run(
             await operation.execute_async(mgx_file=mgx_code, base_path=base_path)
         except (PromptIntegrityError, ValueError, FileNotFoundError) as error:
             raise click.ClickException(str(error)) from error
+        except StopError as stop_error:
+            raise click.ClickException(str(stop_error)) from stop_error
 
         # Prevent hanging in headless mode if the run requires user input or permission
         if headless and (model.pending_input is not None or model.pending_permission is not None):

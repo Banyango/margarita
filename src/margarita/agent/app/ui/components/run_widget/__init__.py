@@ -82,6 +82,7 @@ class RunWidget(Vertical):
             return
 
         self._header.status = self._run.status
+        self._header.name = self._run.name
         self._header.duration_ms = self._run.duration_ms
         self._header.tokens = self._run.tokens.total_tokens
         self._header.model = self._run.model

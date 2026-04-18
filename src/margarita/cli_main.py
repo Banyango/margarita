@@ -4,7 +4,7 @@ import click
 
 from margarita.agent.app.cli.agents.run import run
 from margarita.agent.app.cli.prompts.commands import prompts
-from margarita.language.cli import install_claude_skill, render
+from margarita.language.cli import install_claude_skill, metadata, render
 
 
 @click.group()
@@ -18,6 +18,7 @@ cli.add_command(run)
 cli.add_command(prompts)
 cli.add_command(install_claude_skill)
 cli.add_command(render)
+cli.add_command(metadata)
 
 if __name__ == "__main__":
     cli()

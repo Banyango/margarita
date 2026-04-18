@@ -78,10 +78,13 @@ class _SubExecutionModel(ExecutionModel):
             await prompt.event.wait()
             self._parent_model.pending_permission = None
 
-    def start_run(self, prompt: str, provider: str, status: RunStatus, start_time: datetime) -> Run:
+    def start_run(
+        self, name: str, prompt: str, provider: str, status: RunStatus, start_time: datetime
+    ) -> Run:
         """Start a new run and return it.
 
         Args:
+            name: Name of the run
             prompt: Permission prompt.
             provider: Permission provider.
             status: Run status.
@@ -91,7 +94,7 @@ class _SubExecutionModel(ExecutionModel):
             Run: The started run with sub-run metadata stamped.
         """
         run = super().start_run(
-            prompt=prompt, provider=provider, status=status, start_time=start_time
+            name="SubRun", prompt=prompt, provider=provider, status=status, start_time=start_time
         )
         run.is_sub_run = True
         run.title = self._exec_title

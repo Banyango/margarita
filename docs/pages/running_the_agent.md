@@ -1,22 +1,10 @@
 # Running the Agent
 
-## Installation
-
-Run the following command to run a `.mgx` file without a permanent install:
-
-```sh
-uvx margarita run hello.mgx
-```
-
-To install as a persistent tool:
-
-```sh
-uv tool install margarita
-```
-
 ## Requirements
 
 Margarita's agent runner uses GitHub Copilot. You will need the [Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/install-copilot-cli) installed and configured.
+
+> **Note:** We're working on adding support for more models and providers in the future. If you have a specific model or provider you'd like to see supported, please let us know by creating an issue in our GitHub repository.
 
 ## Your first agent template
 
@@ -56,4 +44,23 @@ model: "gpt-4"
 << test >>
 
 @effect run
+```
+
+# Naming the Runs
+
+If you supply a parameter after `@effect run`, that parameter will be used as the name of the run.
+
+
+```mgx
+---
+description: Hello world agent template
+---
+
+<<
+# Hello World
+
+Tell the user Hello, and welcome them to Margarita!
+>>
+
+@effect run Hello World
 ```

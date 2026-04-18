@@ -53,6 +53,7 @@ async def test_handle_should_run_func_when_valid():
     execution_model = ExecutionModel()
     execution_model.start_turn()
     execution_model.start_run(
+        name="test",
         prompt="p",
         provider="prov",
         status=RunStatus.PENDING,

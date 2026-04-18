@@ -18,11 +18,14 @@ class SessionConfig:
     client_name = "MargaritaAI"
     model: str
     streaming: bool
-    on_permission_request: Callable[
-        [PermissionRequest, dict[str, str]],
-        PermissionRequestResult | Awaitable[PermissionRequestResult],
-    ]
-    infinite_sessions: bool
+    on_permission_request: (
+        Callable[
+            [PermissionRequest, dict[str, str]],
+            PermissionRequestResult | Awaitable[PermissionRequestResult],
+        ]
+        | None
+    )
+    infinite_sessions: InfiniteSessionConfig | None
     tools: list[Tool]
     system_message: SystemMessageConfig | None = None
     on_user_input_request: UserInputHandler | None = None

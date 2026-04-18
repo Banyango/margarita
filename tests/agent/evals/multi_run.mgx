@@ -8,17 +8,19 @@ description: "A prompt for loading and summarizing files."
 Say Hello
 >>
 
-@effect run
+@effect run Greetings
 
 if numbers is false:
     <<
     Say Goodbye too
     >>
 
-@effect run
+@effect run Farewell
+
+@effect log "I'm in Again scope"
 
 <<
 Say Hello 2x
 >>
 
-@effect run
+@effect run Again

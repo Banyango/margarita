@@ -344,6 +344,7 @@ def _render_directory(
             click.echo(f"\n--- End of {template_file.name} ---\n")
 
 
+@click.command()
 @click.argument("template_path", type=click.Path(exists=True, path_type=Path))
 def metadata(template_path: Path):
     """Show metadata from a margarita template file or directory.

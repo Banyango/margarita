@@ -99,11 +99,12 @@ class CopilotQuery(QueryService):
         self.app_config = app_config or AppConfig()
         self.logger_service = logger
 
-    async def execute_query(self, execution_model: ExecutionModel) -> str:
+    async def execute_query(self, execution_model: ExecutionModel, params: str) -> str:
         """Execute a query using the Copilot client.
 
         Args:
             execution_model (ExecutionModel): The execution model for the current agent run.
+            params (str): The query parameters for the execution model.
         """
         if not self.client.con:
             raise Exception("Copilot client is not connected")
@@ -118,7 +119,7 @@ class CopilotQuery(QueryService):
 
             Args:
                 request (UserInputRequest): The user input request from the Copilot session, containing the prompt.
-                properties (dict[str, str]): Additional properties related to the request.
+                _properties (dict[str, str]): Additional properties related to the request.
             """
             request = InputRequest(prompt=request["question"])
             await execution_model.request_input(request)
@@ -216,15 +217,10 @@ class CopilotQuery(QueryService):
                     model=model_value or "gpt-5-mini",
                     streaming=True,
                     tools=session_tools,
+                    infinite_sessions=None,
                 )
-            # Prefer client.create_session when available, otherwise fall back to client.con.create_session
-            if hasattr(self.client, "create_session"):
-                await self.client.create_session(session_config)
-            elif hasattr(self.client, "con") and hasattr(self.client.con, "create_session"):
-                session = await self.client.con.create_session(session_config)
-                self.client.session = session
-            else:
-                raise RuntimeError("Copilot client does not support session creation")
+
+            await self.client.create_session(session_config=session_config)
 
         if self.logger_service:
             self.logger_service.print(
@@ -235,6 +231,7 @@ class CopilotQuery(QueryService):
             )
 
         run = execution_model.start_run(
+            name=params,
             prompt=execution_model.context.window,
             provider="copilot",
             status=RunStatus.RUNNING,
@@ -423,13 +420,18 @@ class CopilotQuery(QueryService):
         except TimeoutError:
             run.status = RunStatus.ERROR
             run.end_time = datetime.now(UTC)
-            execution_model.dismiss_all_overlays()
+            await execution_model.dismiss_all_overlays()
             unsubscribe()
 
             if self.logger_service:
                 self.logger_service.print(f"[Run error] shutdown_reason={ShutdownReason.TIMEOUT}")
 
+            execution_model.start_turn()
+
             return ""
+
+        execution_model.current_run.on_complete()
+        execution_model.start_turn()
 
         return response.data.content
 

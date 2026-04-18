@@ -1,0 +1,56 @@
+<<
+Make sure that all tests are passing format and linting are run
+```bash
+make format
+make lint
+make test
+```
+If there was an error set `fail` variable to True.
+>>
+
+@effect run
+@effect context clear
+
+if fail:
+    @effect stop
+
+
+<<
+Update the version number in pyproject.toml. Follow semantic versioning. Ask for a version if you are unsure.
+Store the new version number in a variable called `version` for later use.
+>>
+
+@effect run
+
+<<
+Investigate the git commit history since the last release and summarize the changes that have been made. This will help in writing the release notes.
+
+Then Update RELEASE_NOTES.md with the new version and changes in the following format:
+
+```
+# Release Notes - Margarita v${version}
+
+**Release Date:** <date>
+
+## 🎉 Overview
+a brief summary of the added features, improvements, and bug fixes in this release.
+```
+>>
+
+@effect run
+@effect context clear
+
+<<
+Run mike to create a new versioned docs site:
+   ```bash
+   cd docs
+   uv run mike deploy ${version} latest --update-aliases
+   ```
+>>
+@effect run
+
+<<
+5. Commit all changes with a message like "Release v${version}".
+>>
+
+@effect run

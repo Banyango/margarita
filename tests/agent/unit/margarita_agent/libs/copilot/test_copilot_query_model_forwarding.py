@@ -45,6 +45,11 @@ class FakeClient:
 
     def __init__(self):
         self.con = FakeCon()
+        self.received_model = None
+
+    async def create_session(self, session_config=None):
+        self.received_model = getattr(session_config, "model", None)
+        self.session = FakeSession()
 
 
 @pytest.mark.asyncio
@@ -98,7 +103,7 @@ async def test_execute_query_forwards_model_from_execution_model(monkeypatch):
     execution_model.start_turn()
 
     # Act
-    await query.execute_query(execution_model)
+    await query.execute_query(execution_model, params="")
 
     # Assert
-    assert fake_client.con.received_model == "custom-model"
+    assert fake_client.received_model == "custom-model"

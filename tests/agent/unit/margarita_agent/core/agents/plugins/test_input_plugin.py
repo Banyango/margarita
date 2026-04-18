@@ -15,6 +15,7 @@ def _create_execution_model():
     model = ExecutionModel()
     model.start_turn()
     model.start_run(
+        name="test",
         prompt="",
         provider="test",
         status=RunStatus.PENDING,

@@ -14,4 +14,4 @@ Then ask me another question based on my first answer with 3 options and get my 
 Then write Here was your answer (with the answer)
 >>
 
-@effect run
+@effect run Collect Input

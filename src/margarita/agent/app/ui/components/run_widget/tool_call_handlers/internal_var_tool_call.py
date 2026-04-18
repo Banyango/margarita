@@ -5,7 +5,13 @@ from typing import TYPE_CHECKING
 
 from rich.text import Text
 
+from margarita.agent.app.ui.components.run_widget.tool_call_handlers.interfaces import (
+    ToolcallHandler,
+)
+
 if TYPE_CHECKING:
+    from rich.panel import Panel
+
     from margarita.agent.entities.run import ToolCall
 
 _STATE_VARIABLE_TOOLS = ("get_variable", "set_variable")
@@ -25,9 +31,8 @@ def _join_truncated(parts: list[str], max_len: int = _MAX_VALUE_LEN) -> str:
     return result
 
 
-class MargaritaVarToolCall:
-    @staticmethod
-    def handles(tool_name: str) -> bool:
+class MargaritaVarToolCall(ToolcallHandler):
+    def handles(self, tool_name: str) -> bool:
         """Check if the tool call is handled by this renderer
 
         Args:
@@ -97,8 +102,7 @@ class MargaritaVarToolCall:
 
         return text
 
-    @staticmethod
-    def render(tc: ToolCall) -> Text:
+    def render(self, tc: ToolCall) -> Text | Panel:
         """Render the tool call
 
         Args:

@@ -280,6 +280,36 @@ async def test_execute_async_should_skip_if_block_when_condition_is_false():
 
 
 @pytest.mark.asyncio
+async def test_execute_async_should_render_if_block_when_condition_is_lowercase_true_literal():
+    # Arrange
+    operation = _create_operation()
+    mgx_content = """if true:
+    <<Active>>
+"""
+
+    # Act
+    await operation.execute_async(mgx_content)
+
+    # Assert
+    assert operation.execution_model.context.window == "Active\n"
+
+
+@pytest.mark.asyncio
+async def test_execute_async_should_skip_if_block_when_condition_is_lowercase_false_literal():
+    # Arrange
+    operation = _create_operation()
+    mgx_content = """if false:
+    <<Active>>
+"""
+
+    # Act
+    await operation.execute_async(mgx_content)
+
+    # Assert
+    assert operation.execution_model.context.window == ""
+
+
+@pytest.mark.asyncio
 async def test_execute_async_should_call_plugin_when_effect_matches():
     # Arrange
     mock_plugin = MockPlugin("test")

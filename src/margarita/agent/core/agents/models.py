@@ -100,6 +100,7 @@ class ExecutionModel:
         self.memory: Memory | None = None
         self.globals_dict: dict[str, Any] = globals()
         self.done: bool = False
+        self.stopped: bool = False
 
     def start(self):
         """Initialize the execution model for a new agent execution."""
@@ -136,16 +137,20 @@ class ExecutionModel:
         """Get a list of all turns that have an associated run."""
         return [turn for turn in self.turns if turn.run is not None]
 
-    def start_run(self, prompt: str, provider: str, status: RunStatus, start_time: datetime) -> Run:
+    def start_run(
+        self, name: str, prompt: str, provider: str, status: RunStatus, start_time: datetime
+    ) -> Run:
         """Start a new LLM Agent run with the given prompt, provider, status, and start time.
 
         Args:
+            name (str): The name of the run.
             prompt (str): The prompt for the new run.
             provider (str): The provider for the new run.
             status (RunStatus): The status for the new run.
             start_time (datetime): The start time for the new run.
         """
         run = Run(
+            name=name,
             tool_calls=[],
             prompt=prompt,
             provider=provider,
@@ -225,6 +230,9 @@ class ExecutionModel:
         """
         if self.current_run:
             self.current_run.add_log(param)
+
+    def stop(self):
+        self.stopped = True
 
 
 class BreakSignal(Exception):

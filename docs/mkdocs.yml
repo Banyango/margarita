@@ -1,35 +1,40 @@
 site_name: MARGARITA
 nav:
   - 📚 Documentation:
-    - MARGARITA: index.md
-    - Getting Started: getting_started.md
-    - Language Reference:
+    - Getting Started:
+      - MARGARITA: index.md
+      - Hello Margarita: hello.md
+    - Language Reference (.mg):
+        - Overview: getting_started.md
         - Conditionals: conditionals.md
         - Loops: loops.md
         - Variables: variables.md
         - Metadata: metadata.md
         - Includes: include_files.md
         - Contexts: contexts.md
-    - Agent (.mgx):
-        - MGX Overview: mgx.md
+    - Language Reference Agent (.mgx):
+        - Overview: mgx.md
         - Running the Agent: running_the_agent.md
         - State: state.md
         - Memory: memory.md
         - Context Management: context_management.md
         - User Input: user_input.md
         - Logging: logging.md
+        - Stopping the Agent: stopping.md
         - Function Calls: function_calls.md
+        - Sub Runs: sub_runs.md
+        - Await All: await_all.md
         - Custom Tools: custom_tools.md
         - Prompt Locking: prompt_locking.md
         - Plugins: coming_soon.md
-    - Other Tools:
-        - Template Packages in your .venv: uv_packages.md
-        - Claude Skill: claude_skill.md
-        - Jetbrains IDE Plugin: jetbrains_plugin.md
-    - Python API:
-        - Basic Usage: basic.md
-        - Includes For Organized Prompts: includes.md
-        - Agentic Loops: use-in-agents.md
+  - Other Tools:
+      - Template Packages in your .venv: uv_packages.md
+      - Claude Skill: claude_skill.md
+      - Jetbrains IDE Plugin: jetbrains_plugin.md
+  - Python API:
+      - Basic Usage: basic.md
+      - Includes For Organized Prompts: includes.md
+      - Agentic Loops: use-in-agents.md
 
 repo_url: https://github.com/banyango/margarita
 repo_name: banyango/margarita

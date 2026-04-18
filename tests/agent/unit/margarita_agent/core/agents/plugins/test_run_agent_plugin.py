@@ -41,16 +41,14 @@ def test_is_match_should_return_false_when_token_is_other():
 
 
 @pytest.mark.asyncio
-async def test_handle_should_call_execute_query_and_start_turn_when_called():
+async def test_handle_should_call_execute_query_when_called():
     # Arrange
     mock_service = _create_mock_agent_service()
     plugin = RunAgentPlugin(agent_service=mock_service)
     execution_model = _create_execution_model()
-    initial_turn_count = len(execution_model.turns)
 
     # Act
     await plugin.handle("", execution_model=execution_model)
 
     # Assert
-    mock_service.execute_query.assert_awaited_once_with(execution_model=execution_model)
-    assert len(execution_model.turns) == initial_turn_count + 1
+    mock_service.execute_query.assert_awaited_once_with(execution_model=execution_model, params="")

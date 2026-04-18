@@ -119,6 +119,11 @@ class CodeChanges:
     lines_removed: int = 0
 
 
+class StopError(Exception):
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+
 @dataclass
 class RunError:
     """Structured error information captured during a run."""
@@ -145,6 +150,7 @@ class Run:
     """Comprehensive record of an agent Run, including lifecycle, usage, content, and results."""
 
     # Identity
+    name: str | None = None
     session_id: str | None = None
     turn_id: str | None = None
 
