@@ -21,12 +21,13 @@ class InputPlugin(AgentPlugin):
 
         prompt_text = execution_model.context.replace_variables_in_content(prompt_text)
 
-        execution_model.current_run.content_blocks.append(
-            ContentBlock(
-                type=ContentBlockType.QUESTION,
-                text=prompt_text,
+        if execution_model.current_run:
+            execution_model.current_run.content_blocks.append(
+                ContentBlock(
+                    type=ContentBlockType.QUESTION,
+                    text=prompt_text,
+                )
             )
-        )
 
         # Post a request for the UI to handle, then wait until it is resolved.
         request = InputRequest(prompt=prompt_text)
