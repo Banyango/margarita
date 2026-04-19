@@ -535,3 +535,63 @@ else:
 
         assert "Done" in result
         assert result.startswith("Done")
+
+    def test_render_should_not_evaluate_when_condition_calls_builtin_function(self):
+        # Arrange: condition attempts to call __import__ via a builtin
+        template = "if __import__('os').getcwd() == '/':\n    <<secret>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+
+        # Act
+        result = renderer.render(nodes)
+
+        # Assert: unsafe expression is rejected; the true block must not be rendered
+        assert "secret" not in result
+
+    def test_render_should_not_evaluate_when_condition_uses_dunder_attribute(self):
+        # Arrange: condition tries to access a dunder attribute for introspection
+        template = "if ().__class__.__name__ == 'tuple':\n    <<secret>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+
+        # Act
+        result = renderer.render(nodes)
+
+        # Assert
+        assert "secret" not in result
+
+    def test_render_should_not_evaluate_when_condition_contains_arbitrary_call(self):
+        # Arrange: condition tries to invoke an arbitrary callable from context
+        template = "if open('/etc/passwd') == True:\n    <<secret>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+
+        # Act
+        result = renderer.render(nodes)
+
+        # Assert
+        assert "secret" not in result
+
+    def test_render_should_not_evaluate_when_condition_uses_lambda(self):
+        # Arrange: condition embeds a lambda expression
+        template = "if (lambda: True)() == True:\n    <<secret>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+
+        # Act
+        result = renderer.render(nodes)
+
+        # Assert
+        assert "secret" not in result
+
+    def test_render_should_not_evaluate_when_condition_uses_list_comprehension(self):
+        # Arrange: condition uses a list comprehension (contains unsupported AST nodes)
+        template = "if [x for x in range(1)] == [0]:\n    <<secret>>"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+
+        # Act
+        result = renderer.render(nodes)
+
+        # Assert
+        assert "secret" not in result

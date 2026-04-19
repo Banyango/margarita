@@ -4,9 +4,9 @@ This module provides functionality to render parsed AST nodes into strings
 by applying variable substitution and control flow logic.
 """
 
+import ast
 import re
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 from margarita.language.parser import (
@@ -40,6 +40,148 @@ class _BreakSignal(Exception):
     """Internal signal raised when a BreakNode is encountered inside a for loop."""
 
     pass
+
+
+# Mapping of ast comparison/bool operator types to callables
+_CMP_OPS: dict[type, Any] = {
+    ast.Eq: lambda a, b: a == b,
+    ast.NotEq: lambda a, b: a != b,
+    ast.Lt: lambda a, b: a < b,
+    ast.LtE: lambda a, b: a <= b,
+    ast.Gt: lambda a, b: a > b,
+    ast.GtE: lambda a, b: a >= b,
+    ast.In: lambda a, b: a in b,
+    ast.NotIn: lambda a, b: a not in b,
+}
+
+_ALLOWED_NODES = frozenset(
+    {
+        ast.Expression,
+        ast.BoolOp,
+        ast.And,
+        ast.Or,
+        ast.UnaryOp,
+        ast.Not,
+        ast.Compare,
+        ast.Constant,
+        ast.Name,
+        ast.Attribute,
+        ast.List,
+        ast.Tuple,
+        *_CMP_OPS.keys(),
+    }
+)
+
+# Aliases recognised as constants
+_CONSTANT_ALIASES: dict[str, Any] = {
+    "true": True,
+    "false": False,
+    "none": None,
+    "True": True,
+    "False": False,
+    "None": None,
+}
+
+
+class _SafeConditionEvaluator(ast.NodeVisitor):
+    """Walks a parsed AST expression and evaluates it against a context dict.
+
+    Only a strict whitelist of node types is permitted; anything else raises
+    ``ValueError`` so the caller can treat the condition as unevaluable.
+    """
+
+    def __init__(self, context: dict[str, Any]):
+        self._context = context
+
+    def visit(self, node: ast.AST) -> Any:  # type: ignore[override]
+        if type(node) not in _ALLOWED_NODES:
+            raise ValueError(f"Unsafe AST node type: {type(node).__name__}")
+        return super().visit(node)
+
+    # --- literal values ---
+
+    def visit_Constant(self, node: ast.Constant) -> Any:
+        return node.value
+
+    # --- variable lookup (Name) ---
+
+    def visit_Name(self, node: ast.Name) -> Any:
+        if node.id in _CONSTANT_ALIASES:
+            return _CONSTANT_ALIASES[node.id]
+        return self._get_value(node.id)
+
+    # --- dotted attribute access (e.g. user.name) ---
+
+    def visit_Attribute(self, node: ast.Attribute) -> Any:
+        attr = node.attr
+        if attr.startswith("_"):
+            raise ValueError(f"Access to private/dunder attribute '{attr}' is not allowed")
+        obj = self.visit(node.value)
+        if isinstance(obj, dict):
+            return obj.get(attr)
+        return getattr(obj, attr, None)
+
+    # --- collections ---
+
+    def visit_List(self, node: ast.List) -> list:
+        return [self.visit(el) for el in node.elts]
+
+    def visit_Tuple(self, node: ast.Tuple) -> tuple:
+        return tuple(self.visit(el) for el in node.elts)
+
+    # --- boolean operators ---
+
+    def visit_BoolOp(self, node: ast.BoolOp) -> Any:
+        if isinstance(node.op, ast.And):
+            result: Any = True
+            for value in node.values:
+                result = self.visit(value)
+                if not result:
+                    return result
+            return result
+        else:  # Or
+            result = False
+            for value in node.values:
+                result = self.visit(value)
+                if result:
+                    return result
+            return result
+
+    def visit_UnaryOp(self, node: ast.UnaryOp) -> Any:
+        operand = self.visit(node.operand)
+        if isinstance(node.op, ast.Not):
+            return not operand
+        raise ValueError(f"Unsupported unary operator: {type(node.op).__name__}")
+
+    # --- comparison operators ---
+
+    def visit_Compare(self, node: ast.Compare) -> bool:
+        left = self.visit(node.left)
+        for op, comparator in zip(node.ops, node.comparators):
+            right = self.visit(comparator)
+            fn = _CMP_OPS.get(type(op))
+            if fn is None:
+                raise ValueError(f"Unsupported comparison operator: {type(op).__name__}")
+            if not fn(left, right):
+                return False
+            left = right
+        return True
+
+    # --- helpers ---
+
+    def _get_value(self, name: str) -> Any:
+        parts = name.split(".")
+        value: Any = self._context
+        for part in parts:
+            if isinstance(value, dict):
+                value = value.get(part)
+            elif hasattr(value, part):
+                value = getattr(value, part)
+            else:
+                return None
+            if value is None:
+                return None
+        return value
 
 
 class Renderer:
@@ -257,28 +399,17 @@ class Renderer:
 
         return value
 
-    def _context_to_eval_namespace(self) -> dict:
-        """Convert context to an eval namespace, converting nested dicts to SimpleNamespace for dotted access."""
-
-        def convert(obj: Any) -> Any:
-            if isinstance(obj, dict):
-                return SimpleNamespace(**{k: convert(v) for k, v in obj.items()})
-            elif isinstance(obj, list):
-                return [convert(item) for item in obj]
-            return obj
-
-        return {k: convert(v) for k, v in self.context.items()}
-
     def _evaluate_condition(self, condition: str) -> bool | None:
-        """Evaluate a condition expression using Python eval with a restricted namespace.
+        """Safely evaluate a condition expression using the ast module.
 
         Supports: or, and, not, in, not in, ==, !=, >, <, >=, <=, and simple truthy checks.
+        No arbitrary code execution — only a strict whitelist of AST node types is allowed.
 
         Args:
             condition: The condition string to evaluate
 
         Returns:
-            True if the condition is true, False otherwise
+            True if the condition is true, False otherwise, None on error
         """
         condition = condition.strip()
 
@@ -288,10 +419,9 @@ class Renderer:
 
         if does_condition_contain_equality_or_logical:
             try:
-                namespace = self._context_to_eval_namespace()
-                namespace.update({"true": True, "false": False, "none": None})
-                result = eval(condition, {"__builtins__": {}}, namespace)
-                return result
+                tree = ast.parse(condition, mode="eval")
+                result = _SafeConditionEvaluator(self.context).visit(tree.body)
+                return bool(result)
             except Exception:
                 return None
 
