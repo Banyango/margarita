@@ -18,14 +18,17 @@ if fail:
 <<
 Update the version number in pyproject.toml. Follow semantic versioning. Ask for a version if you are unsure.
 Store the new version number in a variable called `version` for later use.
+
+After you update the pyproject.toml run `uv sync` to update the lock file.
 >>
 
 @effect run
+@effect context clear
 
 <<
 Investigate the git commit history since the last release and summarize the changes that have been made. This will help in writing the release notes.
 
-Then Update RELEASE_NOTES.md with the new version and changes in the following format:
+Then Update RELEASE_NOTES.md with the changes in the following format:
 
 ```
 # Release Notes - Margarita v${version}

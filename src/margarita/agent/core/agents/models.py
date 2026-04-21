@@ -249,6 +249,12 @@ class ExecutionModel:
         """
         self.current_turn.add_error(RunError(error))
 
+    def on_complete_run(self):
+        """On complete run"""
+        for turn in self.turns:
+            if turn.run:
+                turn.run.on_complete()
+
 
 class BreakSignal(Exception):
     """Internal exception used to short-circuit execution of a loop or flow.

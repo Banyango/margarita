@@ -41,7 +41,7 @@ class Margarita(App):
         self.app_config = app_config
         self._poll_timer = Timer | None
         self._model = execution_model
-        self._auto_scroll = True
+        self._auto_scroll = False
         self.theme = app_config.theme
         self._turn_widgets: dict[int, TurnWidget] = {}
         self._header_fp: tuple | None = None

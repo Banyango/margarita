@@ -237,8 +237,7 @@ class CopilotQuery(QueryService):
                 f" state=f{execution_model.context.data}\n tools={[tool.name for tool in session_tools]}"
             )
 
-        if execution_model.current_run:
-            execution_model.current_run.on_complete()
+        execution_model.on_complete_run()
 
         run = execution_model.start_run(
             name=params,

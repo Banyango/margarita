@@ -1,7 +1,7 @@
 from margarita.agent.core.agents.models import ExecutionModel
-from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
 from margarita.agent.core.interfaces.logger import LoggerService
+from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.entities.run import ContentBlockType
 
 

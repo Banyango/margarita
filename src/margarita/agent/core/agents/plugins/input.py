@@ -1,8 +1,8 @@
 import re
 
 from margarita.agent.core.agents.models import ExecutionModel, InputRequest
-from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
+from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.entities.run import ContentBlockType
 
 

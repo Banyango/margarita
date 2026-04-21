@@ -1,3 +1,12 @@
+# Release Notes - Margarita v0.5.3
+
+**Release Date:** 2026-04-21
+
+## 🎉 Overview
+Fixes to conditional evaluation and node collapsing behavior: replaced unsafe eval usage in if-conditions,
+prevented unexpected node collapse when runs were unchanged,
+and several small bug fixes and refactors improving stability.
+
 # Release Notes - Margarita v0.5.0
 
 **Release Date:** Apr 16, 2026
