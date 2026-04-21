@@ -12,6 +12,7 @@ When given a problem, you should:
 4. Provide the final answer clearly.
 >>
 
+@state blah = True
 @state test = 5
 @state result = 0
 @memory state

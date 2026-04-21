@@ -19,9 +19,10 @@ from margarita.agent.app.ui.components.run_widget.tool_call_handlers.internal_va
 from margarita.agent.app.ui.components.run_widget.tool_call_handlers.view_tool_call import (
     MargaritaViewToolCall,
 )
-from margarita.agent.entities.run import ContentBlock, ContentBlockType, Run, RunStatus, ToolCall
+from margarita.agent.entities.run import ContentBlockType, Run, RunStatus, ToolCall
 
 if TYPE_CHECKING:
+    from margarita.agent import ContentBlock
     from margarita.agent.app.config import AppConfig
     from margarita.agent.app.ui.components.run_widget.tool_call_handlers.interfaces import (
         ToolcallHandler,
@@ -119,17 +120,6 @@ class RunWidgetContent:
             elif block.type == ContentBlockType.QUESTION:
                 parts.append(self._render_question(block))
 
-        # Errors
-        for err in run.errors:
-            parts.append(
-                Panel(
-                    Text(err.message, style="red"),
-                    title=f"Error{f' ({err.error_type})' if err.error_type else ''}",
-                    border_style="red",
-                    expand=True,
-                )
-            )
-
         # Usage summary (only when run is done)
         if run.status == RunStatus.COMPLETED and run.tokens.total_tokens > 0:
             usage = Table.grid(padding=(0, 2))
@@ -177,6 +167,30 @@ class RunWidgetContent:
             self._tool_call_cache[tc.tool_call_id] = rendered
 
         return rendered
+
+    @staticmethod
+    def render_content_blocks(blocks: list[ContentBlock]) -> list:
+        parts = []
+        for block in blocks:
+            if block.type == ContentBlockType.REASONING:
+                continue
+            elif block.type == ContentBlockType.RESPONSE:
+                if not block.text:
+                    continue
+                parts.append(Text("Response:", style="bold blue"))
+                try:
+                    parts.append(Markdown(block.text))
+                except Exception:
+                    parts.append(Text(block.text))
+            elif block.type == ContentBlockType.INPUT:
+                parts.append(RunWidgetContent._render_input(block))
+            elif block.type == ContentBlockType.LOGGING:
+                if not block.text:
+                    continue
+                parts.append(Text(f"[INFO] {block.text}", style="cyan dim"))
+            elif block.type == ContentBlockType.QUESTION:
+                parts.append(RunWidgetContent._render_question(block))
+        return parts
 
     @staticmethod
     def _render_input(tc: ContentBlock) -> Panel:

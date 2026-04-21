@@ -1,6 +1,7 @@
+import asyncio
 from dataclasses import asdict
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from copilot import define_tool
 from copilot.generated.session_events import PermissionRequest, SessionEventType
@@ -17,13 +18,13 @@ from wireup import injectable
 if TYPE_CHECKING:
     from copilot.tools import Tool
 
+from margarita.agent import ContentBlock
 from margarita.agent.app.config import AppConfig
 from margarita.agent.core.agents.models import ExecutionModel, InputRequest, PermissionPrompt
 from margarita.agent.core.interfaces.logger import LoggerService
 from margarita.agent.core.interfaces.query_service import QueryService
 from margarita.agent.entities.run import (
     CodeChanges,
-    ContentBlock,
     ContentBlockType,
     ModelUsage,
     RunContext,
@@ -98,6 +99,9 @@ class CopilotQuery(QueryService):
         # Allow omission in tests; default to a basic AppConfig when not provided.
         self.app_config = app_config or AppConfig()
         self.logger_service = logger
+        # Per-execution-model sessions so concurrent sub-executions don't share a session.
+        self._model_sessions: dict[int, Any] = {}
+        self._session_lock = asyncio.Lock()
 
     async def execute_query(self, execution_model: ExecutionModel, params: str) -> str:
         """Execute a query using the Copilot client.
@@ -164,7 +168,7 @@ class CopilotQuery(QueryService):
                     params_type = execution_model.globals_dict[params[0].type]
 
                     if not params_type:
-                        execution_model.current_run.errors.append(
+                        execution_model.add_error(
                             "Invalid tool parameter type: (Did you forget to import this type?)"
                             + params[0].type
                         )
@@ -196,31 +200,34 @@ class CopilotQuery(QueryService):
                 content=self.app_config.system_prompt + SYSTEM_PROMPT,
             )
 
-        session_attr = getattr(self.client, "session", None)
-        if not session_attr:
-            try:
-                session_config = SessionConfig(
-                    system_message=system_message,
-                    model=model_value or "gpt-5-mini",
-                    streaming=True,
-                    on_user_input_request=on_user_input_request,
-                    on_permission_request=on_permission_request,
-                    infinite_sessions=InfiniteSessionConfig(
-                        enabled=True,
-                    ),
-                    tools=session_tools,
-                )
-            except TypeError:
-                # Fallback for test doubles that accept a simpler signature
-                session_config = SessionConfig(
-                    system_message=SystemMessageAppendConfig(content=SYSTEM_PROMPT),
-                    model=model_value or "gpt-5-mini",
-                    streaming=True,
-                    tools=session_tools,
-                    infinite_sessions=None,
-                )
+        model_id = id(execution_model)
+        async with self._session_lock:
+            if model_id not in self._model_sessions:
+                try:
+                    session_config = SessionConfig(
+                        system_message=system_message,
+                        model=model_value or "gpt-5-mini",
+                        streaming=True,
+                        on_user_input_request=on_user_input_request,
+                        on_permission_request=on_permission_request,
+                        infinite_sessions=InfiniteSessionConfig(
+                            enabled=True,
+                        ),
+                        tools=session_tools,
+                    )
+                except TypeError:
+                    # Fallback for test doubles that accept a simpler signature
+                    session_config = SessionConfig(
+                        system_message=SystemMessageAppendConfig(content=SYSTEM_PROMPT),
+                        model=model_value or "gpt-5-mini",
+                        streaming=True,
+                        tools=session_tools,
+                        infinite_sessions=None,
+                    )
+                await self.client.create_session(session_config=session_config)
+                self._model_sessions[model_id] = self.client.session
 
-            await self.client.create_session(session_config=session_config)
+        session = self._model_sessions[model_id]
 
         if self.logger_service:
             self.logger_service.print(
@@ -229,6 +236,9 @@ class CopilotQuery(QueryService):
                 f" prompt={execution_model.context.window},\n"
                 f" state=f{execution_model.context.data}\n tools={[tool.name for tool in session_tools]}"
             )
+
+        if execution_model.current_run:
+            execution_model.current_run.on_complete()
 
         run = execution_model.start_run(
             name=params,
@@ -393,10 +403,10 @@ class CopilotQuery(QueryService):
             elif event.type == SessionEventType.SESSION_IDLE:
                 pass
 
-        unsubscribe = self.client.session.on(handle_event)
+        unsubscribe = session.on(handle_event)
 
         try:
-            response = await self.client.session.send_and_wait(
+            response = await session.send_and_wait(
                 prompt=execution_model.context.window, mode="immediate", timeout=300
             )
 
@@ -430,7 +440,6 @@ class CopilotQuery(QueryService):
 
             return ""
 
-        execution_model.current_run.on_complete()
         execution_model.start_turn()
 
         return response.data.content

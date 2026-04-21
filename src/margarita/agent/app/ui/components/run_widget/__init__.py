@@ -10,7 +10,7 @@ from textual.events import Click
 from textual.message import Message
 from textual.widgets import Static
 
-from margarita.agent.app.ui.components.run_header import RunHeader
+from margarita.agent.app.ui.components.run_widget.run_header import RunHeader
 from margarita.agent.app.ui.components.run_widget.run_widget_content import RunWidgetContent
 from margarita.agent.app.ui.components.run_widget.run_widget_header import RunWidgetHeader
 from margarita.agent.app.ui.status_constants import NUM_SUB_COLORS

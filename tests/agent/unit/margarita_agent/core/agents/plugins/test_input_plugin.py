@@ -128,6 +128,41 @@ async def test_handle_should_clear_pending_input_after_completion():
 
 
 @pytest.mark.asyncio
+async def test_handle_should_store_user_input_in_variable_when_no_prompt():
+    # Arrange
+    plugin = _create_plugin()
+    execution_model = _create_execution_model()
+
+    # Act
+    await asyncio.gather(
+        plugin.handle("=> result", execution_model=execution_model),
+        _resolve_pending_input(execution_model, "silent answer"),
+    )
+
+    # Assert
+    assert execution_model.context.get_variable_value("result") == "silent answer"
+
+
+@pytest.mark.asyncio
+async def test_handle_should_not_add_question_block_when_no_prompt():
+    # Arrange
+    plugin = _create_plugin()
+    execution_model = _create_execution_model()
+
+    # Act
+    await asyncio.gather(
+        plugin.handle("=> result", execution_model=execution_model),
+        _resolve_pending_input(execution_model, "silent answer"),
+    )
+
+    # Assert — only a LOGGING block, no QUESTION block
+    blocks = execution_model.current_run.content_blocks
+    assert len(blocks) == 1
+    assert blocks[0].type == ContentBlockType.LOGGING
+    assert "silent answer" in blocks[0].text
+
+
+@pytest.mark.asyncio
 async def test_handle_should_raise_when_params_syntax_is_invalid():
     # Arrange
     plugin = _create_plugin()

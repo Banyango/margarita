@@ -250,10 +250,28 @@ async def test_handle_merges_child_turns_into_parent(tmp_path):
 
 @pytest.mark.asyncio
 async def test_handle_sets_exec_title_on_child_runs(tmp_path):
-    child = tmp_path / "child.mgx"
-    child.write_text("")
+    from datetime import datetime
 
-    plugin = _make_plugin()
+    from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
+    from margarita.agent.entities.run import RunStatus
+
+    class FakeRunPlugin(AgentPlugin):
+        def is_match(self, t):
+            return t == "fake-run"
+
+        async def handle(self, params, execution_model):
+            execution_model.start_run(
+                name="test",
+                prompt="",
+                provider="test",
+                status=RunStatus.RUNNING,
+                start_time=datetime.now(),
+            )
+
+    child = tmp_path / "child.mgx"
+    child.write_text("@effect fake-run\n")
+
+    plugin = _make_plugin(plugin_factory=lambda: [FakeRunPlugin()])
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 

@@ -1,7 +1,8 @@
 from margarita.agent.core.agents.models import ExecutionModel
+from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
 from margarita.agent.core.interfaces.logger import LoggerService
-from margarita.agent.entities.run import ContentBlock, ContentBlockType
+from margarita.agent.entities.run import ContentBlockType
 
 
 class ConsoleLogPlugin(AgentPlugin):
@@ -28,18 +29,6 @@ class ConsoleLogPlugin(AgentPlugin):
 
         self.logger_service.print(f"[Log.Info] {final_string}")
 
-        # Find the most recent active run to record the log message.
-        # current_run can be None after a @effect run causes start_turn() to create a new empty turn.
-        target_run = execution_model.current_run
-        if target_run is None:
-            for turn in reversed(execution_model.turns):
-                if turn.run is not None:
-                    target_run = turn.run
-                    break
-
-        if target_run is not None:
-            target_run.content_blocks.append(
-                ContentBlock(type=ContentBlockType.LOGGING, text=final_string)
-            )
-        else:
-            print(final_string)
+        execution_model.add_content_block(
+            ContentBlock(type=ContentBlockType.LOGGING, text=final_string)
+        )

@@ -8,12 +8,12 @@ from margarita.agent.core.agents.models import (
     PermissionPrompt,
     Run,
     RunStatus,
-    Turn,
 )
 from margarita.agent.core.agents.services.memory import MemoryService
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
 from margarita.agent.core.interfaces.prompt_integrity import PromptIntegrity
 from margarita.agent.entities.context import Context
+from margarita.agent.entities.turn import Turn
 
 # Must stay in sync with _SUB_RUN_PALETTE in textual_app.py
 _EXEC_COLOR_PALETTE = ["#00d7ff", "#ff5fff", "#ffd700", "#87ff00", "#ff8700", "#af87ff"]
@@ -78,6 +78,20 @@ class _SubExecutionModel(ExecutionModel):
             await prompt.event.wait()
             self._parent_model.pending_permission = None
 
+    def start_turn(self) -> Turn:
+        """Start a new turn and resolve the sub-run color on the first turn.
+
+        The color must be set before any input/permission request can be made
+        (e.g. @effect input fires before @effect run), so it cannot wait until
+        start_run.  At this point the mirrored turn has already been appended to
+        the parent list, so counting parent turns gives the correct palette index.
+        """
+        turn = super().start_turn()
+        if not self._color_hex and len(self.turns) == 1:
+            idx = len(self._parent_model.turns) - 1
+            self._color_hex = _EXEC_COLOR_PALETTE[idx % len(_EXEC_COLOR_PALETTE)]
+        return turn
+
     def start_run(
         self, name: str, prompt: str, provider: str, status: RunStatus, start_time: datetime
     ) -> Run:
@@ -98,12 +112,6 @@ class _SubExecutionModel(ExecutionModel):
         )
         run.is_sub_run = True
         run.title = self._exec_title
-        if not self._color_hex:
-            # Determine color from this run's position in parent's turns_with_runs.
-            # At this point the run is already in the parent list (mirrored), so
-            # counting turns_with_runs gives us the correct palette index.
-            idx = len([t for t in self._parent_model.turns if t.run is not None]) - 1
-            self._color_hex = _EXEC_COLOR_PALETTE[idx % len(_EXEC_COLOR_PALETTE)]
         return run
 
 

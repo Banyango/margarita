@@ -3,39 +3,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-
-class ContentBlockType(Enum):
-    """Enumeration of content block types used in run outputs.
-
-    Values indicate the origin or format of a content block (text, code, etc.).
-    """
-
-    """Types of content blocks produced during a run (reasoning, response, tool output, etc.)."""
-    REASONING = "reasoning"
-    RESPONSE = "response"
-    FUNCTION_CALL = "function_call"
-    TOOL_CALL = "tool_call"
-    INPUT = "input"
-    QUESTION = "question"
-    LOGGING = "logging"
-    AWAIT_ALL = "await_all"
-    OTHER = "other"
-
-
-@dataclass
-class ContentBlock:
-    """Represents a single block of content produced during a run.
-
-    Attributes:
-        type: The ContentBlockType of this block.
-        text: The textual content of this block.
-        ref: An optional reference string (e.g. tool name, function name) associated with this block.
-    """
-
-    """A single block of content generated during a run, with a type and optional reference."""
-    type: ContentBlockType
-    text: str = ""
-    ref: str | None = None
+from margarita.agent.entities.content_block import ContentBlock, ContentBlockType
 
 
 class RunStatus(Enum):
@@ -185,9 +153,6 @@ class Run:
 
     # Environment
     context: RunContext = field(default_factory=RunContext)
-
-    # Errors
-    errors: list[RunError] = field(default_factory=list)
 
     # Extensible metadata (provider-specific data, telemetry, etc.)
     metadata: dict[str, Any] = field(default_factory=dict)

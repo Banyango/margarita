@@ -1,12 +1,8 @@
 import contextlib
-import re
 import sys
 from pathlib import Path
-from time import monotonic
 from typing import ClassVar
 
-from rich.console import Group
-from rich.text import Text
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -19,9 +15,9 @@ from margarita.agent.app.ui.components.app_header import AppHeader
 from margarita.agent.app.ui.components.input_overlay import InputOverlay
 from margarita.agent.app.ui.components.permission_overlay import PermissionOverlay
 from margarita.agent.app.ui.components.run_widget import RunWidget
-from margarita.agent.app.ui.status_constants import SPINNER_FRAMES
+from margarita.agent.app.ui.components.status_line import StatusLine
+from margarita.agent.app.ui.components.turn_widget import TurnWidget
 from margarita.agent.core.agents.models import ExecutionModel
-from margarita.agent.entities.run import ContentBlockType, RunStatus
 
 
 class Margarita(App):
@@ -47,17 +43,18 @@ class Margarita(App):
         self._model = execution_model
         self._auto_scroll = True
         self.theme = app_config.theme
-        self._run_widgets: dict[int, RunWidget] = {}
+        self._turn_widgets: dict[int, TurnWidget] = {}
         self._header_fp: tuple | None = None
         self._displayed_input: object = None
         self._displayed_permission: object = None
         self.header = AppHeader()
+        self._status_line = StatusLine()
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         with VerticalScroll(id="scroll"):
             yield Static(id="header-content")
-            yield Vertical(id="runs-container")
+            yield Vertical(id="turns-container")
             yield Static(id="status-line")
         yield PermissionOverlay(id="perm-overlay")
         yield InputOverlay(id="input-overlay")
@@ -72,13 +69,19 @@ class Margarita(App):
         save_app_config(self.app_config)
 
     async def _poll(self) -> None:
-        await self._sync_runs()
+        await self._sync_turns()
 
-        self._sync_header()
-        self._sync_status()
+        header_content = self.query_one("#header-content", Static)
+        self.header.sync(self._model, header_content)
+
+        status_line = self.query_one("#status-line", Static)
+        self._status_line.sync(self._model, status_line)
 
         self._sync_input()
         self._sync_permission()
+
+        if self._status_line.all_done:
+            self._auto_scroll = False
 
         if self._auto_scroll:
             self.query_one("#scroll", VerticalScroll).scroll_end(animate=False)
@@ -86,86 +89,17 @@ class Margarita(App):
         if self._model.done:
             self._poll_timer.stop()
 
-    def _sync_header(self) -> None:
-        model = self._model
-        memory_len = len(model.memory.get_items()) if model.memory else 0
-        fp = (
-            len(model.import_errors),
-            len(model.warnings),
-            model.header,
-            len(model.metadata),
-            memory_len,
-        )
-        if fp == self._header_fp:
-            return
-        self._header_fp = fp
-
-        renderables = self.header.render(model)
-        self.query_one("#header-content", Static).update(Group(*renderables))
-
-    async def _sync_runs(self) -> None:
-        turns = self._model.turns_with_runs
-        container = self.query_one("#runs-container", Vertical)
+    async def _sync_turns(self) -> None:
+        turns = self._model.turns
+        container = self.query_one("#turns-container", Vertical)
 
         for i, turn in enumerate(turns):
-            if turn.run is None:
-                continue
-
-            if i not in self._run_widgets:
-                widget = RunWidget(i, self.app_config)
-                self._run_widgets[i] = widget
+            if i not in self._turn_widgets:
+                widget = TurnWidget(i, self.app_config)
+                self._turn_widgets[i] = widget
                 await container.mount(widget)
 
-            self._run_widgets[i].sync(turn.run)
-
-    def _sync_status(self) -> None:
-        model = self._model
-        has_runs = model.turns and any(t.run for t in model.turns)
-        if not has_runs:
-            self.query_one("#status-line", Static).update("")
-            return
-
-        all_done = all(
-            t.run and t.run.status in (RunStatus.COMPLETED, RunStatus.ERROR)
-            for t in model.turns
-            if t.run
-        )
-        if all_done:
-            self._auto_scroll = False
-
-            t = Text()
-
-            t.append("● ", style="bold green")
-            t.append("All turns completed  ", style="dim")
-            t.append("q", style="bold")
-            t.append(" to quit", style="dim")
-
-            self.query_one("#status-line", Static).update(t)
-        else:
-            frame = SPINNER_FRAMES[int(monotonic() * 10) % len(SPINNER_FRAMES)]
-
-            t = Text()
-
-            t.append(f"{frame} ", style="green")
-            t.append("Executing…", style="dim")
-
-            run = model.current_run
-            if run is not None:
-                reasoning_blocks = [
-                    b for b in run.content_blocks if b.type == ContentBlockType.REASONING and b.text
-                ]
-                if reasoning_blocks:
-                    latest = reasoning_blocks[-1].text
-                    condensed = re.findall(r"\*\*(.+?)\*\*", latest)
-
-                    snippet = condensed[-1] if condensed else latest
-                    snippet = snippet.replace("\n", " ").strip()
-
-                    if len(snippet) > 80:
-                        snippet = snippet[:77] + "…"
-                    t.append(f"  {snippet}", style="dim italic")
-
-            self.query_one("#status-line", Static).update(t)
+            await self._turn_widgets[i].sync(turn)
 
     def _sync_input(self) -> None:
         pending = self._model.pending_input
@@ -194,20 +128,19 @@ class Margarita(App):
 
     @on(RunWidget.CollapseChanged)
     def _on_run_collapse_changed(self, event: RunWidget.CollapseChanged) -> None:
-        """When a parent run collapses, collapse all immediately-following sub-runs."""
-        if event.expanded:
-            return
+        """When a parent run collapses/expands, hide/show all immediately-following sub-run TurnWidgets."""
         sender = event.run_widget
-        widgets = [self._run_widgets[i] for i in sorted(self._run_widgets)]
+        sorted_indices = sorted(self._turn_widgets)
         found = False
-        for w in widgets:
-            if w is sender:
+        for i in sorted_indices:
+            tw = self._turn_widgets[i]
+            rw = tw._run_widget
+            if rw is sender:
                 found = True
                 continue
             if found:
-                if w._run and w._run.is_sub_run:
-                    w._run.is_expanded = False
-                    w.set_class(False, "-expanded")
+                if rw is not None and rw._run and rw._run.is_sub_run:
+                    tw.display = event.expanded
                 else:
                     break
 

@@ -4,9 +4,11 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
+from margarita.agent.entities.content_block import ContentBlock
 from margarita.agent.entities.context import Context
 from margarita.agent.entities.function import FunctionCall
-from margarita.agent.entities.run import Run, RunStatus
+from margarita.agent.entities.run import Run, RunError, RunStatus
+from margarita.agent.entities.turn import Turn
 
 if TYPE_CHECKING:
     from margarita.agent.entities.memory import Memory
@@ -43,18 +45,6 @@ class InputRequest:
     event: asyncio.Event = field(default_factory=asyncio.Event)
     source: str = ""
     color_hex: str = ""
-
-
-@dataclass
-class Turn:
-    """Represents a single LLM turn during execution.
-
-    Contains the prompt, model response, and any metadata produced for the
-    turn that may be persisted in the run history.
-    """
-
-    run: Run | None
-    function_calls: list[FunctionCall]
 
 
 class ExecutionModel:
@@ -102,13 +92,12 @@ class ExecutionModel:
         self.done: bool = False
         self.stopped: bool = False
 
-    def start(self):
-        """Initialize the execution model for a new agent execution."""
-        self.header = ""
+    def start(self) -> None:
+        """Initialize execution state for a run."""
 
     def start_turn(self) -> Turn:
         """Start a new turn in the agent execution with the given run and context."""
-        turn = Turn(run=None, function_calls=[])
+        turn = Turn(run=None, function_calls=[], content_blocks=[])
 
         self.turns.append(turn)
 
@@ -192,22 +181,28 @@ class ExecutionModel:
         """
         self.warnings.append(warning)
 
-    async def request_input(self, request: InputRequest) -> None:
+    async def request_input(self, request: InputRequest):
         """Expose an input request to the UI and wait for the user's response.
 
         Serialized via a lock so parallel sub-executions queue rather than race.
         The caller reads `request.response` after this returns.
+
+        Args:
+            request (InputRequest): The input request.
         """
         async with self._input_lock:
             self.pending_input = request
             await request.event.wait()
             self.pending_input = None
 
-    async def request_permission(self, prompt: PermissionPrompt) -> None:
+    async def request_permission(self, prompt: PermissionPrompt):
         """Expose a permission request to the UI and wait for the user's decision.
 
         Serialized via a lock so parallel sub-executions queue rather than race.
         The caller reads `prompt.approved` after this returns.
+
+        Args:
+            prompt (PermissionPrompt): The permission prompt.
         """
         async with self._permission_lock:
             self.pending_permission = prompt
@@ -215,6 +210,7 @@ class ExecutionModel:
             self.pending_permission = None
 
     async def dismiss_all_overlays(self):
+        """Dismiss all overlays in the execution model."""
         self.pending_permission.event.clear()
         self.pending_input.event.clear()
 
@@ -234,13 +230,30 @@ class ExecutionModel:
     def stop(self):
         self.stopped = True
 
+    def add_content_block(self, content_block: ContentBlock):
+        """Add a content block to the execution model.
+
+        Args:
+            content_block (ContentBlock): The content block to add to the execution model.
+        """
+        if self.current_run:
+            self.current_run.content_blocks.append(content_block)
+        else:
+            self.current_turn.add_content_block(content_block)
+
+    def add_error(self, error: str):
+        """Add an error message to the execution model.
+
+        Args:
+            error (str): The error message for the error.
+        """
+        self.current_turn.add_error(RunError(error))
+
 
 class BreakSignal(Exception):
     """Internal exception used to short-circuit execution of a loop or flow.
 
     Raised by plugins or execution logic to indicate an early stop condition.
     """
-
-    """Internal signal raised when a BreakNode."""
 
     pass

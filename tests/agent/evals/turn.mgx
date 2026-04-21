@@ -1,0 +1,7 @@
+@effect log "This is outside a run"
+
+<<
+Say Hi
+>>
+
+@effect run

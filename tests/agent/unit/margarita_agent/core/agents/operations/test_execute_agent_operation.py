@@ -423,7 +423,7 @@ async def test_execute_plugin_should_call_matching_plugin_when_plugin_matches():
     operation = _create_operation(plugins=[mock_plugin])
 
     # Act
-    await operation._execute_plugin(plugin="run", operation="run")
+    await operation._execute_plugin_async(plugin="run", operation="run")
 
     # Assert
     assert mock_plugin.handle_called is True
@@ -437,7 +437,7 @@ async def test_execute_plugin_should_not_call_plugin_when_no_match():
     operation = _create_operation(plugins=[mock_plugin])
 
     # Act
-    await operation._execute_plugin(plugin="other", operation="run")
+    await operation._execute_plugin_async(plugin="other", operation="run")
 
     # Assert
     assert mock_plugin.handle_called is False
@@ -895,7 +895,7 @@ async def test_await_all_partial_failure_logs_error_and_keeps_successful_outputs
     # Assert — failure was logged as a content block (not re-raised)
     log_texts = [
         cb.text
-        for cb in operation.execution_model.current_run.content_blocks
+        for cb in operation.execution_model.current_turn.content_blocks
         if "[AwaitAll]" in (cb.text or "")
     ]
     assert any("child exploded" in t for t in log_texts)

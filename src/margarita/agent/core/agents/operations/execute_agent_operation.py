@@ -1,13 +1,14 @@
+import ast
 import asyncio
 import json
 import re
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 from loguru import logger
 
-from margarita.agent.core.agents.models import BreakSignal, ExecutionModel, RunStatus
+from margarita.agent import ContentBlock
+from margarita.agent.core.agents.models import BreakSignal, ExecutionModel
 from margarita.agent.core.agents.plugins.import_plugin import ImportPlugin
 from margarita.agent.core.agents.services.memory import MemoryService
 from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
@@ -17,7 +18,7 @@ from margarita.agent.entities.prompt_integrity import (
     TRACKED_PROMPT_EXTENSIONS,
     PromptUnverifiedPathError,
 )
-from margarita.agent.entities.run import ContentBlock, ContentBlockType
+from margarita.agent.entities.run import ContentBlockType
 from margarita.language.parser import (
     AllAwaitNode,
     BreakNode,
@@ -108,29 +109,12 @@ class ExecuteAgentOperation:
 
         self.execution_model.metadata = metadata
 
-        # Initialize execution and create a turn/run so plugins can record outputs
-        self.execution_model.start()
         self.execution_model.start_turn()
-        # Start a run record so plugins that write to current_run.content_blocks work
-        run = self.execution_model.start_run(
-            name="Setup",
-            prompt=metadata.get("description", ""),
-            provider="local",
-            status=RunStatus.RUNNING,
-            start_time=datetime.now(),
-        )
 
         await self._process_nodes_async(nodes, self.execution_model.context)
 
         # Save the memory at the end of execution
         await self.memory_service.save_memory(self.execution_model.memory)
-
-        # Mark the run as completed
-        run.end_time = datetime.now()
-        run.status = RunStatus.COMPLETED
-        if run.start_time and run.end_time:
-            run.duration_ms = (run.end_time - run.start_time).total_seconds() * 1000
-        self.execution_model.done = True
 
     async def _process_nodes_async(self, nodes: list[Node], context: Context | None = None):
         """Process a list of AST nodes, executing actions based on node type.
@@ -194,7 +178,7 @@ class ExecuteAgentOperation:
                                 context.remove_from_state(value_var)
 
             elif isinstance(node, StateNode):
-                variable = json.loads(node.initial_value)
+                variable = self._parse_state_value(node.initial_value)
                 context.set_variable(node.variable_name, variable)
 
             elif isinstance(node, ImportNode):
@@ -244,7 +228,7 @@ class ExecuteAgentOperation:
                 context.add_to_context_window(scoped_context.window)
 
             elif isinstance(node, AllAwaitNode):
-                self.execution_model.current_run.content_blocks.append(
+                self.execution_model.add_content_block(
                     ContentBlock(
                         type=ContentBlockType.AWAIT_ALL,
                         text=f"[AwaitAll] processing children... {len(node.effect_nodes)} effect(s)",
@@ -259,7 +243,7 @@ class ExecuteAgentOperation:
                 )
                 for result in results:
                     if isinstance(result, BaseException):
-                        self.execution_model.current_run.content_blocks.append(
+                        self.execution_model.add_content_block(
                             ContentBlock(
                                 type=ContentBlockType.LOGGING,
                                 text=f"[AwaitAll] Child failed: {result}",
@@ -280,9 +264,9 @@ class ExecuteAgentOperation:
         plugin = split[0] if len(split) >= 1 else None
         operation = split[1] if len(split) > 1 else None
 
-        await self._execute_plugin(plugin=plugin, operation=operation)
+        await self._execute_plugin_async(plugin=plugin, operation=operation)
 
-    async def _execute_plugin(self, plugin: str, operation: str):
+    async def _execute_plugin_async(self, plugin: str, operation: str):
         """Execute a plugin operation.
 
         Args:
@@ -302,7 +286,7 @@ class ExecuteAgentOperation:
 
         if params == "clear":
             self.memory_service.clear_memory(self.execution_model.memory)
-            self.execution_model.current_run.content_blocks.append(
+            self.execution_model.add_content_block(
                 ContentBlock(
                     type=ContentBlockType.LOGGING, text="[Memory] Cleared all memory variables"
                 )
@@ -315,7 +299,7 @@ class ExecuteAgentOperation:
 
             self.memory_service.delete_memory_variable(name, self.execution_model.memory)
 
-            self.execution_model.current_run.content_blocks.append(
+            self.execution_model.add_content_block(
                 ContentBlock(type=ContentBlockType.LOGGING, text=f"[Memory] Deleted '{name}'")
             )
             return
@@ -327,7 +311,7 @@ class ExecuteAgentOperation:
                 name=var_match.group(1),
                 memory=self.execution_model.memory,
             )
-            self.execution_model.current_run.content_blocks.append(
+            self.execution_model.add_content_block(
                 ContentBlock(
                     type=ContentBlockType.LOGGING,
                     text=f"[Memory] Set variable '{var_match.group(1)}'",
@@ -354,6 +338,16 @@ class ExecuteAgentOperation:
         if isinstance(value, (int, float)):
             return value != 0
         return True
+
+    @staticmethod
+    def _parse_state_value(raw: str) -> Any:
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            try:
+                return ast.literal_eval(raw)
+            except (ValueError, SyntaxError) as e:
+                raise ValueError(f"Cannot parse state value: {raw!r}") from e
 
     @staticmethod
     def _evaluate_condition(condition: str, context: Context) -> Any:

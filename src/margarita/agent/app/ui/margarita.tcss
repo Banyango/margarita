@@ -15,7 +15,11 @@ VerticalScroll {
     padding: 1 1 0 1;
 }
 
-#runs-container {
+#turns-container {
+    height: auto;
+}
+
+TurnWidget {
     height: auto;
 }
 
