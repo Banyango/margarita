@@ -5,7 +5,7 @@ nav:
       - MARGARITA: index.md
       - Hello Margarita: hello.md
     - Language Reference (.mg):
-        - Overview: getting_started.md
+        - Overview: mg.md
         - Conditionals: conditionals.md
         - Loops: loops.md
         - Variables: variables.md

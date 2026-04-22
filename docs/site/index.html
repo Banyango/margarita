@@ -620,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="getting_started/" class="md-nav__link">
+      <a href="mg/" class="md-nav__link">
         
   
   
@@ -1631,6 +1631,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1650,29 +1669,32 @@
 
 
 <h1 id="margarita">MARGARITA<a class="headerlink" href="#margarita" title="Permanent link">&para;</a></h1>
-<p>MARGARITA is a lightweight templating tool for building prompt and markdown templates with metadata, context, and simple control flow.</p>
+<blockquote>
+<p>What if you could write agents as easily as you write Markdown?</p>
+</blockquote>
+<p>Margarita is a simple scripting language that lets you compose, use logic, and build agents all with simple syntax that's as easy to use as Markdown is.</p>
 <p>Key features</p>
 <ul>
-<li>Simple variable substitution with JSON contexts</li>
-<li>Template metadata for task information</li>
-<li>Conditionals and loops for dynamic sections</li>
-<li>Include files to compose templates across multiple fragments</li>
-<li>CLI for rendering and metadata inspection (<code>margarita render</code>, <code>margarita metadata</code>)</li>
+<li>Support Composable templates that can be split, reused, and nested</li>
+<li>Support Logic with conditionals and loops for dynamic sections</li>
+<li>Build Agents with your favorite LLMs (e.g. OpenAI, Azure, Hugging Face, etc.)</li>
 </ul>
-<p>Quick example</p>
-<p>Create <code>hello.mg</code> containing:</p>
-<div class="language-margarita highlight"><pre><span></span><code><span class="dl">&lt;&lt;</span>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>Create <code>hello.mgx</code> containing:</p>
+<div class="language-margarita highlight"><pre><span></span><code><span class="kd">@state</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Margarita&quot;</span>
+
+<span class="dl">&lt;&lt;</span>
 Hello, <span class="nv">${name}</span>!
 <span class="dl">&gt;&gt;</span>
+
+<span class="kd">@effect</span><span class="w"> </span><span class="k">run</span>
 </code></pre></div>
-<p>Render with a JSON context:</p>
-<div class="language-sh highlight"><pre><span></span><code>margarita<span class="w"> </span>render<span class="w"> </span>hello.mg<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;World&quot;}&#39;</span>
+<p>then run <code>margarita run hello.mgx</code> to see the output:</p>
+<div class="language-text highlight"><pre><span></span><code>Hello, Margarita!
 </code></pre></div>
-<p>Rendered result</p>
-<p>Given the template above and the context <code>{"name": "World"}</code>, the rendered output will be:</p>
-<div class="language-text highlight"><pre><span></span><code>Hello, World!
-</code></pre></div>
-<p>See also: <code>Getting Started</code>, <code>Language Reference</code> pages (Contexts, Metadata, Conditionals, Loops, Include Files).</p>
+<p>Congrats you've just run your first agent!</p>
+<p>Get started with the <a href="mg/">Templating Language</a>
+or the <a href="mgx/">Running the Agent</a></p>
 
 
 
