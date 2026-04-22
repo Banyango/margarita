@@ -1,37 +1,36 @@
 # MARGARITA
 
-MARGARITA is a lightweight templating tool for building prompt and markdown templates with metadata, context, and simple control flow.
+> What if you could write agents as easily as you write Markdown?
+
+Margarita is a simple scripting language that lets you compose, use logic, and build agents all with simple syntax that's as easy to use as Markdown is.
 
 Key features
 
-- Simple variable substitution with JSON contexts
-- Template metadata for task information
-- Conditionals and loops for dynamic sections
-- Include files to compose templates across multiple fragments
-- CLI for rendering and metadata inspection (`margarita render`, `margarita metadata`)
+- Support Composable templates that can be split, reused, and nested
+- Support Logic with conditionals and loops for dynamic sections
+- Build Agents with your favorite LLMs (e.g. OpenAI, Azure, Hugging Face, etc.)
 
-Quick example
+## Quick Start
 
-Create `hello.mg` containing:
+Create `hello.mgx` containing:
 
 ```margarita
+@state name = "Margarita"
+
 <<
 Hello, ${name}!
 >>
+
+@effect run
 ```
 
-Render with a JSON context:
-
-```sh
-margarita render hello.mg -c '{"name": "World"}'
-```
-
-Rendered result
-
-Given the template above and the context `{"name": "World"}`, the rendered output will be:
+then run `margarita run hello.mgx` to see the output:
 
 ```text
-Hello, World!
+Hello, Margarita!
 ```
 
-See also: `Getting Started`, `Language Reference` pages (Contexts, Metadata, Conditionals, Loops, Include Files).
+Congrats you've just run your first agent!
+
+Get started with the [Templating Language](mg.md)
+or the [Running the Agent](mgx.md)

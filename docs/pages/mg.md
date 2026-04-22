@@ -1,6 +1,9 @@
-# Getting Started
+# .mg Template files
 
-### Create a template file `greeting.mg`:
+.mg files are the base level files for Margarita. They contain your prompts and can be
+converted to plain Markdown on their own or can be used in [.mgx](mgx.md) files directly.
+
+### Example .mg file
 
 ```margarita
 <<
