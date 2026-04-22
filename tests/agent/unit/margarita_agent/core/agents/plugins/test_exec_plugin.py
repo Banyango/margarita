@@ -3,6 +3,7 @@ import pytest
 from margarita.agent import Context, ExecutionModel, Memory
 from margarita.agent.core.agents.plugins import ExecPlugin
 from margarita.agent.core.agents.services import MemoryService
+from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
 
 
 class MockMemoryService(MemoryService):
@@ -25,35 +26,26 @@ def _make_plugin(plugin_factory=None):
     )
 
 
-# --- is_match ---
-
-
-def test_is_match_returns_true_for_exec():
+def test_is_match_should_return_true_when_token_is_exec():
     plugin = _make_plugin()
     assert plugin.is_match("exec") is True
 
 
-def test_is_match_returns_false_for_other_tokens():
+def test_is_match_should_return_false_when_token_is_not_exec():
     plugin = _make_plugin()
     assert plugin.is_match("run") is False
     assert plugin.is_match("exec2") is False
     assert plugin.is_match("") is False
 
 
-# --- set_base_path ---
-
-
-def test_set_base_path_updates_resolution_base(tmp_path):
+def test_set_base_path_should_update_resolution_base_when_called(tmp_path):
     plugin = _make_plugin()
     plugin.set_base_path(tmp_path)
     assert plugin.base_path == tmp_path
 
 
-# --- handle: missing file ---
-
-
 @pytest.mark.asyncio
-async def test_handle_raises_file_not_found_when_file_missing(tmp_path):
+async def test_handle_should_raise_file_not_found_when_file_missing(tmp_path):
     plugin = _make_plugin()
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
@@ -62,11 +54,8 @@ async def test_handle_raises_file_not_found_when_file_missing(tmp_path):
         await plugin.handle("missing.mgx", model)
 
 
-# --- handle: file-only (no inputs, no outputs) ---
-
-
 @pytest.mark.asyncio
-async def test_handle_file_only_runs_child_without_error(tmp_path):
+async def test_handle_should_run_child_without_error_when_file_only(tmp_path):
     child = tmp_path / "child.mgx"
     child.write_text("")
 
@@ -77,11 +66,8 @@ async def test_handle_file_only_runs_child_without_error(tmp_path):
     await plugin.handle("child.mgx", model)  # should not raise
 
 
-# --- handle: input variable resolution ---
-
-
 @pytest.mark.asyncio
-async def test_handle_resolves_input_vars_from_parent_context(tmp_path):
+async def test_handle_should_resolve_input_vars_from_parent_context_when_inputs_declared(tmp_path):
     # Child sets a state var from its context
     child = tmp_path / "child.mgx"
     child.write_text('@state result = "done"')
@@ -109,11 +95,10 @@ async def test_handle_resolves_input_vars_from_parent_context(tmp_path):
     assert model.context.get_variable_value("out") == "static"
 
 
-# --- handle: input resolution from parent context (direct value check) ---
-
-
 @pytest.mark.asyncio
-async def test_handle_passes_resolved_value_to_child(tmp_path):
+async def test_handle_should_pass_resolved_value_to_child_when_input_var_references_parent(
+    tmp_path,
+):
     """Verify that input=varName resolves varName from the parent context."""
     # The child will be executed; we verify that the resolved value arrived
     # by examining what the child op sees — we do this indirectly via a
@@ -133,11 +118,10 @@ async def test_handle_passes_resolved_value_to_child(tmp_path):
     # No error = inputs were resolved without issue
 
 
-# --- handle: output vars copied to parent ---
-
-
 @pytest.mark.asyncio
-async def test_handle_copies_declared_outputs_to_parent_context(tmp_path):
+async def test_handle_should_copy_declared_outputs_to_parent_context_when_child_sets_state(
+    tmp_path,
+):
     child = tmp_path / "child.mgx"
     child.write_text('@state result = "child_output"')
 
@@ -151,7 +135,9 @@ async def test_handle_copies_declared_outputs_to_parent_context(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_handle_copies_multiple_declared_outputs(tmp_path):
+async def test_handle_should_copy_multiple_declared_outputs_to_parent_context_when_child_sets_states(
+    tmp_path,
+):
     child = tmp_path / "child.mgx"
     child.write_text('@state out1 = "a"\n@state out2 = "b"')
 
@@ -165,11 +151,10 @@ async def test_handle_copies_multiple_declared_outputs(tmp_path):
     assert model.context.get_variable_value("out2") == "b"
 
 
-# --- handle: isolation (non-declared vars do not leak) ---
-
-
 @pytest.mark.asyncio
-async def test_handle_does_not_leak_undeclared_child_vars_to_parent(tmp_path):
+async def test_handle_should_not_leak_undeclared_child_vars_to_parent_when_no_outputs_declared(
+    tmp_path,
+):
     child = tmp_path / "child.mgx"
     child.write_text('@state secret = "leaked"')
 
@@ -182,11 +167,8 @@ async def test_handle_does_not_leak_undeclared_child_vars_to_parent(tmp_path):
     assert model.context.get_variable_value("secret") is None
 
 
-# --- handle: parent vars do not bleed into child ---
-
-
 @pytest.mark.asyncio
-async def test_handle_child_does_not_inherit_parent_vars(tmp_path):
+async def test_handle_should_not_inherit_parent_vars_when_parent_has_vars(tmp_path):
     """Vars in parent context that are not passed as inputs must not be visible in child."""
     child = tmp_path / "child.mgx"
     child.write_text('@state parentSeen = "no"')
@@ -205,11 +187,10 @@ async def test_handle_child_does_not_inherit_parent_vars(tmp_path):
     assert model.context.get_variable_value("parentOnly") == "secret"
 
 
-# --- handle: fresh plugins from factory per call ---
-
-
 @pytest.mark.asyncio
-async def test_handle_calls_plugin_factory_for_each_execution(tmp_path):
+async def test_handle_should_call_plugin_factory_for_each_execution_when_executed_multiple_times(
+    tmp_path,
+):
     child = tmp_path / "child.mgx"
     child.write_text("")
 
@@ -233,7 +214,7 @@ async def test_handle_calls_plugin_factory_for_each_execution(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_handle_merges_child_turns_into_parent(tmp_path):
+async def test_handle_should_merge_child_turns_into_parent_when_child_runs(tmp_path):
     child = tmp_path / "child.mgx"
     child.write_text("")
 
@@ -249,7 +230,7 @@ async def test_handle_merges_child_turns_into_parent(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_handle_sets_exec_title_on_child_runs(tmp_path):
+async def test_handle_should_set_exec_title_on_child_runs_when_child_starts_run(tmp_path):
     from datetime import datetime
 
     from margarita.agent.core.interfaces.agent_plugin import AgentPlugin
@@ -283,7 +264,7 @@ async def test_handle_sets_exec_title_on_child_runs(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_handle_title_uses_original_file_path_string(tmp_path):
+async def test_handle_should_use_original_file_path_string_in_title_when_subdir_used(tmp_path):
     subdir = tmp_path / "helpers"
     subdir.mkdir()
     child = subdir / "summarize.mgx"
@@ -297,3 +278,34 @@ async def test_handle_title_uses_original_file_path_string(tmp_path):
 
     child_runs = [turn.run for turn in model.turns if turn.run is not None and turn.run.title]
     assert all(r.title == "exec: helpers/summarize.mgx" for r in child_runs)
+
+
+@pytest.mark.asyncio
+async def test_for_loop_should_pass_each_item_to_child_context_when_iterating(tmp_path):
+    """Loop variable must be resolved per-iteration and appear in the child context."""
+    received_items = []
+
+    class CapturingPlugin(AgentPlugin):
+        def is_match(self, t: str) -> bool:
+            return t == "capture"
+
+        async def handle(self, params: str, execution_model: ExecutionModel):
+            received_items.append(execution_model.context.get_variable_value("item"))
+
+    child = tmp_path / "sub.mgx"
+    child.write_text("@effect capture\n")
+
+    exec_plugin = ExecPlugin(
+        plugin_factory=lambda: [CapturingPlugin()],
+        memory_service=MockMemoryService(),
+    )
+    exec_plugin.set_base_path(tmp_path)
+
+    model = ExecutionModel()
+    model.context.set_variable("items", ["alpha", "beta", "gamma"])
+    model.context.set_variable("item", "alpha")
+
+    await exec_plugin.handle("sub.mgx item=item", model)
+
+    assert len(received_items) == 1
+    assert received_items[0] == "alpha"
