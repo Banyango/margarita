@@ -8,7 +8,7 @@ Key features
 
 - Support Composable templates that can be split, reused, and nested
 - Support Logic with conditionals and loops for dynamic sections
-- Build Agents with your favorite LLMs (e.g. OpenAI, Azure, Hugging Face, etc.)
+- Requires GitHub Copilot for agentic capabilities (coming soon: support for other LLMs and local execution)
 
 ## Quick Start
 

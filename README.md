@@ -24,6 +24,9 @@ It provides two file formats:
 - Sub Agents — call other `.mgx` files as sub-agents with `@effect exec`.
 - Metadata — attach version and description metadata alongside your prompts. `parameters` field for defining expected context variables.
 
+## Requirements
+
+- A Github Copilot subscription is required to use the agentic features of Margarita (i.e. to run `.mgx` files). We're working on adding more llm backends currently.
 
 # Installation
 
