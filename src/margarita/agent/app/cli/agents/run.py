@@ -4,6 +4,7 @@ from pathlib import Path
 
 import click
 
+from margarita.agent.app.config import AppConfig
 from margarita.agent.app.container import container
 from margarita.agent.app.lifecycle import with_lifecycle
 from margarita.agent.core.agents.models import ExecutionModel
@@ -83,7 +84,9 @@ async def run(
     should_verify_prompts = verify_prompts if verify_prompts is not None else has_manifest
 
     ui = await container.get(UI)
-    query_service = await container.get(QueryService)
+    # retrieve AppConfig to ensure it's initialized in the container, but we don't need to keep a reference
+    config = await container.get(AppConfig)
+    query_service = await container.get(QueryService, qualifier=config.backend)
     logger_service = await container.get(LoggerService)
     memory_service = await container.get(MemoryService)
     prompt_integrity = None

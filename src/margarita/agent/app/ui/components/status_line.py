@@ -1,4 +1,3 @@
-import re
 from time import monotonic
 
 from rich.text import Text
@@ -52,12 +51,9 @@ class StatusLine:
                 b for b in run.content_blocks if b.type == ContentBlockType.REASONING and b.text
             ]
             if reasoning_blocks:
-                latest = reasoning_blocks[-1].text
-                condensed = re.findall(r"\*\*(.+?)\*\*", latest)
-                snippet = condensed[-1] if condensed else latest
-                snippet = snippet.replace("\n", " ").strip()
+                snippet = reasoning_blocks[-1].text.strip()
                 if len(snippet) > 80:
-                    snippet = snippet[:77] + "…"
+                    snippet = snippet[-77:] + "…"
                 t.append(f"  {snippet}", style="dim italic")
 
         component.update(t)

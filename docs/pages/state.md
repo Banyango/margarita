@@ -27,3 +27,18 @@ You can also instruct the agent to set or update state values. For example, aski
 ```
 
 The example above sets the `count` variable to 5.
+
+
+## Setting values in the context from state
+
+State variables can also be filled into the context before a run. To do this, use `${var_name}` syntax in your template.
+
+```mgx
+@state name = "Margarita"
+
+<< Hello, ${name}! >>
+```
+
+This will fill out the `name` variable from state and include it in the context before the run, so the agent doesn't have to use a tool call to set/get it.
+
+This can be helpful for reducing the number of tool calls the agent has to make which saves you tokens. It also gives you more control since you can set the values into the context before a second run.

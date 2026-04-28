@@ -5,12 +5,15 @@ from pathlib import Path
 from pydantic import BaseModel
 from wireup import injectable
 
+from margarita.agent.core.agents.models import ModelBackend
+
 
 class AppConfig(BaseModel):
     show_context: bool = True
     theme: str = "monokai"
     use_existing_system_prompt: bool = True
     system_prompt: str = ""
+    backend: ModelBackend = ModelBackend.OLLAMA
     ignore_permissions: bool = False
 
 

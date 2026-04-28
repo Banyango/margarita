@@ -8,7 +8,7 @@ Key features
 
 - Support Composable templates that can be split, reused, and nested
 - Support Logic with conditionals and loops for dynamic sections
-- Requires GitHub Copilot for agentic capabilities (coming soon: support for other LLMs and local execution)
+- Requires Ollama or GitHub Copilot for agentic capabilities (more backends coming soon)
 
 ## Quick Start
 

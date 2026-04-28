@@ -72,7 +72,7 @@ class MargaritaVarToolCall(ToolcallHandler):
             text.append(f"↳ setting {var_name} = {value_str}", style="dim")
         elif tool_call.success:
             text.append(f"↳ set {var_name}", style="green")
-            if tool_call.result and value_str:
+            if value_str:
                 text.append(" = ", style="green")
                 text.append(value_str, style="green")
         else:

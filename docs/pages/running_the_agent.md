@@ -2,7 +2,12 @@
 
 ## Requirements
 
-Margarita's agent runner uses GitHub Copilot. You will need the [Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/install-copilot-cli) installed and configured.
+You can choose between the following model backends for running your agents:
+
+- Ollama [installation instructions](https://ollama.com/docs/installation)
+- GitHub Copilot. You will need the [Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/install-copilot-cli) installed and configured.
+
+See here for instructions on [switching between backends](model_backends.md)
 
 > **Note:** We're working on adding support for more models and providers in the future. If you have a specific model or provider you'd like to see supported, please let us know by creating an issue in our GitHub repository.
 

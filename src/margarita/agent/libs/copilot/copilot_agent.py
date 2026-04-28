@@ -81,7 +81,7 @@ SESSION_EVENT_TYPE_MAP: dict[SessionEventType, RunEventEnum] = {
 }
 
 
-@injectable(as_type=QueryService)
+@injectable(as_type=QueryService, qualifier="copilot")
 class CopilotQuery(QueryService):
     """QueryService implementation for interacting with GitHub Copilot.
 
@@ -255,7 +255,7 @@ class CopilotQuery(QueryService):
 
             if event.type == SessionEventType.SESSION_START:
                 run.session_id = d.session_id
-                run.model = d.selected_model or d.current_model
+                run.model = d.selected_model or model_value or "gpt-5-mini"
                 if d.context and hasattr(d.context, "cwd"):
                     run.context = RunContext(
                         cwd=d.context.cwd,

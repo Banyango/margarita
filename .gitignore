@@ -150,3 +150,5 @@ output/
 __pycache__/
 
 .claude/
+test.txt
+memory.json

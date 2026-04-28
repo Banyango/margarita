@@ -1,5 +1,7 @@
 from wireup import AsyncContainer
 
+from margarita.agent.app.config import AppConfig
+from margarita.agent.core.agents.models import ModelBackend
 from margarita.agent.libs.copilot.client import GithubCopilotClient
 
 
@@ -9,8 +11,12 @@ async def startup(container: AsyncContainer):
     Args:
         container (AsyncContainer): The dependency injection container to retrieve the CopilotClient instance.
     """
-    client = await container.get(GithubCopilotClient)
-    await client.connect()
+    # todo fix me
+    config = await container.get(AppConfig)
+
+    if config.backend == ModelBackend.COPILOT:
+        client = await container.get(GithubCopilotClient)
+        await client.connect()
 
 
 async def shutdown(container: AsyncContainer):
@@ -19,5 +25,8 @@ async def shutdown(container: AsyncContainer):
     Args:
         container (AsyncContainer): The dependency injection container to retrieve the CopilotClient instance.
     """
-    client = await container.get(GithubCopilotClient)
-    await client.disconnect()
+    config = await container.get(AppConfig)
+
+    if config.backend == ModelBackend.COPILOT:
+        client = await container.get(GithubCopilotClient)
+        await client.disconnect()

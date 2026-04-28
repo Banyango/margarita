@@ -47,5 +47,3 @@ Notes
 - Conditions evaluate truthiness: missing, false, empty, or null values are treated as false.
 - You can reference nested values with dotted paths, e.g. `user.active`.
 - `elif` is syntactic sugar for a nested `if` in the false branch; no additional AST nodes are needed.
-
-Tip: Use `margarita metadata` or a dry render to ensure required context keys are present before running in production.

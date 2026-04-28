@@ -2,6 +2,7 @@ import asyncio
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from margarita.agent.entities.content_block import ContentBlock
@@ -138,6 +139,8 @@ class ExecutionModel:
             status (RunStatus): The status for the new run.
             start_time (datetime): The start time for the new run.
         """
+        self.on_complete_run()
+
         run = Run(
             name=name,
             tool_calls=[],
@@ -263,3 +266,8 @@ class BreakSignal(Exception):
     """
 
     pass
+
+
+class ModelBackend(StrEnum):
+    COPILOT = "copilot"
+    OLLAMA = "ollama"
