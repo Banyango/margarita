@@ -28,7 +28,7 @@ It provides two file formats:
 
 ## Requirements
 
-- A Github Copilot subscription is required to use the agentic features of Margarita (i.e. to run `.mgx` files). We're working on adding more llm backends currently.
+- A Github Copilot subscription or Ollama installed locally is required to use the agentic features of Margarita (i.e. to run `.mgx` files). We're working on adding more llm backends currently.
 
 # Installation
 
@@ -36,12 +36,10 @@ Run the following command to install Margarita using uv:
 
 ```shell
 uv tool install margarita
-```
 
-Or run it without installing:
+margarita use ollama
 
-```shell
-uvx margarita render greeting.mg
+margarita run example.mgx
 ```
 
 
@@ -54,32 +52,17 @@ uvx margarita render greeting.mg
 ## Hello World
 
 ```margarita
-// file: helloworld.mg
+// file: helloworld.mgx
+@state name = "World"
+
 <<
 Hello, ${name}!
 Welcome to Margarita templating.
 >>
+
+@effect run
 ```
 
-```json
-// file: helloworld.json
-{
-    "name": "World"
-}
-```
-
-```shell
-margarita render helloworld.mg
-```
-
-Output:
-
-```text
-Hello, World!
-Welcome to Margarita templating.
-```
-
-> Tip: When rendering a single file, Margarita auto-detects a same-name `.json` context file — no `-c` flag needed.
 
 ## Conditionals
 
