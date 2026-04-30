@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/margarita.svg)](https://badge.fury.io/py/margarita)
 [![Python Support](https://img.shields.io/pypi/pyversions/margarita.svg)](https://pypi.org/project/margarita/)
 
-[![Discord](https://img.shields.io/discord/1499236997057744986)](https://discord.gg/W9kJWqFnYp)
+[![Discord](https://img.shields.io/discord/1499236997057744986?label=Discord&logo=discord)](https://discord.gg/W9kJWqFnYp)
 
 
 www.margarita.run
