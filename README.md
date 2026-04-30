@@ -3,6 +3,8 @@
 [![PyPI version](https://badge.fury.io/py/margarita.svg)](https://badge.fury.io/py/margarita)
 [![Python Support](https://img.shields.io/pypi/pyversions/margarita.svg)](https://pypi.org/project/margarita/)
 
+www.margarita.run
+
 Margarita aims to make writing Agents as easy as writing Markdown.
 
 It provides two file formats:
