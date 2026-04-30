@@ -1,3 +1,11 @@
+# Release Notes - Margarita v0.6.0
+
+**Release Date:** 2026-04-29
+
+- Added Ollama support for agent execution.
+- Use ollama with `margarita use ollama` command.
+- Project now integrates margartia-open-agent for ollama agent execution.
+
 # Release Notes - Margarita v0.5.3
 
 **Release Date:** 2026-04-21
