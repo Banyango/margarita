@@ -1,0 +1,12 @@
+---
+description: "the description of the addition tool"
+model: "gemma4:26b"
+---
+
+@state blah = True
+
+<<
+What model are we running?
+>>
+
+@effect run

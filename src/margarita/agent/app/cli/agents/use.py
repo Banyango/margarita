@@ -9,9 +9,7 @@ from margarita.agent.core.agents.models import ModelBackend
 @click.command()
 @click.argument("model", type=click.Choice(["copilot", "ollama"], case_sensitive=False))
 @with_lifecycle
-async def use(
-    model:str
-) -> None:
+async def use(model: str) -> None:
     config = await container.get(AppConfig)
 
     if model == "copilot":

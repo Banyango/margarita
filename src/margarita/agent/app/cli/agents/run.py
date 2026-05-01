@@ -7,6 +7,7 @@ import click
 from margarita.agent.app.config import AppConfig
 from margarita.agent.app.container import container
 from margarita.agent.app.lifecycle import with_lifecycle
+from margarita.agent.core.agents.errors import NoModelProvidedException
 from margarita.agent.core.agents.models import ExecutionModel
 from margarita.agent.core.agents.operations.execute_agent_operation import ExecuteAgentOperation
 from margarita.agent.core.agents.plugins import ExecPlugin
@@ -125,7 +126,7 @@ async def run(
 
         try:
             await operation.execute_async(mgx_file=mgx_code, base_path=base_path)
-        except (PromptIntegrityError, ValueError, FileNotFoundError) as error:
+        except (PromptIntegrityError, ValueError, FileNotFoundError, NoModelProvidedException) as error:
             raise click.ClickException(str(error)) from error
         except StopError as stop_error:
             raise click.ClickException(str(stop_error)) from stop_error
