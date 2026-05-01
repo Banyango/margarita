@@ -1,7 +1,6 @@
 import asyncio
 from datetime import UTC, datetime
 
-from margarita.agent.core.agents.errors import NoModelProvidedException
 from margarita_open_agent.core.llm import LLMClient
 from margarita_open_agent.core.models.llm_model_enum import LLMModelEnum
 from margarita_open_agent.core.models.session import SessionStartedMetadata
@@ -16,6 +15,7 @@ from wireup import injectable
 
 from margarita.agent import ContentBlock
 from margarita.agent.app.config import AppConfig
+from margarita.agent.core.agents.errors import NoModelProvidedException
 from margarita.agent.core.agents.models import ExecutionModel
 from margarita.agent.core.interfaces.logger import LoggerService
 from margarita.agent.core.interfaces.query_service import QueryService

@@ -1,3 +1,10 @@
+# Release Notes - Margarita v0.6.1
+
+**Release Date:** 2026-05-01
+
+## 🎉 Overview
+Fixed an issue in the Ollama integration that prevented the selected model from being forwarded correctly. This release also adds improved error handling for the Ollama agent and includes new unit/eval tests to validate the fix.
+
 # Release Notes - Margarita v0.6.0
 
 **Release Date:** 2026-04-29
