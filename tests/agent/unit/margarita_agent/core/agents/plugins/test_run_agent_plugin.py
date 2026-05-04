@@ -48,7 +48,7 @@ async def test_handle_should_call_execute_query_when_called():
     execution_model = _create_execution_model()
 
     # Act
-    await plugin.handle("", execution_model=execution_model)
+    await plugin.handle_async("", execution_model=execution_model)
 
     # Assert
     mock_service.execute_query.assert_awaited_once_with(execution_model=execution_model, params="")

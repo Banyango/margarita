@@ -30,7 +30,7 @@ class MockPlugin(AgentPlugin):
     def is_match(self, token: str) -> bool:
         return token == self.token
 
-    async def handle(self, params: str, execution_model: ExecutionModel):
+    async def handle_async(self, params: str, execution_model: ExecutionModel):
         self.handle_called = True
         self.handle_params = params
 
@@ -842,7 +842,7 @@ async def test_execute_async_should_run_all_effects_in_parallel_when_await_all()
         def is_match(self, t: str) -> bool:
             return t == self.token
 
-        async def handle(self, params: str, execution_model: ExecutionModel):
+        async def handle_async(self, params: str, execution_model: ExecutionModel):
             call_order.append(self.token)
 
     plugin_a = TrackingPlugin("alpha")
@@ -870,7 +870,7 @@ async def test_await_all_partial_failure_logs_error_and_keeps_successful_outputs
         def is_match(self, t: str) -> bool:
             return t == "good"
 
-        async def handle(self, params: str, execution_model: ExecutionModel):
+        async def handle_async(self, params: str, execution_model: ExecutionModel):
             results.append("good")
             execution_model.context.set_variable("goodResult", "ok")
 
@@ -878,7 +878,7 @@ async def test_await_all_partial_failure_logs_error_and_keeps_successful_outputs
         def is_match(self, t: str) -> bool:
             return t == "bad"
 
-        async def handle(self, params: str, execution_model: ExecutionModel):
+        async def handle_async(self, params: str, execution_model: ExecutionModel):
             raise RuntimeError("child exploded")
 
     operation = _create_operation(plugins=[SuccessPlugin(), FailPlugin()])
@@ -915,7 +915,7 @@ async def test_execute_async_should_call_all_await_all_effects_regardless_of_ord
         def is_match(self, t: str) -> bool:
             return t == self.token
 
-        async def handle(self, params: str, execution_model: ExecutionModel):
+        async def handle_async(self, params: str, execution_model: ExecutionModel):
             handled.append((self.token, params))
 
     plugin_x = CollectingPlugin("x")

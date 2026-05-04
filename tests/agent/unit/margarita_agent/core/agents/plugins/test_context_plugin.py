@@ -42,7 +42,7 @@ async def test_handle_should_clear_context_when_params_is_clear():
     plugin = _create_plugin()
 
     # Act
-    await plugin.handle("clear", execution_model=execution_model)
+    await plugin.handle_async("clear", execution_model=execution_model)
 
     # Assert
     assert execution_model.context.window == ""
@@ -56,7 +56,7 @@ async def test_handle_should_not_clear_when_params_is_not_clear():
     plugin = _create_plugin()
 
     # Act
-    await plugin.handle("something_else", execution_model=execution_model)
+    await plugin.handle_async("something_else", execution_model=execution_model)
 
     # Assert
     assert execution_model.context.window == "some content"

@@ -141,7 +141,7 @@ class ExecPlugin(AgentPlugin):
     def is_match(self, token: str) -> bool:
         return token == "exec"
 
-    async def handle(self, params: str, execution_model: ExecutionModel) -> None:
+    async def handle_async(self, params: str, execution_model: ExecutionModel) -> None:
         # Split on ` => ` to separate LHS (file + inputs) from RHS (output vars)
         if " => " in params:
             lhs, rhs = params.split(" => ", 1)

@@ -18,7 +18,7 @@ class ConsoleLogPlugin(AgentPlugin):
         """
         return token == "log"
 
-    async def handle(self, params: str, execution_model: ExecutionModel):
+    async def handle_async(self, params: str, execution_model: ExecutionModel):
         """Handle a request for the plugin.
 
         Args:

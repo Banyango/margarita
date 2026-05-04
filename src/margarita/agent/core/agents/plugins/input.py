@@ -10,7 +10,7 @@ class InputPlugin(AgentPlugin):
     def is_match(self, token: str) -> bool:
         return token == "input"
 
-    async def handle(self, params: str, execution_model: ExecutionModel):
+    async def handle_async(self, params: str, execution_model: ExecutionModel):
         stripped = params.strip()
         prompt_match = re.match(r'^"(.*?)"\s*=>\s*(\w+)$', stripped)
         silent_match = re.match(r"^=>\s*(\w+)$", stripped)

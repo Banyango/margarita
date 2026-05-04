@@ -62,7 +62,7 @@ async def test_handle_should_store_user_input_in_variable():
 
     # Act — run plugin and UI simulation concurrently
     await asyncio.gather(
-        plugin.handle('"What is your name?" => user_name', execution_model=execution_model),
+        plugin.handle_async('"What is your name?" => user_name', execution_model=execution_model),
         _resolve_pending_input(execution_model, "Alice"),
     )
 
@@ -79,7 +79,7 @@ async def test_handle_should_replace_variables_in_prompt_text():
 
     # Act
     await asyncio.gather(
-        plugin.handle('"Tell me about ${topic}" => answer', execution_model=execution_model),
+        plugin.handle_async('"Tell me about ${topic}" => answer', execution_model=execution_model),
         _resolve_pending_input(execution_model, "42"),
     )
 
@@ -97,7 +97,7 @@ async def test_handle_should_append_content_block_to_current_run():
 
     # Act
     await asyncio.gather(
-        plugin.handle('"Say something" => response', execution_model=execution_model),
+        plugin.handle_async('"Say something" => response', execution_model=execution_model),
         _resolve_pending_input(execution_model, "hello"),
     )
 
@@ -119,7 +119,7 @@ async def test_handle_should_clear_pending_input_after_completion():
 
     # Act
     await asyncio.gather(
-        plugin.handle('"Question?" => ans', execution_model=execution_model),
+        plugin.handle_async('"Question?" => ans', execution_model=execution_model),
         _resolve_pending_input(execution_model, "yes"),
     )
 
@@ -135,7 +135,7 @@ async def test_handle_should_store_user_input_in_variable_when_no_prompt():
 
     # Act
     await asyncio.gather(
-        plugin.handle("=> result", execution_model=execution_model),
+        plugin.handle_async("=> result", execution_model=execution_model),
         _resolve_pending_input(execution_model, "silent answer"),
     )
 
@@ -151,7 +151,7 @@ async def test_handle_should_not_add_question_block_when_no_prompt():
 
     # Act
     await asyncio.gather(
-        plugin.handle("=> result", execution_model=execution_model),
+        plugin.handle_async("=> result", execution_model=execution_model),
         _resolve_pending_input(execution_model, "silent answer"),
     )
 
@@ -170,4 +170,4 @@ async def test_handle_should_raise_when_params_syntax_is_invalid():
 
     # Act / Assert
     with pytest.raises(ValueError, match="Invalid input syntax"):
-        await plugin.handle("missing arrow variable", execution_model=execution_model)
+        await plugin.handle_async("missing arrow variable", execution_model=execution_model)

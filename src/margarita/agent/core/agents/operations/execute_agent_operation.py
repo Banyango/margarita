@@ -275,7 +275,7 @@ class ExecuteAgentOperation:
         """
         for effect_plugin in self.plugins:
             if effect_plugin.is_match(plugin):
-                await effect_plugin.handle(
+                await effect_plugin.handle_async(
                     params=operation,
                     execution_model=self.execution_model,
                 )

@@ -36,7 +36,7 @@ async def test_func_should_run_function_and_store_result_when_params_provided():
     params = "add(x,y) => result"
 
     # Act
-    await plugin.handle(params, execution_model=execution_model)
+    await plugin.handle_async(params, execution_model=execution_model)
 
     # Assert
     assert execution_model.context.get_variable_value("result") == 5
@@ -70,7 +70,7 @@ async def test_handle_should_run_func_when_valid():
     params = "add(a, b) => sum_result"
 
     # Act
-    await plugin.handle(params, execution_model=execution_model)
+    await plugin.handle_async(params, execution_model=execution_model)
 
     # Assert
     # One function call should be logged

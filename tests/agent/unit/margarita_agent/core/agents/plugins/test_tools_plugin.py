@@ -63,7 +63,7 @@ async def test_handle_should_parse_correctly(params, result):
     tools_plugin = ToolsPlugin()
 
     # Act
-    await tools_plugin.handle(params, execution_model=execution_model)
+    await tools_plugin.handle_async(params, execution_model=execution_model)
 
     # Assert
     assert execution_model.context.tools[0].name == result.name
@@ -88,7 +88,7 @@ async def test_handle_should_not_add_tool_for_invalid_input(params):
     tools_plugin = ToolsPlugin()
 
     # Act
-    await tools_plugin.handle(params, execution_model=execution_model)
+    await tools_plugin.handle_async(params, execution_model=execution_model)
 
     # Assert
     assert len(execution_model.context.tools) == 0
@@ -102,7 +102,7 @@ async def test_handle_should_clear_tools():
     tools_plugin = ToolsPlugin()
 
     # Act
-    await tools_plugin.handle("clear", execution_model=execution_model)
+    await tools_plugin.handle_async("clear", execution_model=execution_model)
 
     # Assert
     assert len(execution_model.context.tools) == 0

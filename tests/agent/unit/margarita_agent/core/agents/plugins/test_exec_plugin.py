@@ -51,7 +51,7 @@ async def test_handle_should_raise_file_not_found_when_file_missing(tmp_path):
     model = ExecutionModel()
 
     with pytest.raises(FileNotFoundError, match="sub-mgx file not found"):
-        await plugin.handle("missing.mgx", model)
+        await plugin.handle_async("missing.mgx", model)
 
 
 @pytest.mark.asyncio
@@ -63,7 +63,7 @@ async def test_handle_should_run_child_without_error_when_file_only(tmp_path):
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx", model)  # should not raise
+    await plugin.handle_async("child.mgx", model)  # should not raise
 
 
 @pytest.mark.asyncio
@@ -73,9 +73,9 @@ async def test_handle_should_resolve_input_vars_from_parent_context_when_inputs_
     child.write_text('@state result = "done"')
 
     class CapturingPlugin(ExecPlugin):
-        async def handle(self, params, execution_model):
+        async def handle_async(self, params, execution_model):
             # Intercept by subclassing — not needed; test via output check
-            await super().handle(params, execution_model)
+            await super().handle_async(params, execution_model)
 
     plugin = ExecPlugin(
         plugin_factory=lambda: [],
@@ -90,7 +90,7 @@ async def test_handle_should_resolve_input_vars_from_parent_context_when_inputs_
     # child operation was created with resolved values. We do this by writing
     # a child that copies its input to an output var.
     child.write_text('@state out = "static"')
-    await plugin.handle("child.mgx input=userInput => out", model)
+    await plugin.handle_async("child.mgx input=userInput => out", model)
     # out should be copied into parent context
     assert model.context.get_variable_value("out") == "static"
 
@@ -114,7 +114,7 @@ async def test_handle_should_pass_resolved_value_to_child_when_input_var_referen
     model = ExecutionModel()
     model.context.set_variable("myVar", "resolved_value")
 
-    await plugin.handle("child.mgx key=myVar", model)
+    await plugin.handle_async("child.mgx key=myVar", model)
     # No error = inputs were resolved without issue
 
 
@@ -129,7 +129,7 @@ async def test_handle_should_copy_declared_outputs_to_parent_context_when_child_
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx => result", model)
+    await plugin.handle_async("child.mgx => result", model)
 
     assert model.context.get_variable_value("result") == "child_output"
 
@@ -145,7 +145,7 @@ async def test_handle_should_copy_multiple_declared_outputs_to_parent_context_wh
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx => out1, out2", model)
+    await plugin.handle_async("child.mgx => out1, out2", model)
 
     assert model.context.get_variable_value("out1") == "a"
     assert model.context.get_variable_value("out2") == "b"
@@ -162,7 +162,7 @@ async def test_handle_should_not_leak_undeclared_child_vars_to_parent_when_no_ou
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx", model)  # no output declaration
+    await plugin.handle_async("child.mgx", model)  # no output declaration
 
     assert model.context.get_variable_value("secret") is None
 
@@ -182,7 +182,7 @@ async def test_handle_should_not_inherit_parent_vars_when_parent_has_vars(tmp_pa
     # could set a state var — but since child context is isolated (Context({})),
     # parentOnly is simply not present. The test passes as long as no error occurs
     # and the parent's variable remains unchanged.
-    await plugin.handle("child.mgx", model)
+    await plugin.handle_async("child.mgx", model)
 
     assert model.context.get_variable_value("parentOnly") == "secret"
 
@@ -204,8 +204,8 @@ async def test_handle_should_call_plugin_factory_for_each_execution_when_execute
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx", model)
-    await plugin.handle("child.mgx", model)
+    await plugin.handle_async("child.mgx", model)
+    await plugin.handle_async("child.mgx", model)
 
     assert len(factory_calls) == 2
 
@@ -223,7 +223,7 @@ async def test_handle_should_merge_child_turns_into_parent_when_child_runs(tmp_p
     model = ExecutionModel()
     initial_turn_count = len(model.turns)
 
-    await plugin.handle("child.mgx", model)
+    await plugin.handle_async("child.mgx", model)
 
     # Child execution creates at least one turn
     assert len(model.turns) > initial_turn_count
@@ -240,7 +240,7 @@ async def test_handle_should_set_exec_title_on_child_runs_when_child_starts_run(
         def is_match(self, t):
             return t == "fake-run"
 
-        async def handle(self, params, execution_model):
+        async def handle_async(self, params, execution_model):
             execution_model.start_run(
                 name="test",
                 prompt="",
@@ -256,7 +256,7 @@ async def test_handle_should_set_exec_title_on_child_runs_when_child_starts_run(
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("child.mgx", model)
+    await plugin.handle_async("child.mgx", model)
 
     child_runs = [turn.run for turn in model.turns if turn.run is not None and turn.run.title]
     assert len(child_runs) > 0
@@ -274,7 +274,7 @@ async def test_handle_should_use_original_file_path_string_in_title_when_subdir_
     plugin.set_base_path(tmp_path)
     model = ExecutionModel()
 
-    await plugin.handle("helpers/summarize.mgx", model)
+    await plugin.handle_async("helpers/summarize.mgx", model)
 
     child_runs = [turn.run for turn in model.turns if turn.run is not None and turn.run.title]
     assert all(r.title == "exec: helpers/summarize.mgx" for r in child_runs)
@@ -289,7 +289,7 @@ async def test_for_loop_should_pass_each_item_to_child_context_when_iterating(tm
         def is_match(self, t: str) -> bool:
             return t == "capture"
 
-        async def handle(self, params: str, execution_model: ExecutionModel):
+        async def handle_async(self, params: str, execution_model: ExecutionModel):
             received_items.append(execution_model.context.get_variable_value("item"))
 
     child = tmp_path / "sub.mgx"
@@ -305,7 +305,7 @@ async def test_for_loop_should_pass_each_item_to_child_context_when_iterating(tm
     model.context.set_variable("items", ["alpha", "beta", "gamma"])
     model.context.set_variable("item", "alpha")
 
-    await exec_plugin.handle("sub.mgx item=item", model)
+    await exec_plugin.handle_async("sub.mgx item=item", model)
 
     assert len(received_items) == 1
     assert received_items[0] == "alpha"
