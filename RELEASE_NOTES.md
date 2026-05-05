@@ -1,3 +1,16 @@
+# Release Notes - Margarita v0.6.2
+
+**Release Date:** 2026-05-05
+
+## 🎉 Overview
+This release includes a small set of maintenance and integration updates:
+
+- Dependency updates: bumped open-agent/margarita-open-agent and refreshed uv.lock (open-agent 0.3.2).
+- Internal refactor: renamed an internal async helper to `_async` across agent plugins for clarity.
+- Improvements and test updates for the Ollama agent integration.
+- Code formatting and linting cleanups.
+
+
 # Release Notes - Margarita v0.6.1
 
 **Release Date:** 2026-05-01

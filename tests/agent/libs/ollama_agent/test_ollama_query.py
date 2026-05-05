@@ -1,4 +1,3 @@
-
 import pytest
 
 # import the module so we can monkeypatch module-level symbols
