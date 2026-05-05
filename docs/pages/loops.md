@@ -108,3 +108,14 @@ Rendered result:
 name: Alice
 role: admin
 ```
+
+## While Loops
+
+While loops are supported in Margarita
+
+```margarita
+@state count = 0
+
+while count < 3:
+    << Increment `count` by 1 >>
+```
