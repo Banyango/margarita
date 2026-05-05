@@ -2,15 +2,14 @@ import asyncio
 from datetime import UTC, datetime
 
 from margarita_open_agent.core.llm import LLMClient
-from margarita_open_agent.core.models.llm_model_enum import LLMModelEnum
 from margarita_open_agent.core.models.session import SessionStartedMetadata
 from margarita_open_agent.core.models.tool import ToolDefinition
 from margarita_open_agent.core.models.tool_call_event import (
     ToolCallCallingMetadata,
     ToolCallDoneMetadata,
 )
-from margarita_open_agent.session import AgentSession
-from margarita_open_agent.session_event import SessionEventType
+from margarita_open_agent.core.sessions.session import AgentSession
+from margarita_open_agent.core.sessions.session_event import SessionEventType
 from wireup import injectable
 
 from margarita.agent import ContentBlock
@@ -228,11 +227,9 @@ class OllamaQuery(QueryService):
         if model_value is None:
             raise NoModelProvidedException()
 
-        model = self.validate_model_name(model_value)
-
         async with self._session_lock:
             session = AgentSession(
-                model=model,
+                model=model_value,
                 system_message=SYSTEM_PROMPT,
                 additional_tools=extra_tools,
                 on_user_input_request=OllamaUserInputHandler(execution_model),
@@ -246,18 +243,3 @@ class OllamaQuery(QueryService):
 
     async def clear_session(self):
         pass
-
-    @staticmethod
-    def validate_model_name(model_value: str):
-        """Validate the model name
-
-        Args:
-            model_value (str): The model name
-        """
-        for model in LLMModelEnum:
-            if model.value == model_value:
-                return model
-
-        raise ValueError(
-            f"Model {model_value} is not a valid LLMModelEnum value. possible values are {LLMModelEnum}"
-        )

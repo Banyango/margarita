@@ -250,7 +250,7 @@ class ExecutionModel:
         Args:
             error (str): The error message for the error.
         """
-        self.current_turn.add_error(RunError(error))
+        self.current_turn.add_error(RunError(message=error))
 
     def on_complete_run(self):
         """On complete run"""

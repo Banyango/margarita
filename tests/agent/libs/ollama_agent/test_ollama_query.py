@@ -8,32 +8,6 @@ from margarita.agent.core.agents.models import ExecutionModel
 from margarita.agent.libs.ollama_agent.ollama_agent import OllamaQuery
 
 
-def test_validate_model_name_should_return_enum_when_name_matches(monkeypatch):
-    """
-    Validate that OllamaQuery.validate_model_name returns the matching enum member when the
-    provided model name matches an enum member's .value.
-    """
-
-    FakeEnum = Enum("FakeEnum", {"MODEL_A": "model-a", "MODEL_B": "model-b"})
-    # Patch the module-level LLMModelEnum used inside validate_model_name
-    monkeypatch.setattr(ollama_agent, "LLMModelEnum", FakeEnum)
-
-    resolved = OllamaQuery.validate_model_name("model-b")
-    assert resolved is FakeEnum.MODEL_B
-
-
-def test_validate_model_name_should_raise_value_error_when_unknown(monkeypatch):
-    """
-    Validate that validate_model_name raises ValueError for unknown model names.
-    """
-
-    FakeEnum = Enum("FakeEnum", {"MODEL_A": "model-a"})
-    monkeypatch.setattr(ollama_agent, "LLMModelEnum", FakeEnum)
-
-    with pytest.raises(ValueError):
-        OllamaQuery.validate_model_name("no-such-model")
-
-
 @pytest.mark.asyncio
 async def test_create_session_should_send_custom_model_when_execution_model_model_is_provided(
     monkeypatch,
@@ -42,9 +16,6 @@ async def test_create_session_should_send_custom_model_when_execution_model_mode
     Ensure that when ExecutionModel.metadata['model'] contains a model name, create_session
     resolves it via validate_model_name and passes the resolved value to AgentSession(..., model=...).
     """
-
-    FakeEnum = Enum("FakeEnum", {"GEMMA_4_E2B": "gemma-4-e2b", "CUSTOM": "custom-model"})
-    monkeypatch.setattr(ollama_agent, "LLMModelEnum", FakeEnum)
 
     captured = {}
 
@@ -79,4 +50,4 @@ async def test_create_session_should_send_custom_model_when_execution_model_mode
 
     assert isinstance(session, FakeAgentSession)
     assert "model" in captured
-    assert captured["model"] == FakeEnum.CUSTOM
+    assert captured["model"] == "custom-model"

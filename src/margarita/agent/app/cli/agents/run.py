@@ -130,9 +130,12 @@ async def run(
             PromptIntegrityError,
             ValueError,
             FileNotFoundError,
-            NoModelProvidedException,
         ) as error:
             raise click.ClickException(str(error)) from error
+        except NoModelProvidedException:
+            raise click.ClickException(
+                "Model name is required in the metadata. Please add as following:\n---\nmodel: model:variant\n---\n\n."
+            )
         except StopError as stop_error:
             raise click.ClickException(str(stop_error)) from stop_error
 
