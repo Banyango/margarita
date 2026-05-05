@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from margarita.language.parser import Parser
 from margarita.language.renderer import Renderer
 
@@ -595,3 +597,48 @@ else:
 
         # Assert
         assert "secret" not in result
+
+    def test_render_should_render_multiple_times_when_while_loop_true(self):
+        template = "while i < 3:\n    <<Iteration>>\n"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        mock = MagicMock(side_effect=[True, True, True, False])
+        renderer._evaluate_condition = mock
+
+        result = renderer.render(nodes)
+
+        assert result.count("Iteration") == 3
+
+    def test_render_should_not_render_when_while_condition_is_false(self):
+        template = "while done:\n    <<Should not appear>>\n"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={"done": False})
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_stop_iteration_when_while_break_is_unconditional(self):
+        template = "while running:\n    break\n    <<Should not appear>>\n"
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        mock = MagicMock(side_effect=[True])
+        renderer._evaluate_condition = mock
+
+        result = renderer.render(nodes)
+
+        assert result.strip() == ""
+
+    def test_render_should_stop_at_matching_iteration_when_while_break_is_conditional(self):
+        template = 'while running:\n    if flag:\n        break\n    <<Item>>\n'
+        _, nodes = self.parser.parse(template)
+        renderer = Renderer(context={})
+        # Each iteration: while guard, then if guard.
+        # Iter 1: while=True, if=False → renders Item
+        # Iter 2: while=True, if=False → renders Item
+        # Iter 3: while=True, if=True  → break
+        mock = MagicMock(side_effect=[True, False, True, False, True, True])
+        renderer._evaluate_condition = mock
+
+        result = renderer.render(nodes)
+
+        assert result.count("Item") == 2

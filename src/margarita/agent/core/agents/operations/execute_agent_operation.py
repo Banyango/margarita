@@ -32,7 +32,7 @@ from margarita.language.parser import (
     Parser,
     StateNode,
     TextNode,
-    VariableNode,
+    VariableNode, WhileNode,
 )
 
 EQUALITY_OR_LOGICAL_OPERATORS = [
@@ -226,6 +226,15 @@ class ExecuteAgentOperation:
                 await self._process_nodes_async(include_nodes, scoped_context)
 
                 context.add_to_context_window(scoped_context.window)
+
+            elif isinstance(node, WhileNode):
+                while self._is_truthy(self._evaluate_condition(node.condition, context)):
+                    if self.execution_model.stopped:
+                        break
+                    try:
+                        await self._process_nodes_async(node.block, context)
+                    except BreakSignal:
+                        break
 
             elif isinstance(node, AllAwaitNode):
                 self.execution_model.add_content_block(

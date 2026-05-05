@@ -9,7 +9,7 @@ from margarita.language.parser import (
     MemoryNode,
     Parser,
     StateNode,
-    TextNode,
+    TextNode, WhileNode,
 )
 
 
@@ -1034,3 +1034,14 @@ if show_items:
         assert len(nodes[0].true_block) == 1
         assert isinstance(nodes[0].true_block[0], AllAwaitNode)
         assert len(nodes[0].true_block[0].effect_nodes) == 2
+
+
+    def test_parse_should_parse_while_when_valid(self):
+        template = """while True:
+    <<Looping>>"""
+        _, nodes = self.parser.parse(template)
+
+        assert len(nodes) == 1
+        assert isinstance(nodes[0], WhileNode)
+        assert len(nodes[0].block) == 1
+        assert isinstance(nodes[0].block[0], TextNode)

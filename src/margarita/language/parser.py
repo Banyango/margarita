@@ -18,6 +18,12 @@ class TextNode(Node):
 
 
 @dataclass
+class WhileNode(Node):
+    condition: str
+    block: list[Node]
+
+
+@dataclass
 class VariableNode(Node):
     name: str
 
@@ -252,6 +258,7 @@ class Parser:
             state_match = re.match(r"^@state\s+(\w+)\s*=\s*(.+)$", stripped)
             import_match = re.match(r"^import\s+.+$", stripped)
             from_import_match = re.match(r"^from\s+.+\s+import\s+.+$", stripped)
+            while_match = re.match(r"^while\s+(.+):$", stripped)
             break_match = stripped == "break"
             text_block_start = stripped.startswith("<<")
 
@@ -288,6 +295,12 @@ class Parser:
                     current_false = [IfNode(elif_cond, elif_block, current_false)]
 
                 nodes.append(IfNode(condition, true_block, current_false))
+
+            elif while_match:
+                condition = while_match.group(1)
+                self.pos += 1
+                block = self._parse_block(indent)
+                nodes.append(WhileNode(condition, block))
 
             elif for_match:
                 # Parse for loop

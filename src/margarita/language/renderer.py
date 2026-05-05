@@ -18,7 +18,7 @@ from margarita.language.parser import (
     Node,
     Parser,
     TextNode,
-    VariableNode,
+    VariableNode, WhileNode,
 )
 
 EQUALITY_OR_LOGICAL_OPERATORS = (
@@ -256,6 +256,15 @@ class Renderer:
             elif node.false_block:
                 return self.render(node.false_block)
             return ""
+
+        elif isinstance(node, WhileNode):
+            output = []
+            while self._evaluate_condition(node.condition):
+                try:
+                    output.append(self.render(node.block))
+                except _BreakSignal:
+                    break
+            return "".join(output)
 
         elif isinstance(node, ForNode):
             iterable = self._resolve_iterable(node.iterable)
