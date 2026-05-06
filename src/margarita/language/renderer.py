@@ -18,7 +18,8 @@ from margarita.language.parser import (
     Node,
     Parser,
     TextNode,
-    VariableNode, WhileNode,
+    VariableNode,
+    WhileNode,
 )
 
 EQUALITY_OR_LOGICAL_OPERATORS = (

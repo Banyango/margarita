@@ -55,7 +55,7 @@ SET_TOOL_DEFINITION: ToolDefinition = ToolDefinition(
 )
 
 
-class OllamaCustomToolHandler(UserToolCallbackHandler):
+class OpenAgentCustomToolHandler(UserToolCallbackHandler):
     def __init__(self, execution_model: ExecutionModel) -> None:
         self.execution_model = execution_model
 

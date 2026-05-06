@@ -5,7 +5,7 @@ from margarita.agent import ContentBlock, ContentBlockType, ExecutionModel
 from margarita.agent.core.agents.models import InputRequest
 
 
-class OllamaUserInputHandler(UserInputCallbackHandler):
+class OpenAgentUserInputHandler(UserInputCallbackHandler):
     def __init__(self, execution_model: ExecutionModel):
         self.execution_model = execution_model
 

@@ -1,9 +1,9 @@
 import pytest
 
 # import the module so we can monkeypatch module-level symbols
-import margarita.agent.libs.ollama_agent.ollama_agent as ollama_agent
+import margarita.agent.libs.open_agent.agent as ollama_agent
 from margarita.agent.core.agents.models import ExecutionModel
-from margarita.agent.libs.ollama_agent.ollama_agent import OllamaQuery
+from margarita.agent.libs.open_agent.ollama import OllamaAgent
 
 
 @pytest.mark.asyncio
@@ -26,6 +26,7 @@ async def test_create_session_should_send_custom_model_when_execution_model_mode
             on_user_input_request=None,
             on_permission_request=None,
             on_custom_tool_request=None,
+            backend=None,
         ):
             captured["model"] = model
             captured["system_message"] = system_message
@@ -36,7 +37,7 @@ async def test_create_session_should_send_custom_model_when_execution_model_mode
 
     monkeypatch.setattr(ollama_agent, "AgentSession", FakeAgentSession)
 
-    query = OllamaQuery(ollama_client=None)
+    query = OllamaAgent()
 
     execution_model = ExecutionModel()
     execution_model.start_turn()
@@ -44,7 +45,7 @@ async def test_create_session_should_send_custom_model_when_execution_model_mode
     # Simulate parser-preserved quotes around the model name (create_session strips them)
     execution_model.metadata["model"] = "'custom-model'"
 
-    session = await query.create_session(execution_model, extra_tools=[])
+    session = await query.agent._create_session(execution_model, extra_tools=[])
 
     assert isinstance(session, FakeAgentSession)
     assert "model" in captured

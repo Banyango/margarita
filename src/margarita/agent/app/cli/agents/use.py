@@ -7,7 +7,7 @@ from margarita.agent.core.agents.models import ModelBackend
 
 
 @click.command()
-@click.argument("model", type=click.Choice(["copilot", "ollama"], case_sensitive=False))
+@click.argument("model", type=click.Choice(["copilot", "ollama", "openai"], case_sensitive=False))
 @with_lifecycle
 async def use(model: str) -> None:
     config = await container.get(AppConfig)
@@ -16,6 +16,8 @@ async def use(model: str) -> None:
         config.backend = ModelBackend.COPILOT
     elif model == "ollama":
         config.backend = ModelBackend.OLLAMA
+    elif model == "openai":
+        config.backend = ModelBackend.OPENAI
     else:
         raise click.BadParameter("Invalid model type")
 

@@ -10,7 +10,7 @@ from margarita.agent.core.agents.models import PermissionPrompt
 _INTERNAL_TOOLS = {"get_variable", "set_variable"}
 
 
-class OllamaPermissionHandler(PermissionCallbackHandler):
+class OpenAgentPermissionHandler(PermissionCallbackHandler):
     def __init__(self, execution_model: ExecutionModel, app_config: AppConfig):
         self.execution_model = execution_model
         self.app_config = app_config

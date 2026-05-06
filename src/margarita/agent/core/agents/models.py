@@ -271,3 +271,4 @@ class BreakSignal(Exception):
 class ModelBackend(StrEnum):
     COPILOT = "copilot"
     OLLAMA = "ollama"
+    OPENAI = "openai"

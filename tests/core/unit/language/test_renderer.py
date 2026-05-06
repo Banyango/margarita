@@ -629,7 +629,7 @@ else:
         assert result.strip() == ""
 
     def test_render_should_stop_at_matching_iteration_when_while_break_is_conditional(self):
-        template = 'while running:\n    if flag:\n        break\n    <<Item>>\n'
+        template = "while running:\n    if flag:\n        break\n    <<Item>>\n"
         _, nodes = self.parser.parse(template)
         renderer = Renderer(context={})
         # Each iteration: while guard, then if guard.

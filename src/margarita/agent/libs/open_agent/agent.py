@@ -1,7 +1,7 @@
 import asyncio
 from datetime import UTC, datetime
+from typing import Literal
 
-from margarita_open_agent.core.llm import LLMClient
 from margarita_open_agent.core.models.session import SessionStartedMetadata
 from margarita_open_agent.core.models.tool import ToolDefinition
 from margarita_open_agent.core.models.tool_call_event import (
@@ -10,14 +10,12 @@ from margarita_open_agent.core.models.tool_call_event import (
 )
 from margarita_open_agent.core.sessions.session import AgentSession
 from margarita_open_agent.core.sessions.session_event import SessionEventType
-from wireup import injectable
 
 from margarita.agent import ContentBlock
 from margarita.agent.app.config import AppConfig
 from margarita.agent.core.agents.errors import NoModelProvidedException
 from margarita.agent.core.agents.models import ExecutionModel
 from margarita.agent.core.interfaces.logger import LoggerService
-from margarita.agent.core.interfaces.query_service import QueryService
 from margarita.agent.entities.run import (
     ContentBlockType,
     Run,
@@ -26,14 +24,14 @@ from margarita.agent.entities.run import (
     ShutdownReason,
     ToolCall,
 )
-from margarita.agent.libs.ollama_agent.custom_tool_handler import (
+from margarita.agent.libs.open_agent.tools.custom_tool_handler import (
     GET_TOOL_DEFINITION,
     SET_TOOL_DEFINITION,
-    OllamaCustomToolHandler,
+    OpenAgentCustomToolHandler,
 )
-from margarita.agent.libs.ollama_agent.tool_converter import convert_core_tool_to_ollama
-from margarita.agent.libs.ollama_agent.user_input_handler import OllamaUserInputHandler
-from margarita.agent.libs.ollama_agent.user_permission_handler import OllamaPermissionHandler
+from margarita.agent.libs.open_agent.tools.tool_converter import convert_core_tool_to_open_agent
+from margarita.agent.libs.open_agent.users.user_input_handler import OpenAgentUserInputHandler
+from margarita.agent.libs.open_agent.users.user_permission_handler import OpenAgentPermissionHandler
 
 SYSTEM_PROMPT = """
 # ROLE:
@@ -62,21 +60,18 @@ SESSION_EVENT_TYPE_MAP: dict[SessionEventType, RunEventEnum] = {
 }
 
 
-@injectable(as_type=QueryService, qualifier="ollama")
-class OllamaQuery(QueryService):
-    """QueryService implementation for interacting with Ollama.
-
-    Manages sessions, streams events from the Ollama SDK, and exposes run
+class OpenAgent:
+    """Manages sessions, streams events from the open agent SDK, and exposes run
     methods used by RunAgentPlugin to execute LLM queries.
     """
 
     def __init__(
         self,
-        ollama_client: LLMClient,
+        backend: Literal["ollama", "openai"],
         app_config: AppConfig | None = None,
         logger: LoggerService | None = None,
     ):
-        self.client = ollama_client
+        self.backend = backend
         # Allow omission in tests; default to a basic AppConfig when not provided.
         self.app_config = app_config or AppConfig()
         self.logger_service = logger
@@ -84,8 +79,8 @@ class OllamaQuery(QueryService):
         self._model_sessions: dict[int, AgentSession] = {}
         self._session_lock = asyncio.Lock()
 
-    async def execute_query(self, execution_model: ExecutionModel, params: str) -> str:
-        """Execute a query using the Ollama client.
+    async def execute_query_async(self, execution_model: ExecutionModel, params: str) -> str:
+        """Execute a query using the open agent client.
 
         Args:
             execution_model (ExecutionModel): The execution model for the current agent run.
@@ -93,11 +88,11 @@ class OllamaQuery(QueryService):
         """
         extra_tools: list[ToolDefinition] = []
         if execution_model.context.tools:
-            extra_tools = convert_core_tool_to_ollama(execution_model.context.tools)
+            extra_tools = convert_core_tool_to_open_agent(execution_model.context.tools)
 
         session_tools = [SET_TOOL_DEFINITION, GET_TOOL_DEFINITION, *extra_tools]
 
-        session = await self.create_session(execution_model, session_tools)
+        session = await self._create_session(execution_model, session_tools)
 
         if self.logger_service:
             self.logger_service.print(
@@ -110,7 +105,7 @@ class OllamaQuery(QueryService):
         run = execution_model.start_run(
             name=params,
             prompt=execution_model.context.window,
-            provider="Ollama",
+            provider=self.backend,
             status=RunStatus.RUNNING,
             start_time=datetime.now(UTC),
         )
@@ -214,7 +209,7 @@ class OllamaQuery(QueryService):
         run.end_time = datetime.now(UTC)
         run.status = RunStatus.COMPLETED
 
-    async def create_session(
+    async def _create_session(
         self, execution_model: ExecutionModel, extra_tools: list[ToolDefinition]
     ) -> AgentSession:
         model_id = id(execution_model)
@@ -232,14 +227,12 @@ class OllamaQuery(QueryService):
                 model=model_value,
                 system_message=SYSTEM_PROMPT,
                 additional_tools=extra_tools,
-                on_user_input_request=OllamaUserInputHandler(execution_model),
-                on_permission_request=OllamaPermissionHandler(execution_model, self.app_config),
-                on_custom_tool_request=OllamaCustomToolHandler(execution_model),
+                on_user_input_request=OpenAgentUserInputHandler(execution_model),
+                on_permission_request=OpenAgentPermissionHandler(execution_model, self.app_config),
+                on_custom_tool_request=OpenAgentCustomToolHandler(execution_model),
+                backend=self.backend,
             )
             self._model_sessions[model_id] = session
 
         session = self._model_sessions[model_id]
         return session
-
-    async def clear_session(self):
-        pass
