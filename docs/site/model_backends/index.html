@@ -1625,6 +1625,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#claude-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#openai-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenAI API
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1654,15 +1676,33 @@
 <ul>
 <li><strong>Ollama</strong>: A local model backend that runs on your machine.</li>
 <li><strong>GitHub Copilot</strong>: A cloud-based model backend that integrates with GitHub's</li>
+<li><strong>Claude API</strong>: A cloud-based model backend that integrates with the Claude API.</li>
+<li><strong>OpenAI API</strong>: A cloud-based model backend that integrates with the OpenAI API.</li>
 </ul>
 <h2 id="switching-between-backends">Switching Between Backends<a class="headerlink" href="#switching-between-backends" title="Permanent link">&para;</a></h2>
 <p>Use the following command to switch between model backends:</p>
 <p><code>margarita use &lt;backend_name&gt;</code></p>
+<blockquote>
+<p>Some models require the model name to be in the metadata section. You will get an error if you are missing this.</p>
+</blockquote>
+<p>To specify the model name, add it to the metadata section of your <code>.mgx</code> file:</p>
+<div class="language-margarita highlight"><pre><span></span><code><span class="p">---</span>
+<span class="na">model</span><span class="p">:</span> ollama:your_model_name
+<span class="p">---</span>
+</code></pre></div>
 <h2 id="ollama">Ollama<a class="headerlink" href="#ollama" title="Permanent link">&para;</a></h2>
 <p>Ollama is a local model backend that allows you to run language models on your machine.</p>
 <p><code>margarita use ollama</code></p>
+<p>ollama requires that you have the Ollama software installed and set up on your machine. You can find installation instructions in the <a href="https://ollama.com/docs/installation">Ollama documentation</a>.</p>
 <h2 id="github-copilot">GitHub Copilot<a class="headerlink" href="#github-copilot" title="Permanent link">&para;</a></h2>
 <p><code>margarita use copilot</code></p>
+<p>To use GitHub Copilot download the Copilot CLI and log in to the cli then you should be able to use Margarita.</p>
+<h2 id="claude-api">Claude API<a class="headerlink" href="#claude-api" title="Permanent link">&para;</a></h2>
+<p><code>margarita use claude</code></p>
+<p>set your <code>CLAUDE_CODE_OAUTH_TOKEN</code> environment variable to your Claude API key</p>
+<h2 id="openai-api">OpenAI API<a class="headerlink" href="#openai-api" title="Permanent link">&para;</a></h2>
+<p><code>margarita use openai</code></p>
+<p>set your <code>OPENAI_API_KEY</code> environment variable to your OpenAI API key</p>
 
 
 
