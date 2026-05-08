@@ -9,6 +9,8 @@ www.margarita.run
 
 Margarita aims to make writing Agents as easy as writing Markdown.
 
+![Screenshot](https://raw.githubusercontent.com/Banyango/margarita/refs/heads/main/docs/screenshot.png)
+
 It provides two file formats:
 
 - **`.mg`** — A templating language that renders dynamic prompts to Markdown. Extends Markdown with variables, conditionals, loops, and includes.
