@@ -781,7 +781,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.0.0" },
     { name = "github-copilot-sdk", specifier = ">=0.1.25" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "margarita-open-agent", specifier = "==0.1.4rc1" },
+    { name = "margarita-open-agent", specifier = ">=0.1.4" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.0" },
     { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.0" },
     { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.24.0" },
@@ -815,16 +815,16 @@ test = [{ name = "pytest", specifier = ">=9.0.2" }]
 
 [[package]]
 name = "margarita-open-agent"
-version = "0.1.4rc1"
+version = "0.1.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "ollama" },
     { name = "openai" },
     { name = "wireup" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/24/70/5075ab6f47d079f791accc8293c1105703cb51cb84c9bb3d6f70c61a4a90/margarita_open_agent-0.1.4rc1.tar.gz", hash = "sha256:a047556f55e4415752aa32867d97035193a94df120085643d594b89e2792c13a", size = 71673, upload-time = "2026-05-05T18:52:05.555Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/00/66e7043e5034eb75b8771fae63133500838d7d7fa6404b3a116a8f167372/margarita_open_agent-0.1.4.tar.gz", hash = "sha256:f7a5c01c0d331cba144fd087dd3ed26a470229b6e64674258160dae7b54a148b", size = 71671, upload-time = "2026-05-08T13:10:17.739Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/f4/fd4aa97d844db537a7932ab3ac2f8ba9c5ef70f3c5e8c371c442003f6ede/margarita_open_agent-0.1.4rc1-py3-none-any.whl", hash = "sha256:3edae99596dd16d944cf5e33215539c1b14cd83ead9c9e802bcc732b959ef124", size = 25502, upload-time = "2026-05-05T18:52:06.588Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/84/385f4626a43e5b7e8d49aa19fcf4fae06b449c6223dd08a4ced4c18c909b/margarita_open_agent-0.1.4-py3-none-any.whl", hash = "sha256:df0da60e92d173720e55e33ab2292f59d266a56f6920a67d36b0e61caf0cdf09", size = 25478, upload-time = "2026-05-08T13:10:18.616Z" },
 ]
 
 [[package]]
@@ -1187,7 +1187,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "2.34.0"
+version = "2.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -1199,9 +1199,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7b/89/f1e78f5f828f4e97a6ebca8f45c6b35667da12b074ac490dc8362b882279/openai-2.34.0.tar.gz", hash = "sha256:828b4efcbb126352c2b5eb97d33ae890c92a71ab72511aefc1b7fe64aeccb07b", size = 759556, upload-time = "2026-05-04T17:34:08.721Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f4/a1/4d5e84cf51720fc1526cc49e10ac1961abcccb55b0efb3d970db1e9a2728/openai-2.36.0.tar.gz", hash = "sha256:139dea0edd2f1b30c33d46ae1a6929e03906254140318e4608e98fe8c566f2e7", size = 753003, upload-time = "2026-05-07T17:33:17.075Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/40/f090499f10514515081d09cb9da09f25b821eb20497e9423afe4f07b4ecf/openai-2.34.0-py3-none-any.whl", hash = "sha256:c996a71b1a210f3569844572ad4c609307e978515fb76877cf449b72596e549e", size = 1316535, upload-time = "2026-05-04T17:34:06.773Z" },
+    { url = "https://files.pythonhosted.org/packages/9d/1c/5d43735b2553baae2a5e899dcbcd0670a86930d993184d72ca909bf11c9b/openai-2.36.0-py3-none-any.whl", hash = "sha256:143f6194b548dbc2c921af1f1b03b9f14c85fed8a75b5b516f5bcc11a2a50c63", size = 1302361, upload-time = "2026-05-07T17:33:15.063Z" },
 ]
 
 [[package]]
