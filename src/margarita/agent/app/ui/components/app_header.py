@@ -42,26 +42,36 @@ class AppHeader:
 
     @import_errors.setter
     def import_errors(self, value):
+        if value == self._import_errors:
+            return
         self._is_dirty = True
         self._import_errors = value
 
     @warnings.setter
     def warnings(self, value):
+        if value == self._warnings:
+            return
         self._is_dirty = True
         self._warnings = value
 
     @header.setter
     def header(self, value):
+        if value == self._header:
+            return
         self._is_dirty = True
         self._header = value
 
     @metadata.setter
     def metadata(self, value):
+        if value == self._metadata:
+            return
         self._is_dirty = True
         self._metadata = value
 
     @memory.setter
     def memory(self, value):
+        if value == self._memory:
+            return
         self._is_dirty = True
         self._memory = value
 
@@ -79,6 +89,8 @@ class AppHeader:
             return
 
         content.update(Group(*self.render(model)))
+
+        self._is_dirty = False
 
     def render(self, model: ExecutionModel | None = None) -> list[Any]:
         if model is not None:

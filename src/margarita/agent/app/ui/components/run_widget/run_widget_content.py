@@ -59,13 +59,21 @@ class RunWidgetContent:
         last_text_len = len(run.content_blocks[-1].text) if run.content_blocks else 0
         completed_tool_calls = sum(1 for tc in run.tool_calls if tc.success is not None)
 
-        return (num_content_blocks, tool_calls, status, last_text_len, completed_tool_calls) != (
+        if (num_content_blocks, tool_calls, status, last_text_len, completed_tool_calls) == (
             self.num_content_blocks,
             self.tool_calls,
             self.status,
             self.last_text_len,
             self.completed_tool_calls,
-        )
+        ):
+            return False
+
+        self.num_content_blocks = num_content_blocks
+        self.tool_calls = tool_calls
+        self.status = status
+        self.last_text_len = last_text_len
+        self.completed_tool_calls = completed_tool_calls
+        return True
 
     def refresh_content(self, run: Run, app_config: AppConfig):
         """Refresh the content of the run

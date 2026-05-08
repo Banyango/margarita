@@ -100,6 +100,7 @@ class RunWidget(Vertical):
             return
 
         header.update(self._header.render())
+        self._header.clear_dirty()
 
     def _refresh_content(self) -> None:
         if self._run is None or not self._run.is_expanded:

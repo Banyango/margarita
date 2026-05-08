@@ -24,3 +24,5 @@ See the [Agent](running_the_agent.md) section for full documentation on `@state`
 
 - Ollama (local)
 - GitHub Copilot
+- Claude API
+- OpenAI API

@@ -21,12 +21,7 @@ async def create_set_variable_tool(execution_model: ExecutionModel):
         skip_permission=True,
     )
     async def set_variable(params: SetVariableFromState) -> dict:
-        memory = execution_model.memory
-        if memory is not None and params.name in memory.get_items():
-            memory.set(params.name, params.value)
-            value = execution_model.context.set_variable(params.name, params.value)
-        else:
-            value = execution_model.context.set_variable(params.name, params.value)
-        return {"value": value}
+        execution_model.set_variable(params.name, params.value)
+        return {"value": params.value}
 
     return set_variable

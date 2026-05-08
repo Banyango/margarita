@@ -258,6 +258,18 @@ class ExecutionModel:
             if turn.run:
                 turn.run.on_complete()
 
+    def set_variable(self, name: str, value: Any) -> Any:
+        """Set a variable in the execution model's context and memory.
+
+        Args:
+            name (str): The name of the variable.
+            value (Any): The value of the variable.
+        """
+        self.context.set_variable(name, value)
+
+        if self.memory is not None and name in self.memory.get_items():
+            self.memory.set(name, value)
+
 
 class BreakSignal(Exception):
     """Internal exception used to short-circuit execution of a loop or flow.
@@ -272,3 +284,4 @@ class ModelBackend(StrEnum):
     COPILOT = "copilot"
     OLLAMA = "ollama"
     OPENAI = "openai"
+    CLAUDE = "claude"

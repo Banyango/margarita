@@ -8,7 +8,7 @@ Key features
 
 - Support Composable templates that can be split, reused, and nested
 - Support Logic with conditionals and loops for dynamic sections
-- Requires Ollama or GitHub Copilot for agentic capabilities (more backends coming soon)
+- Requires Ollama, Claude API Key, OpenAI API Key, or GitHub Copilot for agentic capabilities (more backends coming soon)
 
 ## Quick Start
 
