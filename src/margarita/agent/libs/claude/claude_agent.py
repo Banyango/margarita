@@ -152,6 +152,7 @@ class ClaudeAgent(QueryService):
             can_use_tool=can_use_tool,
             permission_mode="bypassPermissions" if self.app_config.ignore_permissions else None,
             mcp_servers={"state": state_server},
+            strict_mcp_config=True,
             allowed_tools=["get_variable", "set_variable"],
         )
 
