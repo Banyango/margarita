@@ -9,9 +9,9 @@ from claude_agent_sdk.types import (
     ResultMessage,
     TextBlock,
     ThinkingBlock,
-    ToolPermissionContext,
     ToolResultBlock,
-    ToolUseBlock, UserMessage,
+    ToolUseBlock,
+    UserMessage,
 )
 from wireup import injectable
 
@@ -30,6 +30,7 @@ from margarita.agent.entities.run import (
 )
 from margarita.agent.libs.claude.tools.get_variable_from_state import create_get_variable_tool
 from margarita.agent.libs.claude.tools.set_variable_in_state import create_set_variable_tool
+from margarita.agent.libs.claude.tools.user_input import QuestionRequest, UserInputTool
 
 SYSTEM_PROMPT = """
 Role
@@ -83,14 +84,10 @@ You have two MCP tools for managing shared state across conversation turns:
 4. **Report** — summarize progress to the user concisely
 """
 
-INTERNAL_TOOLS = [
-    "ToolSearch"
-]
+INTERNAL_TOOLS = ["ToolSearch", "AskUserQuestion"]
 
-IGNORE_PERMISSION_TOOLS = [
-    "get_variable",
-    "set_variable",
-]
+IGNORE_PERMISSION_TOOLS = ["get_variable", "set_variable", "AskUserQuestion"]
+
 
 def _normalize_tool_name(name: str) -> str:
     if "get_variable" in name:
@@ -111,10 +108,25 @@ class ClaudeAgent(QueryService):
         self.logger_service = logger
 
     async def execute_query(self, execution_model: ExecutionModel, params: str) -> str:
+        user_input_tool = UserInputTool(execution_model=execution_model)
+
         async def can_use_tool(
-            tool_name: str, tool_input: dict, context: ToolPermissionContext
-        ) -> PermissionResultAllow | PermissionResultDeny:
+            tool_name: str, tool_input: dict
+        ) -> str | PermissionResultAllow | PermissionResultDeny:
             tool_name = _normalize_tool_name(tool_name)
+
+            questions = block.input.get("questions", [])
+            answers = {}
+            if tool_name == "AskUserQuestion":
+                for question in questions:
+                    answer = await user_input_tool.ask_question(request=QuestionRequest(**question))
+                    answers[question["question"]] = answer
+                return PermissionResultAllow(
+                    updated_input={
+                        "questions": questions,
+                        "answers": answers,
+                    }
+                )
 
             if self.app_config.ignore_permissions or tool_name in IGNORE_PERMISSION_TOOLS:
                 return PermissionResultAllow()
@@ -129,8 +141,6 @@ class ClaudeAgent(QueryService):
             if prompt.approved:
                 return PermissionResultAllow()
             return PermissionResultDeny(message="Denied by user")
-
-        model_id = id(execution_model)
 
         model_value = execution_model.model
         if isinstance(model_value, str):
@@ -153,7 +163,7 @@ class ClaudeAgent(QueryService):
             permission_mode="bypassPermissions" if self.app_config.ignore_permissions else None,
             mcp_servers={"state": state_server},
             strict_mcp_config=True,
-            allowed_tools=["get_variable", "set_variable"],
+            allowed_tools=["get_variable", "set_variable", "AskUserQuestion"],
         )
 
         async def prompt_stream():
@@ -199,9 +209,11 @@ class ClaudeAgent(QueryService):
                             run.responses[-1] += block.text
                             if (
                                 not run.content_blocks
-                                or run.content_blocks[-1].type != ContentBlockType.REASONING
+                                or run.content_blocks[-1].type != ContentBlockType.RESPONSE
                             ):
-                                run.content_blocks.append(ContentBlock(type=ContentBlockType.RESPONSE))
+                                run.content_blocks.append(
+                                    ContentBlock(type=ContentBlockType.RESPONSE)
+                                )
                             run.content_blocks[-1].text += block.text
                             result += block.text
 
@@ -213,7 +225,9 @@ class ClaudeAgent(QueryService):
                                 not run.content_blocks
                                 or run.content_blocks[-1].type != ContentBlockType.REASONING
                             ):
-                                run.content_blocks.append(ContentBlock(type=ContentBlockType.REASONING))
+                                run.content_blocks.append(
+                                    ContentBlock(type=ContentBlockType.REASONING)
+                                )
                             run.content_blocks[-1].text += block.thinking
 
                         elif isinstance(block, ToolUseBlock):
@@ -241,7 +255,9 @@ class ClaudeAgent(QueryService):
                             input_tokens=int(message.usage.get("input_tokens", 0)),
                             output_tokens=int(message.usage.get("output_tokens", 0)),
                             cache_read_tokens=int(message.usage.get("cache_read_input_tokens", 0)),
-                            cache_write_tokens=int(message.usage.get("cache_creation_input_tokens", 0)),
+                            cache_write_tokens=int(
+                                message.usage.get("cache_creation_input_tokens", 0)
+                            ),
                         )
                         run.tokens.accumulate(turn_tokens)
                         run.request_count += 1

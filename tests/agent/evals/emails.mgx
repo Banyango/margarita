@@ -1,0 +1,22 @@
+<<
+Summarize the Last 10 emails I've gotten.
+
+- Categorize them.
+- Give me an action item list.
+- Ignore spam type emails.
+
+Here are the emails:
+Latest 10 emails:
+  Bruce Wayne <notifications@github.com>   [Banyango/margarita] Run failed: Publish - v45.7.0rc3
+  LinkedIn Job Alerts <jobalerts-noreply@l Senior Staff Software Engineer, Core Architecture at Test.com
+  John Realtor <realtor@sell.com>          Seattle Property Search
+  Medium Daily Digest <noreply@medium.com> I Tried 100 Claude Skills. These Are The Best | The PyCoach
+  The Substack Post <post+the-weekender@su “Authenticity is a story the tourist tells about herself”
+  The Substack Post <post+the-weekender@su “Authenticity is a story the tourist tells about herself”
+  Costco Wholesale <CostcoNews@digital.cos Check Out This Week's Treasure Hunt! New and Unique Finds at
+  LinkedIn <notifications-noreply@linkedin You have 1 new invitation
+  Jane Jane <jane@school.com>              Grade 9 Weekly Update: May 8th
+  LinkedIn Job Alerts <jobalerts-noreply@l Proompt Engineer, Applied AI (Fullstack) at Kieowe
+>>
+
+@effect run

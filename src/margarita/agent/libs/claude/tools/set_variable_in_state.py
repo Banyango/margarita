@@ -1,6 +1,5 @@
-from pydantic import BaseModel
-
 from claude_agent_sdk import SdkMcpTool
+from pydantic import BaseModel
 
 from margarita.agent.core.agents.models import ExecutionModel
 

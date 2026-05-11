@@ -1,7 +1,6 @@
+from claude_agent_sdk import SdkMcpTool
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel
-
-from claude_agent_sdk import SdkMcpTool
 
 from margarita.agent.core.agents.models import ExecutionModel
 
@@ -20,5 +19,7 @@ def create_get_variable_tool(execution_model: ExecutionModel) -> SdkMcpTool:
         description="Get a variable from the shared state",
         input_schema=GetVariableParams.model_json_schema(),
         handler=handler,
-        annotations=ToolAnnotations(title="Get a variable from the shared state", readOnlyHint=True)
+        annotations=ToolAnnotations(
+            title="Get a variable from the shared state", readOnlyHint=True
+        ),
     )

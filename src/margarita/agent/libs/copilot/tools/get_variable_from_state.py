@@ -9,6 +9,7 @@ class GetVariableFromState(BaseModel):
 
     Used by the Copilot tools layer to request variables from the agent state.
     """
+
     variable: str
 
 
