@@ -1,8 +1,8 @@
-import margarita.agent.app.cli.agents.use as use_module
-import margarita.agent.app.lifecycle as lifecycle_module
 import pytest
 from click.testing import CliRunner
 
+import margarita.agent.app.cli.agents.use as use_module
+import margarita.agent.app.lifecycle as lifecycle_module
 from margarita.agent.app.config import AppConfig, FeatureFlags
 from margarita.agent.core.agents.models import ModelBackend
 

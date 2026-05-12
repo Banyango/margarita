@@ -7,12 +7,14 @@ from wireup import injectable
 
 from margarita.agent.core.agents.models import ModelBackend
 
+
 class FeatureFlags(BaseModel):
     model_config = ConfigDict(
         extra="ignore",
     )
 
     is_open_ai_api_enabled: bool = False
+
 
 class AppConfig(BaseModel):
     show_context: bool = True
