@@ -48,6 +48,10 @@ set your `CLAUDE_CODE_OAUTH_TOKEN` environment variable to your Claude API key
 
 ## OpenAI API
 
+> Note: The OpenAI API backend is currently in beta. If you're interested in using it or providing feedback, please let us know by creating an issue in our GitHub repository.
+
+> Enable the feature flag in .margarita/settings.json { "feature_flags": {"is_open_ai_api_enabled": true } }
+
 `margarita use openai`
 
 set your `OPENAI_API_KEY` environment variable to your OpenAI API key

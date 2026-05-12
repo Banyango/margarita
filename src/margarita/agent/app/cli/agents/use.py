@@ -18,7 +18,7 @@ async def use(model: str) -> None:
         config.backend = ModelBackend.COPILOT
     elif model == "ollama":
         config.backend = ModelBackend.OLLAMA
-    elif model == "openai":
+    elif config.feature_flags.is_open_ai_api_enabled and model == "openai":
         config.backend = ModelBackend.OPENAI
     elif model == "claude":
         config.backend = ModelBackend.CLAUDE
