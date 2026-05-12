@@ -1,3 +1,14 @@
+# Release Notes - Margarita v0.7.0
+
+**Release Date:** 2026-05-11
+
+## 🎉 Overview
+This release adds more support for other agent backends and some more control flow features.
+
+- Added support for Claude API agent execution.
+- Added beta support for OpenAI API agent execution.
+- Added while loops for more flexible control flow. `@while condition:`
+
 # Release Notes - Margarita v0.6.2
 
 **Release Date:** 2026-05-05

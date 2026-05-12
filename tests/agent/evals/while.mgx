@@ -1,0 +1,10 @@
+---
+description: Test while loop
+---
+@state test = 1
+
+while test < 3:
+    <<
+    Output the value of test and then increment it by 1.
+    >>
+    @effect run

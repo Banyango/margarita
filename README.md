@@ -9,7 +9,9 @@ www.margarita.run
 
 Margarita aims to make writing Agents as easy as writing Markdown.
 
-![Screenshot](https://raw.githubusercontent.com/Banyango/margarita/refs/heads/main/docs/screenshot.png)
+<video width="320" height="240" controls>
+  <source src="https://raw.githubusercontent.com/Banyango/margarita/refs/heads/main/docs/intro.mp4" type="video/mp4">
+</video>
 
 It provides two file formats:
 
